@@ -1,0 +1,9 @@
+matplotlib 
+numpy 
+pandas 
+scipy 
+jupyter 
+scikit-learn 
+scikit-image 
+flask
+openslide-python
