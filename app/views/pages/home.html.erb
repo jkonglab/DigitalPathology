@@ -1,0 +1,23 @@
+
+<div id="example-wide-dzi" class="openseadragon">
+</div>
+
+<script>
+OpenSeadragon({
+    id:            "example-wide-dzi",
+    prefixUrl:     "/openseadragon/images/",
+    tileSources: [{
+        Image: {
+            xmlns:    "http://schemas.microsoft.com/deepzoom/2008",
+            Url:      "https://s3.amazonaws.com/pathology-imageviewer/sample/TCGA-EJ-5494-01A-01-BS1.4617dbb2-0f18-4142-b2c8-cee5160f7da7_files/",
+            Format:   "jpeg", 
+            Overlap:  "1", 
+            TileSize: "254",
+            Size: {
+                Height: "20747",
+                Width: "24001"
+            }
+        }
+    }]
+});
+</script>
