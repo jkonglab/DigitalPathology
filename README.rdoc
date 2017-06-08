@@ -1,21 +1,22 @@
+==Installation Instructions
 
 
 1. Install Homebrew: https://brew.sh/
 2. Brew install git
-	a.) git clone the project directory somewhere project_directory
+	a. git clone the project directory somewhere project_directory
 3. Install RMV: https://rvm.io/rvm/install
-	a.) rvm install 2.0.0
-	b.) rvm use 2.0.0
-	c.) gem install bundler
-	d.) cd project_directory && bundle install //this will install rails
+	a. rvm install 2.0.0
+	b. rvm use 2.0.0
+	c. gem install bundler
+	d. cd project_directory && bundle install //this will install rails
 4. Brew install postgres
-	a.) brew services start postgres
-	b.) install http://www.psequel.com/
+	a. brew services start postgres
+	b. install http://www.psequel.com/
 5. Brew install openslide
 6. Brew install python3
 7. pip install virtualenv  // Development only
-	a.) virtualenv --system-site-packages -p python3 env // Development only
-	b.) source env/bin/activate
+	a. virtualenv --system-site-packages -p python3 env // Development only
+	b. source env/bin/activate
 
 #Test out that you can view your postgres DB using Psequel
 
