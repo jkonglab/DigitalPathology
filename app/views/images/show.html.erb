@@ -1,0 +1,23 @@
+hello world
+<div id="<%=@image.slug%>" class="openseadragon">
+</div>
+
+<script>
+OpenSeadragon({
+    id:            "<%=@image.slug%>",
+    prefixUrl:     "/openseadragon/images/",
+    tileSources: [{
+        Image: {
+            xmlns:    "http://schemas.microsoft.com/deepzoom/2008",
+            Url:      "<%=@image.path%>",
+            Format:   "<%=@image.format%>", 
+            Overlap:  "<%=@image.overlap%>", 
+            TileSize: "<%=@image.tile_size%>",
+            Size: {
+                Height: "<%=@image.height%>",
+                Width: "<%=@image.width%>"
+            }
+        }
+    }]
+});
+</script>

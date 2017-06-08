@@ -12,6 +12,7 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require bootstrap-sprockets
 //= require turbolinks
 //= require_tree .
 
@@ -19,5 +20,7 @@
 
 
 $(function(){
-
+	$("tr[data-link]").click(function() {
+		window.location = $(this).attr('data-link');
+	});
 });

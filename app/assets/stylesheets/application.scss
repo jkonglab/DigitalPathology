@@ -10,12 +10,25 @@
  * defined in the other CSS/SCSS files in this directory. It is generally better to create a new
  * file per style scope.
  *
- *= require_tree .
- *= require_self
  */
 
+@import "bootstrap-sprockets";
+@import "bootstrap";
 
- body{
- 	height: 100%;
-    overflow: hidden;
- }
+body {
+  padding-top: 50px;
+}
+.content{
+  padding: 40px 15px;
+  text-align: center;
+}
+
+.image-table{
+	background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding:10px;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+ 
+}
