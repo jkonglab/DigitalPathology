@@ -1,10 +1,10 @@
-hello world
-<div id="<%=@image.slug%>" class="openseadragon">
+<h4><%=@image.title%></h4>
+<div id="<%=@image.upload_file_name.parameterize%>" class="openseadragon">
 </div>
 
 <script>
 OpenSeadragon({
-    id:            "<%=@image.slug%>",
+    id:            "<%=@image.upload_file_name.parameterize%>",
     prefixUrl:     "/openseadragon/images/",
     tileSources: [{
         Image: {

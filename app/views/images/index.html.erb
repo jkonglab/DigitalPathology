@@ -1,6 +1,10 @@
 
 <h4>Check out all the cool images we have uploaded!</h4>
 <br/><br/>
+<%= link_to new_image_path do %>
+	<button class="btn btn-success">+ Upload New</button>
+<% end %>
+<br/><br/>
 <div class="image-table">
 	<table class="table table-hover">
 	  <thead>
@@ -13,7 +17,7 @@
 	  </thead>
 	  <tbody>
 	  	<% @images.each do |image| %>
-	  		<tr data-link="<%=image_path(image)%>">
+	  		<tr class="image-link" data-link="<%=image_path(image)%>">
 	  			<td><%=image.id%></td>
 	  			<td><%=image.title%></td>
 	  			<td><%=image.width%> x <%=image.height%></td>
