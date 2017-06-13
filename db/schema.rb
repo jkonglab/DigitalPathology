@@ -17,7 +17,7 @@ ActiveRecord::Schema.define(version: 20170608231924) do
   enable_extension "plpgsql"
 
   create_table "images", force: :cascade do |t|
-    t.string   "title",            default: ""
+    t.string   "title",              default: ""
     t.string   "slug"
     t.string   "format"
     t.string   "path"
@@ -27,8 +27,8 @@ ActiveRecord::Schema.define(version: 20170608231924) do
     t.integer  "width"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "processing",       default: false
-    t.string   "upload_file_name"
+    t.boolean  "processing",         default: false
+    t.string   "original_file_name"
   end
 
 end
