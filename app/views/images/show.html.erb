@@ -1,24 +1,57 @@
 <h4><%=@image.title%></h4>
-<div id="<%=@image.upload_file_name.parameterize%>" class="openseadragon">
+<div class="annotations-hidden-form">
+	<%= form_for @annotation do |f| %>
+	  <%= f.hidden_field :data %>
+	  <%= f.hidden_field :image_id, :value=> @image.id %>
+	  <%= f.submit 'Save Annotations', :class=>'btn btn-primary' %>
+	<% end %>
+</div>
+<div onclick="viewer.annotations.clean()" class="btn btn-success">Clear Annotation</div>
+
+<div class="container">
+	<div class="col-md-6 col-xs-12">
+		<div id="<%=@image.upload_file_name.parameterize%>" class="openseadragon">
+		</div>
+	</div>
+
+	<div class="col-md-6 col-xs-12">
+		<table class="table table-hover">
+		  <thead>
+		  	<tr>
+			  	<th>Annotation ID</th>
+			  	<th>Date Annotated</th>
+		  	</tr>
+		  </thead>
+		  <tbody>
+		  	<% @image.annotations.each do |annotation| %>
+		  		<tr class="annotation-row" annotation-data="<%= annotation.data.to_json%>">
+		  			<td><%=annotation.id%></td>
+		  			<td><%=annotation.created_at%></td>
+		  		</tr>
+		  	<% end %>
+		  </tbody>
+		</table>
+	</div>
 </div>
 
+
 <script>
-var viewer = OpenSeadragon({
-    id:            "<%=@image.upload_file_name.parameterize%>",
-    prefixUrl:     "/openseadragon/images/",
-    tileSources: [{
-        Image: {
-            xmlns:    "http://schemas.microsoft.com/deepzoom/2008",
-            Url:      "<%=@image.path%>",
-            Format:   "<%=@image.format%>", 
-            Overlap:  "<%=@image.overlap%>", 
-            TileSize: "<%=@image.tile_size%>",
-            Size: {
-                Height: "<%=@image.height%>",
-                Width: "<%=@image.width%>"
-            }
-        }
-    }]
-});
-viewer.initializeAnnotations();
+	var viewer = OpenSeadragon({
+	    id:            "<%=@image.upload_file_name.parameterize%>",
+	    prefixUrl:     "/openseadragon/images/",
+	    tileSources:   "https://s3.amazonaws.com/<%=Rails.application.config.s3_bucket%>/<%=@image.upload_file_name.split('.svs')[0]%>/<%=@image.upload_file_name.split('.svs')[0]%>.dzi",
+	});
+
+	viewer.initializeAnnotations();
+
+	$( "#new_annotation" ).submit(function( event ) {
+	  var annotation_data = viewer.annotations.get();
+	  $('#annotation_data').val(JSON.stringify(annotation_data));
+	});
+
+	$('.annotation-row').click(function(){
+		var annotation_data = JSON.parse($(this).attr('annotation-data'));
+		viewer.annotations.set(annotation_data);
+	})
+
 </script>
