@@ -1,6 +1,5 @@
 class ImagesController < ApplicationController
     
-
   def index
       @images = Image.all
   end  
@@ -25,6 +24,7 @@ class ImagesController < ApplicationController
 
   def show
       @image = Image.find(params[:id])
+      @annotation = Annotation.new
   end
 
   private
