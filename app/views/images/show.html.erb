@@ -3,7 +3,7 @@
 </div>
 
 <script>
-OpenSeadragon({
+var viewer = OpenSeadragon({
     id:            "<%=@image.upload_file_name.parameterize%>",
     prefixUrl:     "/openseadragon/images/",
     tileSources: [{
@@ -20,4 +20,5 @@ OpenSeadragon({
         }
     }]
 });
+viewer.initializeAnnotations();
 </script>

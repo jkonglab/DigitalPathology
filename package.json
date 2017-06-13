@@ -12,6 +12,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "openseadragon": "^2.2.1"
-  }
+    "openseadragon": "2.2.1"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ays0110/imageviewer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ays0110/imageviewer/issues"
+  },
+  "homepage": "https://github.com/ays0110/imageviewer#readme"
 }
