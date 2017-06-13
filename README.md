@@ -15,7 +15,9 @@
 6. `brew install openslide` We use openslide for file conversions
 7. `brew install redis` We use redis for Sidekiq/background workers
 	 * `brew services start redis`
-7. DEVELOPMENT ONLY `pip install virtualenv`  
+8. Follow the AWS Installation instructions here: http://docs.aws.amazon.com/cli/latest/userguide/cli-install-macos.html
+	 * Afterwards, run `aws configure` and talk to Alice for AWS Credentials
+9. DEVELOPMENT ONLY `pip install virtualenv`  
 	 * `cd /yourpath/imageviewer/python`
 	 * `virtualenv --system-site-packages -p python3 env`
 	 * `source env/bin/activate`

@@ -31,7 +31,7 @@ class ImagesController < ApplicationController
   def generate_new_image(original_filename)
     image_suffix =  original_filename.split('.')[-1]
     image_title = original_filename.split('.'+image_suffix)[0]
-    image_unique_id = Image.last.id + 1
+    image_unique_id = Image.last ? Image.last.id + 1 : 2
 
     new_file_name = image_title + '-' + image_unique_id.to_s + '.' + image_suffix
     return Image.create(:title => image_title, :upload_file_name => new_file_name)
