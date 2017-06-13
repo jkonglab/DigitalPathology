@@ -18,3 +18,6 @@
 /node_modules
 /python/data
 /python/env
+# Added by npm-rails
+/node_modules
+/node_modules

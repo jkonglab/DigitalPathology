@@ -1,0 +1,4 @@
+# Browserify is required.
+# You can install it globally and delete from here.
+npm 'openseadragon'
+npm 'openseadragon-annotations'
