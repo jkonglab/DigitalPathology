@@ -10,7 +10,7 @@ class ImagesController < ApplicationController
   end
 
   def create
-    uploaded_io = params[:image][:upload]
+    uploaded_io = params[:file]
     original_filename = uploaded_io.original_filename # myfile.svs
     image = generate_new_image(original_filename)
 
