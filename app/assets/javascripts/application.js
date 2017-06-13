@@ -13,9 +13,9 @@
 //= require jquery
 //= require jquery_ujs
 //= require bootstrap-sprockets
-//= require_tree ../../../node_modules/openseadragon
-//= require_tree ../../../node_modules/openseadragon-annotations
 //= require_tree ../../../bower_components/formstone/dist/js
+//= require_tree ../../../node_modules/openseadragon/build
+//= require_tree ../../../node_modules/openseadragon-annotations/dist
 //= require_tree .
 
 

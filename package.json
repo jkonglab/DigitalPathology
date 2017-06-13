@@ -12,7 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "openseadragon": "2.2.1"
+    "openseadragon": "^2.2.1",
+    "openseadragon-annotations": "^1.0.2"
   },
   "devDependencies": {},
   "repository": {
