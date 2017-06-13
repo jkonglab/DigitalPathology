@@ -18,3 +18,5 @@
 /node_modules
 /python/data
 /python/env
+npm-debug.log
+/bower_components
