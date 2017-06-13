@@ -6,19 +6,7 @@
 var viewer = OpenSeadragon({
     id:            "<%=@image.upload_file_name.parameterize%>",
     prefixUrl:     "/openseadragon/images/",
-    tileSources: [{
-        Image: {
-            xmlns:    "http://schemas.microsoft.com/deepzoom/2008",
-            Url:      "<%=@image.path%>",
-            Format:   "<%=@image.format%>", 
-            Overlap:  "<%=@image.overlap%>", 
-            TileSize: "<%=@image.tile_size%>",
-            Size: {
-                Height: "<%=@image.height%>",
-                Width: "<%=@image.width%>"
-            }
-        }
-    }]
+    tileSources:   "https://s3.amazonaws.com/<%=Rails.application.config.s3_bucket%>/<%=@image.upload_file_name.split('.svs')[0]%>/<%=@image.upload_file_name.split('.svs')[0]%>.dzi",
 });
 viewer.initializeAnnotations();
 </script>
