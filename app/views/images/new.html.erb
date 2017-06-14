@@ -14,7 +14,7 @@
 	.filelist li .progress { color: #B0BEC5; display: block; float: right; font-size: 10px; text-transform: uppercase; }
 	.filelist li .cancel { color: red; cursor: pointer; display: block; float: right; font-size: 10px; margin: 0 0 0 10px; text-transform: uppercase; }
 	.filelist li.error .file { color: red; }
-	.filelist li.error .progress { color: red; }
+	.filelist li.error .progress { color: black; }
 	.filelist li.error .cancel { display: none; }
 </style>
 
@@ -50,9 +50,9 @@
 		console.log("Before Send");
 		formData.append("test_field", "test_value");
 		   if (file.name.indexOf(".svs") < 0) {
+       		alert("Your file type is not supported. Please upload an SVS file ");
        		 return false;
     	}
-
 		return formData;
 	}
 	function onQueued(e, files) {
@@ -104,7 +104,8 @@
 		console.log("File Error");
 		$(this).parents("form").find(".filelist.queue")
 			.find("li[data-index=" + file.index + "]").addClass("error")
-			.find(".progress").text("Error: " + error);
+			.find(".progress").text("Upload Cancled");
+
 	}
 	function onChunkStart(e, file) {
 		console.log("Chunk Start");
