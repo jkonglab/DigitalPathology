@@ -10,9 +10,8 @@
 // Read Sprockets README (https://github.com/sstephenson/sprockets#sprockets-directives) for details
 // about supported directives.
 //
-//= require jquery
-//= require jquery_ujs
-//= require bootstrap-sprockets
+//= require jquery3
+//= require bootstrap
 //= require_tree ../../../bower_components/formstone/dist/js
 //= require_tree ../../../node_modules/openseadragon/build
 //= require_tree ../../../node_modules/openseadragon-annotations/dist
