@@ -25,6 +25,7 @@ class ImagesController < ApplicationController
   def show
       @image = Image.find(params[:id])
       @annotation = Annotation.new
+      @imageJSON = ClinicalDatum.new
   end
 
   private

@@ -6,7 +6,8 @@ Rails.application.routes.draw do
   root 'pages#home'
   resources :images
   resources :annotations
-
+  get '/about' => 'pages#about'
+  resources :clinical_data
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
 

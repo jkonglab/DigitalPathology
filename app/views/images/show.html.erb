@@ -8,6 +8,13 @@
 </div>
 <div onclick="viewer.annotations.clean()" class="btn btn-success">Clear Annotation</div>
 
+<%= form_for @imageJSON do |f| %>
+  <%= f.file_field :upload %>
+   <%= f.hidden_field :image_id, :value=> @image.id %>
+  <%= f.submit %>
+<% end %> >
+
+
 <div class="container">
 	<div class="col-md-6 col-xs-12">
 		<div id="<%=@image.upload_file_name.parameterize%>" class="openseadragon">
