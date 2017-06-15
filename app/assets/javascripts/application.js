@@ -10,9 +10,12 @@
 // Read Sprockets README (https://github.com/sstephenson/sprockets#sprockets-directives) for details
 // about supported directives.
 //
+
 //= require jquery3
+//= require jquery_ujs
 //= require bootstrap
-//= require_tree ../../../bower_components/formstone/dist/js
+//= require formstone/dist/js/core
+//= require formstone/dist/js/upload
 //= require_tree ../../../node_modules/openseadragon/build
 //= require_tree ../../../node_modules/openseadragon-annotations/dist
 //= require_tree .
@@ -22,4 +25,5 @@ $(function(){
 	$("tr.image-link").click(function() {
 		window.location = $(this).attr('data-link');
 	});
+
 });
