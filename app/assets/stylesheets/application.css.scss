@@ -13,15 +13,16 @@
  *= require_tree ../../../bower_components/formstone/dist/css
  */
 
-@import "bootstrap-sprockets";
 @import "bootstrap";
 
 body {
-  padding-top: 50px;
+  padding-top: 5rem;
 }
-.content{
-  padding: 40px 15px;
-  text-align: center;
+
+@media (min-width: 1200px){
+	.container {
+	    width: 100%;
+	}
 }
 
 .image-table{
@@ -51,3 +52,9 @@ body {
 .filelist li.error .file { color: red; }
 .filelist li.error .progress { color: black; }
 .filelist li.error .cancel { display: none; }
+  	border: 1px solid #ddd;
+  	border-radius: 4px;
+  	padding:10px;
+  	-webkit-box-shadow: none;
+  	box-shadow: none;
+}
