@@ -7,20 +7,31 @@
 	<% end %>
 </div>
 <div onclick="viewer.annotations.clean()" class="btn btn-success">Clear Annotation</div>
-
 <%= form_for @imageJSON do |f| %>
-  <%= f.file_field :upload %>
-   <%= f.hidden_field :image_id, :value=> @image.id %>
-  <%= f.submit %>
-<% end %> >
-
-
+	<%= f.file_field :upload%>
+	<%= f.hidden_field :image_id, :value=> @image.id %>
+	<%= f.submit 'Enter Clinical Data', :class=>'btn btn-primary'  %>
+<% end %> 
+<br/><br/>
+<div style="padding-left: 835px; margin-top: -150; padding-bottom: 200" >
+	<div class="col-md-12 col-12">
+		<table class="table table-hover">
+		  <tbody>
+	  			<%@clinical.each do |key| %>
+	  			<tr class="clinical_data-link">
+	  				<td><%=key.meta_key%></td>
+	  				<td><%=key.meta_value%></td>
+	  			</tr>
+	  			<% end %>
+	  		</tbody>
+		</table>
+	</div>
+</div>
 <div class="row">
 	<div class="col-md-8 col-12">
 		<div id="<%=@image.upload_file_name.parameterize%>" class="openseadragon">
 		</div>
 	</div>
-
 	<div class="col-md-4 col-12">
 		<table class="table table-hover">
 		  <thead>
@@ -41,7 +52,6 @@
 	</div>
 </div>
 
-
 <script>
 	var viewer = OpenSeadragon({
 	    id:            "<%=@image.upload_file_name.parameterize%>",
@@ -60,5 +70,4 @@
 		var annotation_data = JSON.parse($(this).attr('annotation-data'));
 		viewer.annotations.set(annotation_data);
 	})
-
 </script>

@@ -10,7 +10,7 @@ class ImagesController < ApplicationController
 
   def create
     uploaded_io = params[:file]
-    original_filename = uploaded_io.original_filename # myfile.svs
+    original_filename = uploaded_io.original_filename #myfile.svs
     image = generate_new_image(original_filename)
 
     File.open(Rails.root.join('python', 'data', image.upload_file_name), 'wb') do |file|
@@ -26,6 +26,7 @@ class ImagesController < ApplicationController
       @image = Image.find(params[:id])
       @annotation = Annotation.new
       @imageJSON = ClinicalDatum.new
+      @clinical = ClinicalDatum.where(image_id: params[:id])
   end
 
   private
