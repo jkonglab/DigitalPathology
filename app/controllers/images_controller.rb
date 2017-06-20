@@ -39,5 +39,9 @@ class ImagesController < ApplicationController
     new_file_name = image_title + '-' + image_unique_id.to_s + '.' + image_suffix
     return Image.create(:title => image_title, :upload_file_name => new_file_name)
   end
+  
+
+
+
 
 end

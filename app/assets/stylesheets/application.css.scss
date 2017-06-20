@@ -51,10 +51,10 @@ body {
 .filelist li .cancel { color: red; cursor: pointer; display: block; float: right; font-size: 10px; margin: 0 0 0 10px; text-transform: uppercase; }
 .filelist li.error .file { color: red; }
 .filelist li.error .progress { color: black; }
-.filelist li.error .cancel { display: none; }
-  	border: 1px solid #ddd;
-  	border-radius: 4px;
-  	padding:10px;
-  	-webkit-box-shadow: none;
-  	box-shadow: none;
+.filelist li.error .cancel { display: none;
+    border: 1px solid #dd;
+    border-radius: 4px;
+    padding: 10px;
+    -webkit-box-shadow: none;
+    box-shadow: none;
 }

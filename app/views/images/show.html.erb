@@ -7,13 +7,73 @@
 	<% end %>
 </div>
 <div onclick="viewer.annotations.clean()" class="btn btn-success">Clear Annotation</div>
+
+
+<!-- Upload field -->
+<div style="padding-left: 1000; margin-top: -70; margin-right: -140; padding-bottom: 25; padding-right: -20;">
 <%= form_for @imageJSON do |f| %>
 	<%= f.file_field :upload%>
 	<%= f.hidden_field :image_id, :value=> @image.id %>
-	<%= f.submit 'Enter Clinical Data', :class=>'btn btn-primary'  %>
+	<div style="padding-right: -50">
+	<%= f.submit 'Clinical Data Upload', :class=>'btn btn-primary'  %>
+	</div>
 <% end %> 
+</div>
+
+
+<!-- quick add -->
+<div style="padding-left: 848; padding-right: -15; margin-top: -80; padding-bottom: 25">
+	<div class="btn-group">
+    	<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Quick Add</button>
+    	<div class="dropdown-menu">
+	        <a class="dropdown-item" href="#">Age</a>
+			<a class="dropdown-item" href="#">Age of Death</a>
+			<a class="dropdown-item" href="#">Date of Birth</a>
+			<a class="dropdown-item" href="#">Gender</a>
+	        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#name_model">Name</a>
+	        <div class="dropdown-divider"></div>
+	        <a class="dropdown-item" href="#">Other</a>
+    	</div>
+	</div>
+</div>
+
+
+<!-- Test Modal -->
+<div id="name_model" class="modal fade" role="dialog">
+	<div class="modal-dialog">
+    	<div class="modal-content">
+      		<div class="modal-header">
+        		<button type="button" class="close" data-dismiss="modal">&times;</button>
+       			<h4 class="modal-title">Enter Name</h4>
+      		</div>
+     		<div class="modal-body">
+        		<div class="md-form" style="margin-right: 0 ">
+    			<input placeholder="John Smith" type="text" id="quick_input_field" class="form-control">
+				</div>
+      		</div>
+      		<div class="modal-footer">
+        		<button onclick="test()" class="btn btn-primary">Submit</button>
+      		</div>
+    	</div>
+    </div>
+</div>
+
+
+
+<!-- Test Script for Modal -->
+<script type="text/javascript">
+	function test(){
+		 document.getElementById("demo").innerHTML = document.getElementById("quick_input_field").value;
+	}
+</script>
+
+
+
+
+
+<!-- Clinical Data Table -->
 <br/><br/>
-<div style="padding-left: 835px; margin-top: -150; padding-bottom: 200" >
+<div style="padding-left: 835px; margin-top: -50; padding-bottom: 200" >
 	<div class="col-md-12 col-12">
 		<table class="table table-hover">
 		  <tbody>
@@ -27,6 +87,23 @@
 		</table>
 	</div>
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <div class="row">
 	<div class="col-md-8 col-12">
 		<div id="<%=@image.upload_file_name.parameterize%>" class="openseadragon">
@@ -51,7 +128,6 @@
 		</table>
 	</div>
 </div>
-
 <script>
 	var viewer = OpenSeadragon({
 	    id:            "<%=@image.upload_file_name.parameterize%>",
