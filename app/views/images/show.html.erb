@@ -1,133 +1,26 @@
-<h4><%=@image.title%></h4>
-<div class="annotations-hidden-form">
-	<%= form_for @annotation do |f| %>
-	  <%= f.hidden_field :data %>
-	  <%= f.hidden_field :image_id, :value=> @image.id %>
-	  <%= f.submit 'Save Annotations', :class=>'btn btn-primary' %>
-	<% end %>
-</div>
-<div onclick="viewer.annotations.clean()" class="btn btn-success">Clear Annotation</div>
-
-
-<!-- Upload field -->
-<div style="padding-left: 1000; margin-top: -70; margin-right: -140; padding-bottom: 25; padding-right: -20;">
-<%= form_for @imageJSON do |f| %>
-	<%= f.file_field :upload%>
-	<%= f.hidden_field :image_id, :value=> @image.id %>
-	<div style="padding-right: -50">
-	<%= f.submit 'Clinical Data Upload', :class=>'btn btn-primary'  %>
-	</div>
-<% end %> 
-</div>
-
-
-<!-- quick add -->
-<div style="padding-left: 848; padding-right: -15; margin-top: -80; padding-bottom: 25">
-	<div class="btn-group">
-    	<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Quick Add</button>
-    	<div class="dropdown-menu">
-	        <a class="dropdown-item" href="#">Age</a>
-			<a class="dropdown-item" href="#">Age of Death</a>
-			<a class="dropdown-item" href="#">Date of Birth</a>
-			<a class="dropdown-item" href="#">Gender</a>
-	        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#name_model">Name</a>
-	        <div class="dropdown-divider"></div>
-	        <a class="dropdown-item" href="#">Other</a>
-    	</div>
-	</div>
-</div>
-
-
-<!-- Test Modal -->
-<div id="name_model" class="modal fade" role="dialog">
-	<div class="modal-dialog">
-    	<div class="modal-content">
-      		<div class="modal-header">
-        		<button type="button" class="close" data-dismiss="modal">&times;</button>
-       			<h4 class="modal-title">Enter Name</h4>
-      		</div>
-     		<div class="modal-body">
-        		<div class="md-form" style="margin-right: 0 ">
-    			<input placeholder="John Smith" type="text" id="quick_input_field" class="form-control">
-				</div>
-      		</div>
-      		<div class="modal-footer">
-        		<button onclick="test()" class="btn btn-primary">Submit</button>
-      		</div>
-    	</div>
+<div class="bmd-layout-container bmd-drawer-f-l bmd-drawer-in">
+	<div id="dw-1" class="bmd-layout-drawer bg-faded" aria-expanded="false" aria-hidden="false">
+		<div class="drawer-tab active drawer-home">
+			<%= render partial: "drawer_home", locals: { image: @image } %>
+		</div>
+		<div class="drawer-tab drawer-annotations">
+			<%= render partial: "drawer_annotations", locals: { annotation: @annotation, image: @image } %>
+		</div>
+		<div class="drawer-tab drawer-data">
+			<%= render partial: "drawer_data", locals: { image_json: @image_json, image: @image } %>
+		</div>
     </div>
-</div>
 
-
-
-<!-- Test Script for Modal -->
-<script type="text/javascript">
-	function test(){
-		 document.getElementById("demo").innerHTML = document.getElementById("quick_input_field").value;
-	}
-</script>
-
-
-
-
-
-<!-- Clinical Data Table -->
-<br/><br/>
-<div style="padding-left: 835px; margin-top: -50; padding-bottom: 200" >
-	<div class="col-md-12 col-12">
-		<table class="table table-hover">
-		  <tbody>
-	  			<%@clinical.each do |key| %>
-	  			<tr class="clinical_data-link">
-	  				<td><%=key.meta_key%></td>
-	  				<td><%=key.meta_value%></td>
-	  			</tr>
-	  			<% end %>
-	  		</tbody>
-		</table>
-	</div>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="row">
-	<div class="col-md-8 col-12">
-		<div id="<%=@image.upload_file_name.parameterize%>" class="openseadragon">
+    <div class="bmd-layout-content">
+		<div class="row">
+			<div class="col-12">
+				<div id="<%=@image.upload_file_name.parameterize%>" class="openseadragon">
+				</div>
+			</div>
 		</div>
 	</div>
-	<div class="col-md-4 col-12">
-		<table class="table table-hover">
-		  <thead>
-		  	<tr>
-			  	<th>Annotation ID</th>
-			  	<th>Date Annotated</th>
-		  	</tr>
-		  </thead>
-		  <tbody>
-		  	<% @image.annotations.each do |annotation| %>
-		  		<tr class="annotation-row" annotation-data="<%= annotation.data.to_json%>">
-		  			<td><%=annotation.id%></td>
-		  			<td><%=annotation.created_at%></td>
-		  		</tr>
-		  	<% end %>
-		  </tbody>
-		</table>
-	</div>
 </div>
+
 <script>
 	var viewer = OpenSeadragon({
 	    id:            "<%=@image.upload_file_name.parameterize%>",
@@ -146,4 +39,36 @@
 		var annotation_data = JSON.parse($(this).attr('annotation-data'));
 		viewer.annotations.set(annotation_data);
 	})
+
+	$('.drawer-link').click(function(){
+		var clicked_tab = $(this).attr('data-tab');
+		$('.drawer-tab').removeClass('active');
+		$('.'+clicked_tab).css('opacity',0).addClass('active').animate({opacity: 1}, 50);
+		if(clicked_tab == 'drawer-annotations'){
+			viewer.startDrawing();
+		}else{
+			viewer.stopDrawing();
+		}
+	})
 </script>
+
+<div id="general-modal" class="modal fade" role="dialog">
+	<div class="modal-dialog">
+   		<div class="modal-content">
+     		<div class="modal-header">
+       			<button type="button" class="close" data-dismiss="modal">&times;</button>
+      			<h4 id="general-modal-title" class="modal-title"></h4>
+     		</div>
+    		<div class="modal-body">
+				<div class="md-form" style="margin-right: 0">
+					<input type="hidden" id="quick_input_field_key" class="form-control">
+		   			<input type="text" id="quick_input_field" class="form-control">
+				</div>
+    		</div>
+    		<div class="modal-footer">
+		       	<button onclick="submitData()" class="btn btn-primary">Submit</button>
+		    </div>
+    	</div>
+    </div>
+</div>
+

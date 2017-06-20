@@ -10,28 +10,88 @@
  * defined in the other CSS/SCSS files in this directory. It is generally better to create a new
  * file per style scope.
  *
- *= require_tree ../../../bower_components/formstone/dist/css
  */
 
 @import "bootstrap";
 
-body {
-  padding-top: 5rem;
+.bmd-layout-drawer .list-group {
+    padding-top: 1rem;
 }
 
-@media (min-width: 1200px){
-	.container {
-	    width: 100%;
+.bmd-layout-drawer header {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-pack: end;
+    -ms-flex-pack: end;
+    justify-content: flex-end;
+    padding: 1rem;
+}
+
+.bmd-layout-drawer .list-group .list-group-item {
+    padding-right: 2.5rem;
+    padding-left: 2.5rem;
+    font-size: .8125rem;
+    font-weight: 500;
+}
+
+.bmd-layout-drawer * {
+    -ms-flex-negative: 0;
+    flex-shrink: 0;
+}
+
+.drawer-tab{
+	height:100%;
+	opacity:0;
+	visibility:hidden;
+	display:none;
+	-webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -ms-flex-wrap: nowrap;
+    flex-wrap: nowrap;
+    -webkit-transition: all .5s ease;
+    -moz-transition: all .5s ease;
+    transition: all .5s ease;
+    max-height: 100%;
+	&.active{
+		visibility:visible;
+		display:flex;
+		opacity:1;
 	}
+}
+
+.full-width-container {
+	max-width:100%;
+    width: 100%;
+}
+
+.pull-xs-right{
+	.material-icons{
+		color:white;
+	}
+}
+
+.navbar-nav{
+	-webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
 }
 
 .image-table{
 	background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding:10px;
-  -webkit-box-shadow: none;
-  box-shadow: none;
+  	border: 1px solid #ddd;
+  	border-radius: 4px;
+  	padding:10px;
+  	-webkit-box-shadow: none;
+  	box-shadow: none;
  
 }
 
@@ -51,7 +111,9 @@ body {
 .filelist li .cancel { color: red; cursor: pointer; display: block; float: right; font-size: 10px; margin: 0 0 0 10px; text-transform: uppercase; }
 .filelist li.error .file { color: red; }
 .filelist li.error .progress { color: black; }
-.filelist li.error .cancel { display: none;
+
+.filelist li.error .cancel { 
+    display: none;
     border: 1px solid #dd;
     border-radius: 4px;
     padding: 10px;

@@ -26,4 +26,5 @@ $(function(){
 		window.location = $(this).attr('data-link');
 	});
 
+  	$('body').bootstrapMaterialDesign();
 });

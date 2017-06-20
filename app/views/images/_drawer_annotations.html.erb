@@ -1,0 +1,43 @@
+<span data-tab="drawer-home" class="drawer-link" style="padding:15px;">
+  <i onclick="viewer.annotations.clean()" style="vertical-align:bottom;" class="material-icons" role="presentation">arrow_back</i>
+  <span>Back</span>
+</span>
+
+<header>
+  <span style="white-space:pre-wrap;" class="navbar-brand">Annotate</span>
+  <span>Click anywhere on the image to start annotating</span>
+</header>
+<ul class="list-group">
+  <a onclick="$('#save-annotations').click()" class="list-group-item">
+    <i class="material-icons" role="presentation">save</i>Save
+  </a>
+  <a onclick="viewer.annotations.clean()" class="list-group-item">
+    <i class="material-icons" role="presentation">delete</i>Clear
+  </a>
+
+  <header><span style="white-space:pre-wrap;" class="navbar-brand">Load Annotations</span></header>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Annotation ID</th>
+        <th>Date Annotated</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @image.annotations.each do |annotation| %>
+        <tr class="annotation-row" annotation-data="<%= annotation.data.to_json%>">
+          <td><%=annotation.id%></td>
+          <td><%=annotation.created_at%></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</ul>
+
+<div class="annotations-hidden-form">
+  <%= form_for annotation do |f| %>
+    <%= f.hidden_field :data %>
+    <%= f.hidden_field :image_id, :value=> image.id %>
+    <%= f.submit '+ Save Annotations', :id=>'save-annotations', :style=>'display:none;', :class=>'btn btn-primary' %>
+  <% end %>
+</div>

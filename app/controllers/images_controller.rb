@@ -23,10 +23,10 @@ class ImagesController < ApplicationController
   end
 
   def show
-      @image = Image.find(params[:id])
-      @annotation = Annotation.new
-      @imageJSON = ClinicalDatum.new
-      @clinical = ClinicalDatum.where(image_id: params[:id])
+    @image = Image.find(params[:id])
+    @annotation = Annotation.new
+    @clinical = ClinicalDatum.where(image_id: params[:id])
+    @image_json = ClinicalDatum.new
   end
 
   private
@@ -40,8 +40,4 @@ class ImagesController < ApplicationController
     return Image.create(:title => image_title, :upload_file_name => new_file_name)
   end
   
-
-
-
-
 end

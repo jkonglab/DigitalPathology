@@ -1,47 +1,67 @@
 
 <head>
   <title>Imageviewer</title>
+  <!-- Material Design fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" crossorigin="anonymous"></script>
+  <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
   <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => false %>
   <%= javascript_include_tag 'application', 'data-turbolinks-track' => false %>
   <%= csrf_meta_tags %>
+  <!-- Bootstrap Material Design -->
+  <link rel="stylesheet" href="https://cdn.rawgit.com/FezVrasta/bootstrap-material-design/dist/dist/bootstrap-material-design.min.css">
+  <script src="https://cdn.rawgit.com/FezVrasta/bootstrap-material-design/dist/dist/bootstrap-material-design.iife.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/js/ie10-viewport-bug-workaround.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 </head>
 
 
 <body>
-    <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse fixed-top">
-      <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <a class="navbar-brand" href="#">ImageViewer</a>
-      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item active">
-            <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link disabled" href="#">About</a>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Image Archive</a>
-            <div class="dropdown-menu" aria-labelledby="dropdown01">
-              <a class="dropdown-item" href="/images">All Images</a>
-              <a class="dropdown-item" href="/images/new">Upload</a>
-            </div>
-          </li>
-        </ul>
-        <form class="form-inline my-2 my-lg-0">
-          <input class="form-control mr-sm-2" type="text" placeholder="Search">
-          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-        </form>
-      </div>
-    </nav>
+  <div class="navbar navbar-inverse bg-inverse">
+    <button class="navbar-toggler" type="button" data-toggle="drawer" data-target="#dw-1" aria-expanded="false">
+      <span class="sr-only">Toggle drawer</span>
+      <i class="material-icons">menu</i>
+    </button>
+    <ul class="nav navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Image Archive</a>
+        <div class="dropdown-menu" aria-labelledby="dropdown01">
+          <a class="dropdown-item" href="/images">All Images</a>
+          <a class="dropdown-item" href="/images/new">Upload</a>
+        </div>
+      </li>
+    </ul>
+    <ul class="nav navbar-nav pull-xs-right">
+      <li class="nav-item">
+        <div class="bmd-form-group bmd-collapse-inline pull-xs-right">
+          <button class="btn bmd-btn-icon collapsed" for="search" data-toggle="collapse" data-target="#collapse-search-1" aria-controls="collapse-search-1" aria-expanded="false">
+            <i class="material-icons">search</i>
+          <div class="ripple-container"></div></button>
+          <span id="collapse-search-1" class="width collapse" aria-expanded="false" style="width: 0px;">
+            <input class="form-control" type="text" id="search" placeholder="Enter your query...">
+          </span>
+        </div>
+      </li>
+      <li class="nav-item">
+        <div class="dropdown">
+          <button class="btn bmd-btn-icon btn-secondary dropdown-toggle" type="button" id="more-menu-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="material-icons">more_vert</i>
+          <div class="ripple-container"></div></button>
+          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="more-menu-1">
+            <a href="/about"><button class="dropdown-item" type="button">About</button></a>
+            <button class="dropdown-item" type="button">Contact</button>
+            <button class="dropdown-item" type="button">Legal information</button>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
 
-    <div class="container">
-        <%= yield %>
-    </div><!-- /.container -->
-  
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
-  
+  <div class="full-width-container" style="height:100%; width:100%; position:relative;">
+    <%= yield %>
+  </div>
 </body>

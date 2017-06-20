@@ -1,0 +1,95 @@
+<span data-tab="drawer-home" class="drawer-link" style="padding:15px;">
+  <i onclick="viewer.annotations.clean()" style="vertical-align:bottom;" class="material-icons" role="presentation">arrow_back</i>
+  <span>Back</span>
+</span>
+
+<header>
+	<span style="white-space:pre-wrap;" class="navbar-brand">Clinical Data</span>
+</header>
+<ul class="list-group">
+	<!-- Clinical Data Table -->
+	<div>
+		<div class="col-md-12 col-12">
+			<table class="table table-hover">
+			  <thead>
+			  	<tr>
+			  		<td>Data Key</td>
+			  		<td>Value</td>
+			  	</tr>
+			  </thead>
+			  <tbody>
+		  			<%@clinical.each do |key| %>
+		  			<tr class="clinical_data-link">
+		  				<td><%=key.meta_key%></td>
+		  				<td><%=key.meta_value%></td>
+		  			</tr>
+		  			<% end %>
+		  		</tbody>
+			</table>
+		</div>
+	</div>
+	<header>
+		<span style="white-space:pre-wrap;" class="navbar-brand">Import Data</span>
+		Only JSON file format is accepted at this time
+	</header>
+	<div class="upload-data" style="padding:15px;">
+		<%= form_for image_json do |f| %>
+	  		<%= f.file_field :upload %>
+			<%= f.hidden_field :image_id, :value=> image.id %>
+	  	<%= f.submit 'Upload', :style=>'float:right', :class=>"btn btn-success"%>
+		<% end %>
+	</div>
+
+	<!-- quick add -->
+	<div>
+		<div class="btn-group">
+		   	<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Quick Add</button>
+		   	<div class="dropdown-menu">
+		   		<a class="dropdown-item" href="#" data-toggle="modal" data-target="#general-modal" data-key="patient-id" data-label="Patient ID">Patient ID</a>
+		   		<a class="dropdown-item" href="#" data-toggle="modal" data-target="#general-modal" data-key="allergies" data-label="Allergies (text)">Allergies</a>
+				<a class="dropdown-item" href="#" data-toggle="modal" data-target="#general-modal" data-key="age" data-label="Age (years)">Age</a>
+				<a class="dropdown-item" href="#" data-toggle="modal" data-target="#general-modal" data-key="disease_type" data-label="Disease Type">Disease Type</a>
+				<a class="dropdown-item" href="#" data-toggle="modal" data-target="#general-modal" data-key="dob" data-label="Date of Birth">Date of Birth</a>
+				<a class="dropdown-item" href="#" data-toggle="modal" data-target="#general-modal" data-key="gender" data-label="Gender">Gender</a>
+				<a class="dropdown-item" href="#" data-toggle="modal" data-target="#general-modal" data-key="height" data-label="Height (ft)">Height</a>
+				<a class="dropdown-item" href="#" data-toggle="modal" data-target="#general-modal" data-key="weight" data-label="Weight (lb)">Weight</a>
+				<a class="dropdown-item" href="#" data-toggle="modal" data-target="#general-modal" data-key="symptoms" data-label="Symptoms">Symptoms</a>
+				<div class="dropdown-divider"></div>
+				<a class="dropdown-item" href="#">Other</a>
+		   	</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		$('.dropdown-item').bind('click', function(){
+			callModal(this);
+		});
+
+		function submitData(){
+			var image_id = <%=image.id %>;
+			var modal_data_key = $('#quick_input_field_key').val();
+			var modal_data_value = $('#quick_input_field').val();
+	 		var separator = (window.location.href.indexOf("?")===-1)?"?":"&";
+
+	 		var payload = {
+	 			id: image_id,
+	 			meta_key: modal_data_key, 
+	 			meta_value: modal_data_value
+	 		};
+
+	 		$.post("/clinical_data/single", payload, function(data){
+	 			location.reload();
+	 		});
+		}
+
+		function callModal(object){
+			var data_key = $(object).attr('data-key');
+			var data_label = $(object).attr('data-label');
+			$('#general-modal-title').html('Enter ' + data_label);
+			$('#quick_input_field_key').val(data_key);
+
+		}
+	</script>
+
+</ul>
+

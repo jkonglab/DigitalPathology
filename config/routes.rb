@@ -7,7 +7,14 @@ Rails.application.routes.draw do
   resources :images
   resources :annotations
   get '/about' => 'pages#about'
-  resources :clinical_data
+  
+  resources :clinical_data do
+    collection do
+      post 'single' => 'clinical_data#create_single'
+    end
+  end
+
+
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
 
