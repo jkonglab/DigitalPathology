@@ -8,6 +8,7 @@
 	 * `rvm install 2.0.0`
 	 * `rvm use 2.0.0`, you may also want to set the default at this time
 	 * `gem install bundler` to be able to use Gemfile for installation
+	 * bower install and npm install
 	 * `cd project_directory && bundle install` to install Rails and all gems (if you are having trouble installing pg 0.1 8.4, follow the instructions here: https://stackoverflow.com/questions/6040583/cant-find-the-libpq-fe-h-header-when-trying-to-install-pg-gem)
 	 
 4. We use Postgres for our DB
