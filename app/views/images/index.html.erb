@@ -1,7 +1,10 @@
+<div class="container">
+<br/><br/>
+<h1>Image Archive</h1>
 <h4>Check out all the cool images we have uploaded!</h4>
 <br/><br/>
 <%= link_to new_image_path do %>
-	<button class="btn btn-success">+ Upload New</button>
+	<button style="float:right" class="btn btn-success">+ Upload New Image</button>
 <% end %>
 <br/><br/>
 <div class="image-table">
@@ -10,7 +13,6 @@
 	  	<tr>
 		  	<th>ID</th>
 		  	<th>Image Name</th>
-		  	<th>Image Size</th>
 		  	<th>Date Uploaded</th>
 	  	</tr>
 	  </thead>
@@ -19,10 +21,10 @@
 	  		<tr class="image-link" data-link="<%=image_path(image)%>">
 	  			<td><%=image.id%></td>
 	  			<td><%=image.title%></td>
-	  			<td><%=image.width%> x <%=image.height%></td>
 	  			<td><%=image.created_at%></td>
 	  		</tr>
 	  	<% end %>
 	  </tbody>
 	</table>
+</div>
 </div>

@@ -29,27 +29,61 @@
 	});
 
 	viewer.initializeAnnotations();
-
-	$( "#new_annotation" ).submit(function( event ) {
-	  var annotation_data = viewer.annotations.get();
-	  $('#annotation_data').val(JSON.stringify(annotation_data));
-	});
-
-	$('.annotation-row').click(function(){
-		var annotation_data = JSON.parse($(this).attr('annotation-data'));
-		viewer.annotations.set(annotation_data);
-	})
+	bindAnnotationRows();
 
 	$('.drawer-link').click(function(){
 		var clicked_tab = $(this).attr('data-tab');
 		$('.drawer-tab').removeClass('active');
 		$('.'+clicked_tab).css('opacity',0).addClass('active').animate({opacity: 1}, 50);
+
 		if(clicked_tab == 'drawer-annotations'){
-			viewer.startDrawing();
+			$( ".openseadragon-canvas svg" ).mouseup(function() {
+				promptAndSaveAnnotation();
+			});
 		}else{
 			viewer.stopDrawing();
 		}
-	})
+	});
+
+	$('.start-draw').click(function(){
+		viewer.startDrawing(); 
+		$('.start-draw').hide(); 
+		$('.stop-draw').show();
+	});
+
+	$('.stop-draw').click(function(){
+		viewer.stopDrawing(); 
+		$('.start-draw').show(); 
+		$('.stop-draw').hide();
+	});
+
+	function bindAnnotationRows(){
+		$('.annotation-row').unbind().click(function(){
+			var annotation_data = JSON.parse($(this).attr('annotation-data'))[0];
+			var existing_annotations = viewer.annotations.get();
+			existing_annotations.push(annotation_data);
+			viewer.annotations.set(existing_annotations);
+		});
+	}
+
+	function promptAndSaveAnnotation(){
+		var annotation_label = prompt("Please label your annotation", "");
+	    if (annotation_label != null) {
+	    	all_annotations = viewer.annotations.get();
+	        $.post( '<%= annotations_path %>.json', {
+			  	'image_id': <%= @image.id %>,
+			  	'label': annotation_label,
+			  	'data': JSON.stringify([all_annotations[all_annotations.length-1]])
+			})
+	        .done(function(data){
+	        	$( ".annotations-table" ).prepend("<tr class='annotation-row' annotation-data='" + JSON.stringify(data.data) + "'><td>" + data.label + "</td><td>" + data.created_at + "</td></tr>" );
+	        	bindAnnotationRows();
+	        });
+	    }else{
+	    	viewer.annotations.clean();
+	    }
+	}
+
 </script>
 
 <div id="general-modal" class="modal fade" role="dialog">

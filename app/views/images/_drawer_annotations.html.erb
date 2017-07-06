@@ -5,39 +5,36 @@
 
 <header>
   <span style="white-space:pre-wrap;" class="navbar-brand">Annotate</span>
-  <span>Click anywhere on the image to start annotating</span>
 </header>
 <ul class="list-group">
-  <a onclick="$('#save-annotations').click()" class="list-group-item">
-    <i class="material-icons" role="presentation">save</i>Save
+  <a class="start-draw list-group-item">
+    <i class="material-icons" role="presentation">edit</i>Draw
+  </a>
+  <a style="display:none;" class="stop-draw list-group-item">
+    <i class="material-icons" role="presentation">cancel</i>Stop Drawing
   </a>
   <a onclick="viewer.annotations.clean()" class="list-group-item">
-    <i class="material-icons" role="presentation">delete</i>Clear
+    <i class="material-icons" role="presentation">delete</i>Hide All
   </a>
 
-  <header><span style="white-space:pre-wrap;" class="navbar-brand">Load Annotations</span></header>
-  <table class="table table-hover">
+  <header>
+    <span style="white-space:pre-wrap;" class="navbar-brand">Load Existing Annotations</span>
+    <span>Click to visualize a previously drawn annotation</span>
+  </header>
+  <table class="annotations-table table table-hover">
     <thead>
       <tr>
-        <th>Annotation ID</th>
-        <th>Date Annotated</th>
+        <th>Label</th>
+        <th>Created Date</th>
       </tr>
     </thead>
     <tbody>
-      <% @image.annotations.each do |annotation| %>
+      <% @image.annotations.order('id desc').each do |annotation| %>
         <tr class="annotation-row" annotation-data="<%= annotation.data.to_json%>">
-          <td><%=annotation.id%></td>
-          <td><%=annotation.created_at%></td>
+          <td><%=annotation.label%></td>
+          <td><%=annotation.created_at.to_s(:short)%></td>
         </tr>
       <% end %>
     </tbody>
   </table>
 </ul>
-
-<div class="annotations-hidden-form">
-  <%= form_for annotation do |f| %>
-    <%= f.hidden_field :data %>
-    <%= f.hidden_field :image_id, :value=> image.id %>
-    <%= f.submit '+ Save Annotations', :id=>'save-annotations', :style=>'display:none;', :class=>'btn btn-primary' %>
-  <% end %>
-</div>
