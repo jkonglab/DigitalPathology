@@ -8,7 +8,6 @@
 	 * `rvm install 2.0.0`
 	 * `rvm use 2.0.0`, you may also want to set the default at this time
 	 * `gem install bundler` to be able to use Gemfile for installation
-	 * bower install and npm install
 	 * `cd project_directory && bundle install` to install Rails and all gems (if you are having trouble installing pg 0.1 8.4, follow the instructions here: https://stackoverflow.com/questions/6040583/cant-find-the-libpq-fe-h-header-when-trying-to-install-pg-gem)
 	 
 4. We use Postgres for our DB
@@ -20,9 +19,12 @@
 7. `brew install redis` or `sudo yum install redis` We use redis for Sidekiq/background workers
 	 * `brew services start redis` or `redis-server --daemonize yes`
 8. `brew install nodejs` or `sudo yum install nodejs`
+	 * Go back to the /imageviewer directory and run `npm install`
+	 * `npm install -g bower`
+	 * `bower install`
 9. Follow the AWS Installation instructions here: http://docs.aws.amazon.com/cli/latest/userguide/cli-install-macos.html
 	 * Afterwards, run `aws configure` and talk to Alice for AWS Credentials
-10. DEVELOPMENT ONLY 
+10. Install Python3 if it's not already installed, then:
 	 * If pip is not installed: `sudo yum install python-pip python-wheel`
 	 * `pip install virtualenv`  
 	 * `cd /yourpath/imageviewer/python`
