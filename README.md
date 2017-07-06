@@ -3,11 +3,13 @@
 1. Install Homebrew: https://brew.sh/
 2. `brew install git`
    * `git clone` the project directory into a folder called `imageviewer`
-3. Install RMV: https://rvm.io/rvm/install
+3. Install RVM: https://rvm.io/rvm/install
+	 * `source /home/ashen5/.rvm/scripts/rvm`
 	 * `rvm install 2.0.0`
 	 * `rvm use 2.0.0`, you may also want to set the default at this time
 	 * `gem install bundler` to be able to use Gemfile for installation
-	 * `cd project_directory && bundle install` to install Rails and all gems
+	 * `cd project_directory && bundle install` to install Rails and all gems (if you are having trouble installing pg 0.1 8.4, follow the instructions here: https://stackoverflow.com/questions/6040583/cant-find-the-libpq-fe-h-header-when-trying-to-install-pg-gem)
+	 
 4. `brew install postgres` We use Postgres for our DB
 	 * `brew services start postgres`
 	 * DEVELOPMENT ONLY: Install PSequel http://www.psequel.com/
