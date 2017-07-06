@@ -27,6 +27,7 @@
 	 * `cd /yourpath/imageviewer/python`
 	 * `virtualenv --system-site-packages -p python3 env`
 	 * `source env/bin/activate`
+	 * `pip install -r requirements.txt`
 
 ## Test out that you can start the rails server
 * `cd /yourpath/imageviewer && rails s`
