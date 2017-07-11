@@ -54,4 +54,5 @@
 	* Set up an app user and password for Postgres
 	* Make sure you have database environmental variables exported for `DATABASE_USERNAME` and `DATABASE_PASSWORD`
 * Make sure that redis and sidekiq are running so uploading/conversion works
+	* `RAILS_ENV=production sidekiq`
 	* May need to set up redis temp folder using `redis-cli` (https://stackoverflow.com/questions/19581059/misconf-redis-is-configured-to-save-rdb-snapshots)
