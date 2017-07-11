@@ -46,6 +46,7 @@
 * It should run and generate a folder called NAMEOFSVSHERE_files with tiled images in your data folder
 
 ## Notes for production environments
+* When deploying on production, run `sh deploy.sh` to do all the necessary prerequisite commands for a new deploy.
 * Passenger Install & Setup Guides for CentOS
 	* https://www.phusionpassenger.com/library/install/apache/install/oss/el7/ 
 	* https://www.phusionpassenger.com/library/walkthroughs/deploy/ruby/ownserver/apache/oss/el7/deploy_app.html
