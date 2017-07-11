@@ -1,8 +1,7 @@
 class AnnotationsController < ApplicationController
 
   def create
-    data = params[:data].blank? ? {} : params[:data]
-    data[0][1]["d"] = data[0][1]["d"] + 'Z'
+    data = params[:data].blank? ? {} : JSON.parse(params[:data])
     image_id = params[:image_id]
     label = params[:label]
     @annotation = Annotation.create(:data=> data, :image_id=>image_id, :label=> label)

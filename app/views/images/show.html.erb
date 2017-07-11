@@ -25,7 +25,7 @@
 	var viewer = OpenSeadragon({
 	    id:            "<%=@image.upload_file_name.parameterize%>",
 	    prefixUrl:     "/openseadragon/images/",
-	    tileSources:   "https://s3.amazonaws.com/<%=Rails.application.config.s3_bucket%>/<%=@image.upload_file_name.split('.svs')[0]%>/<%=@image.upload_file_name.split('.svs')[0]%>.dzi",
+	    tileSources:   "/data/<%=@image.file_name_prefix%>/<%=@image.file_name_prefix%>.dzi",
 	});
 
 	viewer.initializeAnnotations();
@@ -70,6 +70,8 @@
 		var annotation_label = prompt("Please label your annotation", "");
 	    if (annotation_label != null) {
 	    	all_annotations = viewer.annotations.get();
+	    	all_annotations[all_annotations.length-1][1]["d"] = all_annotations[all_annotations.length-1][1]["d"] + 'Z';
+	    	viewer.annotations.set(all_annotations);
 	        $.post( '<%= annotations_path %>.json', {
 			  	'image_id': <%= @image.id %>,
 			  	'label': annotation_label,
