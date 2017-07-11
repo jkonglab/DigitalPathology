@@ -1,6 +1,6 @@
 # Installation Instructions
 
-1. Install Homebrew: https://brew.sh/
+1. Install Homebrew: https://brew.sh/ (if on OSX)
 2. `brew install git` or `yum install git`
    * `git clone` the project directory into a folder called `imageviewer`
 3. Install RVM: https://rvm.io/rvm/install
@@ -31,9 +31,11 @@
 	 * `virtualenv --system-site-packages -p python3 env`
 	 * `source env/bin/activate`
 	 * `pip install -r requirements.txt`
+11. Set up a `data` folder in your `/public` folder of your app.  This folder is not tracked by git and will contain all your uploads and converted data
 
 ## Test out that you can start the rails server
 * `cd /yourpath/imageviewer && rails s`
+* Open another window and type `sidekiq`
 * Navigate to localhost:3000 in your browser
 
 ## Test out that openslide works: 
@@ -42,3 +44,14 @@
 * Put some svs data into this /data folder
 * `python3 deepzoom_tile.py data/NAMEOFSVSHERE.svs`
 * It should run and generate a folder called NAMEOFSVSHERE_files with tiled images in your data folder
+
+## Notes for production environments
+* Passenger Install & Setup Guides for CentOS
+	* https://www.phusionpassenger.com/library/install/apache/install/oss/el7/ 
+	* https://www.phusionpassenger.com/library/walkthroughs/deploy/ruby/ownserver/apache/oss/el7/deploy_app.html
+* Postgres Setup for CentOS
+	* Make Postgres use password authentication
+	* Set up an app user and password for Postgres
+	* Make sure you have database environmental variables exported for `DATABASE_USERNAME` and `DATABASE_PASSWORD`
+* Make sure that redis and sidekiq are running so uploading/conversion works
+	* May need to set up redis temp folder using `redis-cli` (https://stackoverflow.com/questions/19581059/misconf-redis-is-configured-to-save-rdb-snapshots)
