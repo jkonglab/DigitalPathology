@@ -19,9 +19,9 @@
 7. `brew install redis` or `sudo yum install redis` We use redis for Sidekiq/background workers
 	 * `brew services start redis` or `redis-server --daemonize yes`
 8. `brew install nodejs` or `sudo yum install nodejs`
-	 * Go back to the /imageviewer directory and run `npm install`
-	 * `npm install -g bower`
-	 * `bower install`
+	 * Go back to the `/imageviewer` directory and run `npm install`
+	 * Then `npm install -g bower`
+	 * Then `bower install`
 9. Follow the AWS Installation instructions here: http://docs.aws.amazon.com/cli/latest/userguide/cli-install-macos.html
 	 * Afterwards, run `aws configure` and talk to Alice for AWS Credentials
 10. Install Python3 if it's not already installed, then:
