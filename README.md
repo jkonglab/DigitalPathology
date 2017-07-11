@@ -6,32 +6,32 @@
 3. Install RVM: https://rvm.io/rvm/install
 	 * `source /home/ashen5/.rvm/scripts/rvm`
 	 * `rvm install 2.0.0`
-	 * `rvm use 2.0.0`, you may also want to set the default at this time
-	 * `gem install bundler` to be able to use Gemfile for installation
-	 * `cd project_directory && bundle install` to install Rails and all gems (if you are having trouble installing pg 0.1 8.4, follow the instructions here: https://stackoverflow.com/questions/6040583/cant-find-the-libpq-fe-h-header-when-trying-to-install-pg-gem)
+	 * `rvm use 2.0.0`, you may also want to set it to the default at this time
+	 * `gem install bundler` to be able to use Gemfile for installing gems in the future
+	 * `cd project_directory && bundle install` to install Rails and all gems 
+	   * if you are having trouble installing pg 0.1 8.4, follow the instructions here: https://stackoverflow.com/questions/6040583/cant-find-the-libpq-fe-h-header-when-trying-to-install-pg-gem
 	 
-4. We use Postgres for our DB
+4. We use Postgres for our DB, so install that:
 	 * `brew install postgres` or https://wiki.postgresql.org/wiki/PostgreSQL_on_RedHat_Linux
-	 * `brew services start postgres` 
+	 * `brew services start postgres` or whatever command to start the postgres DB server
 	 * DEVELOPMENT ONLY: Install PSequel http://www.psequel.com/
-5. `brew install python3` or `yum install sudo yum install python34u python34u-wheel` We use python for conversion and heavy scripts
-6. `brew install openslide` We use openslide for file conversions
+5. `brew install python3` or `sudo yum install python34u python34u-wheel` We use python for conversion and heavy scripts
+6. `brew install openslide` or `yum install openslide` We use openslide for file conversions
 7. `brew install redis` or `sudo yum install redis` We use redis for Sidekiq/background workers
 	 * `brew services start redis` or `redis-server --daemonize yes`
 8. `brew install nodejs` or `sudo yum install nodejs`
 	 * Go back to the `/imageviewer` directory and run `npm install`
 	 * Then `npm install -g bower`
 	 * Then `bower install`
-9. Follow the AWS Installation instructions here: http://docs.aws.amazon.com/cli/latest/userguide/cli-install-macos.html
-	 * Afterwards, run `aws configure` and talk to Alice for AWS Credentials
-10. Install Python3 if it's not already installed, then:
-	 * If pip is not installed: `sudo yum install python-pip python-wheel`
+9. Install pip to manage python libraries: `brew install pip` OR `sudo yum install python-pip`
 	 * `pip install virtualenv`  
 	 * `cd /yourpath/imageviewer/python`
 	 * `virtualenv --system-site-packages -p python3 env`
 	 * `source env/bin/activate`
 	 * `pip install -r requirements.txt`
-11. Set up a `data` folder in your `/public` folder of your app.  This folder is not tracked by git and will contain all your uploads and converted data
+11. Set up a `data` folder in your `/public` folder of your app.  
+	* This folder is not tracked by git and will contain all your uploads and converted data.
+12. TEMPORARY HACK: Copy and paste `/custom-openseadragon-annotations.js` into `/node_modules/openseadragon-annotations/dist/openseadragon-annotations.js` 
 
 ## Test out that you can start the rails server
 * `cd /yourpath/imageviewer && rails s`
