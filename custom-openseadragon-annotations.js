@@ -914,8 +914,8 @@ OpenSeadragon.Viewer = OpenSeadragon.Viewer || {}, OpenSeadragon.Viewer.prototyp
                 var e = this.base.getBoundingClientRect(),
                     n = t.clientX - e.left,
                     i = t.clientY - e.top,
-                    o = N.convertWidth.toPercent(n),
-                    r = N.convertHeight.toPercent(i);
+                    o = n * 100 / e.width,
+                    r = i * 100 / e.height;
                 return [Math.round(100 * o) / 100, Math.round(100 * r) / 100]
             }, e.prototype.handleMouseDown = function(t) {
                 d.default.notInMoveMode() && (t.stopPropagation(), m.default.apply(void 0, this.coords(t).concat([p.default, d.default])))
