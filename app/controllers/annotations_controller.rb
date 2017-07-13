@@ -1,4 +1,5 @@
 class AnnotationsController < ApplicationController
+  before_action :authenticate_user!, :only => [:create]
 
   def create
     data = params[:data].blank? ? {} : JSON.parse(params[:data])

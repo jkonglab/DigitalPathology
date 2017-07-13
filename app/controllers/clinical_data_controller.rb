@@ -1,5 +1,8 @@
 class ClinicalDataController < ApplicationController
 
+	before_action :authenticate_user!, :only => [:create, :create_single]
+
+
 	def create
 		json_file = params[:clinical_datum][:upload].read
 		image_id = params[:clinical_datum][:image_id]

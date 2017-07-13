@@ -4,18 +4,24 @@
 </span>
 
 <header>
-  <span style="white-space:pre-wrap;" class="navbar-brand">Annotate</span>
+  <span style="white-space:pre-wrap;" class="navbar-brand">Annotations</span>
 </header>
 <ul class="list-group">
-  <a class="start-draw list-group-item">
-    <i class="material-icons" role="presentation">edit</i>Draw
-  </a>
-  <a style="display:none;" class="stop-draw list-group-item">
-    <i class="material-icons" role="presentation">cancel</i>Stop Drawing
-  </a>
-  <a onclick="viewer.annotations.clean()" class="list-group-item">
-    <i class="material-icons" role="presentation">delete</i>Hide All
-  </a>
+  <%if current_user %>
+    <a class="start-draw list-group-item">
+      <i class="material-icons" role="presentation">edit</i>Draw
+    </a>
+    <a style="display:none;" class="stop-draw list-group-item">
+      <i class="material-icons" role="presentation">cancel</i>Stop Drawing
+    </a>
+    <a onclick="viewer.annotations.clean()" class="list-group-item">
+      <i class="material-icons" role="presentation">delete</i>Hide All
+    </a>
+  <% else%>
+    <p style="padding:20px;">
+      You must <%= link_to new_user_session_path do %>log in<% end %> to save drawn annotations.
+    </p>
+  <% end %>
 
   <header>
     <span style="white-space:pre-wrap;" class="navbar-brand">Load Existing Annotations</span>

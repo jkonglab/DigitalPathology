@@ -98,6 +98,24 @@
  
 }
 
+.full-width-container{
+    padding:50px;
+}
+
+.navbar-toggler{
+    display:none;
+}
+
+.images_show{
+    .full-width-container{
+        padding:0px;
+    }
+
+    .navbar-toggler{
+        display:block;
+    }
+}
+
 .filelists { margin: 20px 0; }
 .filelists h5 { margin: 10px 0 0; }
 .filelists .cancel_all { color: red; cursor: pointer; clear: both; font-size: 10px; margin: 0; text-transform: uppercase; }

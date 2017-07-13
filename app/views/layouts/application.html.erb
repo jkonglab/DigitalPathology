@@ -18,6 +18,7 @@
 
 
 <body>
+  <div class="<%=params[:controller]%>_<%=params[:action]%>">
   <div id="top-nav" class="navbar navbar-inverse bg-inverse">
     <button class="navbar-toggler" type="button" data-toggle="drawer" data-target="#dw-1" aria-expanded="false">
       <span class="sr-only">Toggle drawer</span>
@@ -40,6 +41,11 @@
     </ul>
     <ul class="nav navbar-nav pull-xs-right">
       <li class="nav-item">
+        <%=link_to new_user_session_path, :style=>'line-height:15px;', :class=> 'nav-link' do %>
+          Sign In
+        <% end %>
+      </li>
+      <li class="nav-item">
         <div class="bmd-form-group bmd-collapse-inline pull-xs-right">
           <button class="btn bmd-btn-icon collapsed" for="search" data-toggle="collapse" data-target="#collapse-search-1" aria-controls="collapse-search-1" aria-expanded="false">
             <i class="material-icons">search</i>
@@ -55,16 +61,45 @@
             <i class="material-icons">more_vert</i>
           <div class="ripple-container"></div></button>
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="more-menu-1">
+            <% if !current_user %>
+              <%=link_to new_user_session_path do %>
+                <button class="dropdown-item" type="button">Sign In</button>
+              <% end %>
+            <% end %>
             <a href="/about"><button class="dropdown-item" type="button">About</button></a>
             <button class="dropdown-item" type="button">Contact</button>
             <button class="dropdown-item" type="button">Legal information</button>
+            <% if current_user %>
+              <%= link_to destroy_user_session_path, :method=>'delete' do %>
+                <button class="dropdown-item" type="button">Logout</button>
+              <% end %>
+            <% end %>
           </div>
         </div>
       </li>
     </ul>
   </div>
 
+  <% if notice.present? %>
+    <div class="alert alert-info" id="application-alert">
+      <%= raw(notice) %>
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  <% end %>
+
+  <% if flash[:alert].present? %>
+    <div class="alert alert-danger" id="application-alert">
+      <%= raw(flash[:alert]) %>
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  <% end %>
+
   <div class="full-width-container" style="height:100%; width:100%; position:relative;">
     <%= yield %>
   </div>
+</div>
 </body>
