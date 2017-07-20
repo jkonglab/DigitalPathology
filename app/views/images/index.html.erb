@@ -3,6 +3,13 @@
 <h1>Image Archive</h1>
 <h4>Check out all the cool images we have uploaded!</h4>
 <br/><br/>
+
+<%= search_form_for @q do |f| %>
+   
+  <%= f.search_field :title_cont %>
+  <%= f.submit  %>
+<% end %>
+
 <%= link_to new_image_path do %>
 	<button style="float:right" class="btn btn-success">+ Upload New Image</button>
 <% end %>
@@ -11,9 +18,9 @@
 	<table class="table table-hover">
 	  <thead>
 	  	<tr>
-		  	<th>ID</th>
-		  	<th>Image Name</th>
-		  	<th>Date Uploaded</th>
+		  	<th><%= sort_link @q, :id, "ID"%></th>
+		  	<th><%= sort_link @q, :title, "Image Name"%></th>
+		  	<th><%= sort_link @q, :uploaded_at, "Date Uploaded"%></th>
 	  	</tr>
 	  </thead>
 	  <tbody>

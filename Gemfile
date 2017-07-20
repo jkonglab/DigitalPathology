@@ -1,6 +1,5 @@
 source 'http://rubygems.org'
 
-
 gem 'pg'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.0'
@@ -37,6 +36,9 @@ gem 'devise'
 gem 'bootstrap', '~> 4.0.0.alpha6'
 gem 'sidekiq', '~> 4.1.4'
 gem 'redis'
+gem 'ransack'
+
+
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

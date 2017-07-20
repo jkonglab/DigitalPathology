@@ -1,11 +1,18 @@
 class ImagesController < ApplicationController
     
   def index
-      @images = Image.all
+        @images = Image.all
+        @q = Image.ransack(params[:q])
+        @search_results = @q.result(distinct: true)
+        if params[:q]
+        @images = @search_results
+      end 
+
+
   end  
   
   def new
-    @image = Image.new
+    @images = Image.new
   end
 
   def create
