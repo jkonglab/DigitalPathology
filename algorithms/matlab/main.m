@@ -8,7 +8,7 @@ function result = main(svs_file_path, extra_parameters_array, algorithm_name)
    main_function_handler = str2func(strcat(algorithm_name, '_main_function'))
    postprocessing_function_handler = str2func(strcat(algorithm_name, '_postprocess_function'))
    
-   main_input = preprocessing_function_handler(svs_file)
+   main_input = preprocessing_function_handler(svs_file);
    main_output = main_function_handler(main_input, extra_parameters_cell_array{:})
    postprocessing_function_handler(main_output)
 
