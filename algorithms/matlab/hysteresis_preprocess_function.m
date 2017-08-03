@@ -1,5 +1,5 @@
 function result = hysteresis_preprocess_function(input)
 
-	result = input;
+	result = rgb2gray(input);
 
 end
