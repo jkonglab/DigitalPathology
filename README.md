@@ -32,7 +32,8 @@
 	 * `pip install -r requirements.txt`
 11. Set up a `data` folder in your `/public` folder of your app.  
 	* This folder is not tracked by git and will contain all your uploads and converted data.
-12. TEMPORARY HACK: Copy and paste `/custom-openseadragon-annotations.js` into `/node_modules/openseadragon-annotations/dist/openseadragon-annotations.js` 
+12. Navigate to the root folder and run `npm install`
+ 	* TEMPORARY HACK: Copy and paste `/custom-openseadragon-annotations.js` into `/node_modules/openseadragon-annotations/dist/openseadragon-annotations.js` 
 
 ## Test out that you can start the rails server
 * `cd /yourpath/imageviewer && rails s`
