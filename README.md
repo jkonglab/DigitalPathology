@@ -36,6 +36,8 @@
  	* TEMPORARY HACK: Copy and paste `/custom-openseadragon-annotations.js` into `/node_modules/openseadragon-annotations/dist/openseadragon-annotations.js` 
 
 ## Test out that you can start the rails server
+* `rake db:create && rake db:migrate`
+	* If you have trouble with something about "Cabbage", go to your database.yml file and change Cabbage to your computer's root name.
 * `cd /yourpath/imageviewer && rails s`
 * Open another window and type `sidekiq`
 * Navigate to localhost:3000 in your browser
