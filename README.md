@@ -23,7 +23,8 @@
 	 * Go back to the `/imageviewer` directory and run `npm install`
 	 * Then `npm install -g bower`
 	 * Then `bower install`
-9. Install pip to manage python libraries: `brew install pip` OR `sudo yum install python-pip`
+9. Pip comes installed with `brew install python`, but make sure `/usr/local/bin` is on your path 
+	 * On CentOS: Install pip to manage python libraries: `sudo yum install python-pip`
 	 * `pip install virtualenv`  
 	 * `cd /yourpath/imageviewer/python`
 	 * `virtualenv --system-site-packages -p python3 env`
