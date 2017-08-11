@@ -23,7 +23,8 @@
 	 * Go back to the `/imageviewer` directory and run `npm install`
 	 * Then `npm install -g bower`
 	 * Then `bower install`
-9. Install pip to manage python libraries: `brew install pip` OR `sudo yum install python-pip`
+9. Pip comes installed with `brew install python`, but make sure `/usr/local/bin` is on your path 
+	 * On CentOS: Install pip to manage python libraries: `sudo yum install python-pip`
 	 * `pip install virtualenv`  
 	 * `cd /yourpath/imageviewer/python`
 	 * `virtualenv --system-site-packages -p python3 env`
@@ -31,9 +32,12 @@
 	 * `pip install -r requirements.txt`
 11. Set up a `data` folder in your `/public` folder of your app.  
 	* This folder is not tracked by git and will contain all your uploads and converted data.
-12. TEMPORARY HACK: Copy and paste `/custom-openseadragon-annotations.js` into `/node_modules/openseadragon-annotations/dist/openseadragon-annotations.js` 
+12. Navigate to the root folder and run `npm install`
+ 	* TEMPORARY HACK: Copy and paste `/custom-openseadragon-annotations.js` into `/node_modules/openseadragon-annotations/dist/openseadragon-annotations.js` 
 
 ## Test out that you can start the rails server
+* `rake db:create && rake db:migrate`
+	* If you have trouble with something about "Cabbage", go to your database.yml file and change Cabbage to your computer's root name.
 * `cd /yourpath/imageviewer && rails s`
 * Open another window and type `sidekiq`
 * Navigate to localhost:3000 in your browser
