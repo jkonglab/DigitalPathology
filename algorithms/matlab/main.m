@@ -1,10 +1,11 @@
-function result = main(svs_file_path, extra_parameters_array, algorithm_name, tile_x, tile_y, tile_size)
+function result = main(analysis_path, extra_parameters_array, algorithm_name, tile_x, tile_y, tile_size)
    addpath('.')
-   Rows = [tile_x, tile_x + tile_size]
-   Cols = [tile_y, tile_y + tile_size]
-   roi = imread(svs_file_path,'Index',1,'PixelRegion',{Rows,Cols});
+   Rows = [tile_x, tile_x + tile_size - 1]
+   Cols = [tile_y, tile_y + tile_size - 1]
+   cropped_file_path = strcat(analysis_path, 'cropped_image.png')
+   roi = imread(cropped_file_path,'Index',1,'PixelRegion',{Rows,Cols});
    extra_parameters_cell_array = num2cell(extra_parameters_array)
-   output_file_name = strcat('output_',num2str(tile_x),'_',num2str(tile_y))
+   output_file_name = strcat('output_',num2str(tile_x),'_',num2str(tile_y),'.txt')
 
    preprocessing_function_handler = str2func(strcat(algorithm_name, '_preprocess_function'))
    main_function_handler = str2func(strcat(algorithm_name, '_main_function'))
