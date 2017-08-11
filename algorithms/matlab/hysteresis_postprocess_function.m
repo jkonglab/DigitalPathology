@@ -1,3 +1,4 @@
-function result = hysteresis_postprocess_function(input)
+function result = hysteresis_postprocess_function(input, output_file_name)
 	result = input
+	dlmwrite(output_file_name,result)
 end
