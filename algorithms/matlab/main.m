@@ -2,7 +2,7 @@ function result = main(svs_file_path, extra_parameters_array, algorithm_name, ti
    addpath('.')
    Rows = [tile_x, tile_x + tile_size]
    Cols = [tile_y, tile_y + tile_size]
-   roi = imread(svs_file_path,'Index',index,'PixelRegion',{Rows,Cols});
+   roi = imread(svs_file_path,'Index',1,'PixelRegion',{Rows,Cols});
    extra_parameters_cell_array = num2cell(extra_parameters_array)
 
    preprocessing_function_handler = str2func(strcat(algorithm_name, '_preprocess_function'))
