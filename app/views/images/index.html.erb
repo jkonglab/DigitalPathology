@@ -5,10 +5,28 @@
 <br/><br/>
 
 <%= search_form_for @q do |f| %>
-   
-  <%= f.search_field :title_cont %>
-  <%= f.submit  %>
-<% end %>
+	<%= f.condition_fields do |c| %>
+		<div class="field">
+			<%= c.attribute_fields do |a| %>
+				<%= a.attribute_select associtations: [:ClinicalDatum] %>
+			<% end %>
+			<%= c.predicate_select %>
+			<%= c.value_fields do |v|  %>
+				<%= v.text_field :value %>
+			<% end %>
+		</div>
+	<%end %>
+	<div class="actions"><%= f.submit "Search" %></div>
+	<%end%>
+
+
+
+
+
+
+
+
+
 
 <%= link_to new_image_path do %>
 	<button style="float:right" class="btn btn-success">+ Upload New Image</button>

@@ -1,11 +1,34 @@
 class ImagesController < ApplicationController
     
   def index
+
+
+ 
+
+
+
+
+
+
+
+
         @images = Image.all
-        @q = Image.ransack(params[:q])
-        @search_results = @q.result(distinct: true)
+        @q = Image.search(params[:q])
+        @search_results = @q.result
+
+
+   
+        @q.build_condition
+		
+	 	@supervisors = @q.result.includes(:ClinicalDatum)
+
+
+
         if params[:q]
         @images = @search_results
+     #   render html: ClinicalDatum.search(image_id_eq: 6).result.to_json
+        render html: @supervisors.to_json
+
       end 
 
 
