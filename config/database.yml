@@ -20,7 +20,7 @@ test:
 
 production:
   <<: *default
-  database: imageviewer_production
+  database: imageviewer
   username: <%= ENV['DATABASE_USERNAME'] %>
   password: <%= ENV['DATABASE_PASSWORD'] %>
 
