@@ -1,0 +1,41 @@
+<div class="bmd-layout-container bmd-drawer-f-l bmd-drawer-in">
+	<div id="dw-1" class="bmd-layout-drawer bg-faded" aria-expanded="false" aria-hidden="false">
+    </div>
+
+    <div class="bmd-layout-content">
+		<div class="row">
+			<div class="col-12">
+				<div id="<%=@image.upload_file_name.parameterize%>" class="openseadragon">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+
+	var results = '<%= raw(@results_svg.to_json) %>';
+	var annotation = '<%=raw(@annotation.data.to_json) %>';
+	var viewer = OpenSeadragon({
+	    id:            "<%=@image.upload_file_name.parameterize%>",
+	    prefixUrl:     "/openseadragon/images/",
+	    tileSources:   "/data/<%=@image.file_name_prefix%>/<%=@image.file_name_prefix%>.dzi",
+	});
+
+	var data = JSON.parse(results);
+	var annotation_data = JSON.parse(annotation)[0];
+	data.push(annotation_data);
+	viewer.initializeAnnotations();
+	waitForAnnotationInitialize();
+
+	function waitForAnnotationInitialize(){
+    if(viewer.areAnnotationsActive()){
+        viewer.annotations.set(data);
+    }
+    else{
+        setTimeout(waitForAnnotationInitialize, 250);
+    }
+}
+
+
+</script>

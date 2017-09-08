@@ -41,8 +41,18 @@
     </ul>
     <ul class="nav navbar-nav pull-xs-right">
       <li class="nav-item">
-        <%=link_to new_user_session_path, :style=>'line-height:15px;', :class=> 'nav-link' do %>
-          Sign In
+        <% if !current_user %>
+          <%=link_to new_user_session_path, :style=>'line-height:15px;', :class=> 'nav-link' do %>
+            Sign In
+          <% end %>
+        <% else %>
+          <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">My Account</a>
+        <div class="dropdown-menu" aria-labelledby="dropdown01">
+          <a class="dropdown-item" href="<%=runs_path%>">Analyses</a>
+          <a class="dropdown-item" href="#">Images</a>
+        </div>
+      </li>
         <% end %>
       </li>
       <li class="nav-item">

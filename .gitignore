@@ -16,11 +16,11 @@
 !/log/.keep
 /tmp
 /node_modules
-/python/data
 /python/env
 npm-debug.log
 /bower_components
 /node_modules
+/algorithms/run_data/*
 /public/data/*
 /public/assets/*
 *DS_Store

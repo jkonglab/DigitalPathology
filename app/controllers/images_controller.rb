@@ -25,6 +25,7 @@ class ImagesController < ApplicationController
 
   def show
     @image = Image.find(params[:id])
+    @run = @image.runs.new
     @annotation = Annotation.new
     @clinical = ClinicalDatum.where(image_id: params[:id])
     @image_json = ClinicalDatum.new

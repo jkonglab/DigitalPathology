@@ -1,0 +1,29 @@
+<%= form_for(@run) do |f| %>
+	<%= f.hidden_field :image_id, :value=> @image.id %>
+	<div class="form-group">
+		<%= f.label :algorithm_id, "Select an algorithm to run" %>
+		<%= f.collection_select :algorithm_id, Algorithm.all, :id, :name, {}, { class: 'form-control' } %>
+	</div>
+
+	<div class="form-group">
+		<%= f.label :annotation_id, 'Select Annotation ROI' %>
+		<%= f.collection_select :annotation_id, @image.annotations, :id, :label, {}, { class: 'form-control' } %>
+	</div>
+	<br/><br/>
+	<h5>Algorithm Parameters</h5>
+	<hr/>
+	 <%= fields_for :parameters, @run.parameters do |parameter_fields| %>
+	 	<% Algorithm.find(1).parameters.each do |parameter|%> <!-- TODO INTEGRATE ANOTHER ALGORITHM -->
+	 		<div class="form-group">
+	 			<%= parameter_fields.label parameter["key"].to_sym, parameter["title"] %>
+	 			<% if parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["numeric"] %>
+					<%= parameter_fields.number_field parameter["key"].to_sym, { value: parameter["default_value"], 
+						class: 'form-control', :required => parameter["required"]} %>
+				<% elsif parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["boolean"] %>
+					<%= parameter_fields.check_box parameter["key"].to_sym %>
+				<% end %>
+			</div>
+		<% end %>
+  	<% end %>
+  	<%= f.submit "Start Analysis", {class: "float-right btn-raised btn-success"} %>
+<%end %>

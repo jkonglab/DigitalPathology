@@ -89,7 +89,7 @@
 </script>
 
 <div id="general-modal" class="modal fade" role="dialog">
-	<div class="modal-dialog">
+	<div class="modal-dialog" style="margin-top:100px;">
    		<div class="modal-content">
      		<div class="modal-header">
        			<button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -107,4 +107,21 @@
     	</div>
     </div>
 </div>
+
+<div id="run-modal" class="modal fade" role="dialog">
+	<div class="modal-dialog"  style="margin-top:200px;">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+      			<h4 id="general-modal-title" class="modal-title">Run Analysis on ROI</h4>
+			</div>
+			<div class="modal-body">
+				<%= render partial: "runs/form" %>
+			</div>
+			<div class="modal-footer">
+			</div>
+		</div>
+	</div>
+</div>
+
 

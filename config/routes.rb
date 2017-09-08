@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   root 'pages#home'
   resources :images
   resources :annotations
+  resources :runs
   get '/about' => 'pages#about'
   
   resources :clinical_data do
@@ -14,6 +15,9 @@ Rails.application.routes.draw do
       post 'single' => 'clinical_data#create_single'
     end
   end
+
+  require 'sidekiq/web'
+  mount Sidekiq::Web => '/sidekiq'
 
 
   # Example of regular route:

@@ -11,10 +11,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170713211136) do
+ActiveRecord::Schema.define(version: 20170825223927) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "algorithms", force: :cascade do |t|
+    t.string  "name"
+    t.json    "parameters"
+    t.integer "language"
+    t.integer "output_type"
+  end
 
   create_table "annotations", force: :cascade do |t|
     t.integer  "image_id"
@@ -22,7 +29,10 @@ ActiveRecord::Schema.define(version: 20170713211136) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "label"
+    t.integer  "user_id"
   end
+
+  add_index "annotations", ["user_id"], name: "index_annotations_on_user_id", using: :btree
 
   create_table "clinical_data", force: :cascade do |t|
     t.integer  "image_id"
@@ -46,7 +56,38 @@ ActiveRecord::Schema.define(version: 20170713211136) do
     t.boolean  "processing",       default: false
     t.string   "upload_file_name"
     t.string   "file_name_prefix"
+    t.integer  "user_id"
   end
+
+  add_index "images", ["user_id"], name: "index_images_on_user_id", using: :btree
+
+  create_table "results", force: :cascade do |t|
+    t.integer  "run_id"
+    t.integer  "tile_x"
+    t.integer  "tile_y"
+    t.json     "raw_data"
+    t.json     "svg_data"
+    t.integer  "run_at"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "runs", force: :cascade do |t|
+    t.integer  "algorithm_id"
+    t.integer  "image_id"
+    t.integer  "annotation_id"
+    t.json     "parameters"
+    t.boolean  "processing"
+    t.boolean  "complete"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "user_id"
+    t.integer  "run_at"
+    t.integer  "total_tiles"
+    t.integer  "tiles_processed", default: 0
+  end
+
+  add_index "runs", ["user_id"], name: "index_runs_on_user_id", using: :btree
 
   create_table "users", force: :cascade do |t|
     t.string   "email",                  default: "", null: false
