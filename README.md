@@ -15,7 +15,7 @@
 	 * `brew install postgres` or https://wiki.postgresql.org/wiki/PostgreSQL_on_RedHat_Linux
 	 * `brew services start postgres` or whatever command to start the postgres DB server
 	 * DEVELOPMENT ONLY: Install PSequel http://www.psequel.com/
-5. `brew install python3` or `sudo yum install python34u python34u-wheel` We use python for conversion and heavy scripts
+5. `brew install python3` or `sudo yum install python34u python34u-wheel python34-setuptools` We use python for conversion and heavy scripts
 6. `brew install openslide` or `yum install openslide` We use openslide for file conversions
 7. `brew install redis` or `sudo yum install redis` We use redis for Sidekiq/background workers
 	 * `brew services start redis` or `redis-server --daemonize yes`
