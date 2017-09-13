@@ -24,7 +24,7 @@
 	 * Then `npm install -g bower`
 	 * Then `bower install`
 9. Pip comes installed with `brew install python`, but make sure `/usr/local/bin` is on your path 
-	 * On CentOS: Install pip to manage python libraries: `sudo yum install python-pip`
+	 * On CentOS: Install pip3 from python3 easy install (installed in step 5) to manage python libraries: `sudo easy_install-3.4 pip` (in following commands, use `pip3` install of `pip`
 	 * `pip install virtualenv`  
 	 * `cd /yourpath/imageviewer/python`
 	 * `virtualenv --system-site-packages -p python3 env`
