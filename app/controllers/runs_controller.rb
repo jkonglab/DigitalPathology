@@ -7,6 +7,7 @@ class RunsController < ApplicationController
 
   def show
     @run = Run.find(params[:id])
+    @algorithm = @run.algorithm
     @image = @run.image
     @annotation = @run.annotation
     @results = @run.results

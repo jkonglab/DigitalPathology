@@ -157,3 +157,26 @@
     -webkit-box-shadow: none;
     box-shadow: none;
 }
+
+#collapse-search-1{
+    &.show{
+        display:inline-block;
+    }
+
+    input{
+        color:#fff;
+    }
+
+    ::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+      color:#ccc;
+    }
+    ::-moz-placeholder { /* Firefox 19+ */
+      color:#ccc;
+    }
+    :-ms-input-placeholder { /* IE 10+ */
+      color:#ccc;
+    }
+    :-moz-placeholder { /* Firefox 18- */
+      color:#ccc;
+    }
+}

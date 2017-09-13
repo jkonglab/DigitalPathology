@@ -32,7 +32,7 @@
         <a class="nav-link" href="#">About<a>
       </li>
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Image Archive</a>
+        <a class="nav-link dropdown-toggle" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Image Archive</a>
         <div class="dropdown-menu" aria-labelledby="dropdown01">
           <a class="dropdown-item" href="/images">All Images</a>
           <a class="dropdown-item" href="/images/new">Upload</a>
@@ -47,17 +47,17 @@
           <% end %>
         <% else %>
           <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">My Account</a>
+        <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Account</a>
         <div class="dropdown-menu" aria-labelledby="dropdown01">
-          <a class="dropdown-item" href="<%=runs_path%>">Analyses</a>
-          <a class="dropdown-item" href="#">Images</a>
+          <a class="dropdown-item" href="<%=runs_path%>">My Analyses</a>
+          <a class="dropdown-item" href="#">My Images</a>
         </div>
       </li>
         <% end %>
       </li>
       <li class="nav-item">
         <div class="bmd-form-group bmd-collapse-inline pull-xs-right">
-          <button class="btn bmd-btn-icon collapsed" for="search" data-toggle="collapse" data-target="#collapse-search-1" aria-controls="collapse-search-1" aria-expanded="false">
+          <button style="margin-top:4px" class="btn bmd-btn-icon collapsed" for="search" data-toggle="collapse" data-target="#collapse-search-1" aria-controls="collapse-search-1" aria-expanded="false">
             <i class="material-icons">search</i>
           <div class="ripple-container"></div></button>
           <span id="collapse-search-1" class="width collapse" aria-expanded="false" style="width: 0px;">
@@ -67,8 +67,8 @@
       </li>
       <li class="nav-item">
         <div class="dropdown">
-          <button class="btn bmd-btn-icon btn-secondary dropdown-toggle" type="button" id="more-menu-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <i class="material-icons">more_vert</i>
+          <button style="margin-top:4px" class="btn bmd-btn-icon btn-secondary dropdown-toggle" type="button" id="more-menu-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="material-icons" >more_vert</i>
           <div class="ripple-container"></div></button>
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="more-menu-1">
             <% if !current_user %>
