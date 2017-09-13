@@ -14,7 +14,7 @@ class ImagesController < ApplicationController
     original_filename = uploaded_io.original_filename #myfile.svs
     image = generate_new_image(original_filename)
 
-    File.open(Rails.root.join('public', 'data', image.upload_file_name), 'wb') do |file|
+    File.open(Rails.root.join('public', Rails.application.config.data_directory, image.upload_file_name), 'wb') do |file|
         file.write(uploaded_io.read)
     end
 
