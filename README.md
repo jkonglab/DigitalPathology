@@ -30,9 +30,12 @@
 	 * `virtualenv --system-site-packages -p python3 env`
 	 * `source env/bin/activate`
 	 * `pip install -r requirements.txt`
-11. Set up a `data` folder in your `/public` folder of your app.  
-	* This folder is not tracked by git and will contain all your uploads and converted data.
-12. Navigate to the root folder and run `npm install`
+11. Set up a `data` folder in your `/public` folder of your app
+	* The name of this folder should match the data_directory config variable in your production.rb or development.rb
+	* This folder is should not be tracked by git (add folder to .gitignore) and will contain all your uploads and converted data.
+12. Set up a `run_data` folder in your `/algorithms` folder of your app
+	* This folder is already in .gitignore and will not be tracked
+13. Navigate to the root folder and run `npm install`
  	* TEMPORARY HACK: Copy and paste `/custom-openseadragon-annotations.js` into `/node_modules/openseadragon-annotations/dist/openseadragon-annotations.js` 
 
 ## Test out that you can start the rails server
