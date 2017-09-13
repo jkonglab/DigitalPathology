@@ -1,4 +1,4 @@
-if environment == 'production'
+if Rails.env.production?
 	Sidekiq.configure_server do |config|
   		config.redis = { url: 'redis://192.168.1.7:6379' }
 	end
