@@ -36,7 +36,6 @@
 12. Set up a `run_data` folder in your `/algorithms` folder of your app
 	* This folder is already in .gitignore and will not be tracked
 13. Navigate to the root folder and run `npm install`
- 	* TEMPORARY HACK: Copy and paste `/custom-openseadragon-annotations.js` into `/node_modules/openseadragon-annotations/dist/openseadragon-annotations.js` 
 
 ## Test out that you can start the rails server
 * `rake db:create && rake db:migrate`
