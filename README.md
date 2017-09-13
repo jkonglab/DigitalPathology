@@ -15,7 +15,7 @@
 	 * `brew install postgres` or https://wiki.postgresql.org/wiki/PostgreSQL_on_RedHat_Linux
 	 * `brew services start postgres` or whatever command to start the postgres DB server
 	 * DEVELOPMENT ONLY: Install PSequel http://www.psequel.com/
-5. `brew install python3` or `sudo yum install python34u python34u-wheel` We use python for conversion and heavy scripts
+5. `brew install python3` or `sudo yum install python34u python34u-wheel python34-devel.x86_64 python34-setuptools` We use python for conversion and heavy scripts
 6. `brew install openslide` or `yum install openslide` We use openslide for file conversions
 7. `brew install redis` or `sudo yum install redis` We use redis for Sidekiq/background workers
 	 * `brew services start redis` or `redis-server --daemonize yes`
@@ -24,7 +24,7 @@
 	 * Then `npm install -g bower`
 	 * Then `bower install`
 9. Pip comes installed with `brew install python`, but make sure `/usr/local/bin` is on your path 
-	 * On CentOS: Install pip to manage python libraries: `sudo yum install python-pip`
+	 * On CentOS: Install pip3 from python3 easy install (installed in step 5) to manage python libraries: `sudo easy_install-3.4 pip` (in following commands, use `pip3` install of `pip`
 	 * `pip install virtualenv`  
 	 * `cd /yourpath/imageviewer/python`
 	 * `virtualenv --system-site-packages -p python3 env`
@@ -36,7 +36,6 @@
 12. Set up a `run_data` folder in your `/algorithms` folder of your app
 	* This folder is already in .gitignore and will not be tracked
 13. Navigate to the root folder and run `npm install`
- 	* TEMPORARY HACK: Copy and paste `/custom-openseadragon-annotations.js` into `/node_modules/openseadragon-annotations/dist/openseadragon-annotations.js` 
 
 ## Test out that you can start the rails server
 * `rake db:create && rake db:migrate`
