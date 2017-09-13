@@ -39,6 +39,7 @@ Rails.application.configure do
 
   config.s3_bucket = 'pathology-imageviewer-dev'
   config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
+  config.data_directory = 'data'
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true

@@ -11,7 +11,7 @@ class AnalysisWorker
 
     algorithm_language = Algorithm::LANGUAGE_LOOKUP_INVERSE[@algorithm.language]
   	algorithm_path = Rails.root.to_s + '/algorithms/'+algorithm_language
-  	image_path = Rails.root.to_s + '/public/data/' + @image.upload_file_name
+  	image_path = Rails.root.to_s + '/public/' + Rails.application.config.data_directory + '/' + @image.upload_file_name
     run_folder = Rails.root.to_s + '/algorithms/run_data/' + 'run_' + @run.id.to_s + '_' + @run.run_at.to_s
     output_file_name = '/output_' + tile_x.to_s + '_' + tile_y.to_s + '.json'
 

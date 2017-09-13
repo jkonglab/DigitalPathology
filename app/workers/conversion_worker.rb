@@ -8,7 +8,7 @@ class ConversionWorker
         image.update_attributes!(:processing=>true)
 
         python_file_path = Rails.root.to_s + '/python'
-        data_file_path = Rails.root.to_s + '/public/data'
+        data_file_path = Rails.root.to_s + '/public/' + Rails.application.config.data_directory
         file_name = image.upload_file_name
         file_name_suffix = file_name.split('.')[-1]
         file_name_prefix = file_name.split('.' + file_name_suffix)[0]
@@ -22,7 +22,7 @@ class ConversionWorker
 
         image.update_attributes!(
             :format=>'jpeg', 
-            :path=> '/data/' + file_name_prefix + '/' + file_name_prefix + '_files' + '/',
+            :path=> '/' + Rails.application.config.data_directory + '/' + file_name_prefix + '/' + file_name_prefix + '_files' + '/',
             :file_name_prefix => file_name_prefix,
             :processing=>false)
     end

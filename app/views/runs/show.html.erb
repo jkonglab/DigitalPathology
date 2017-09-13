@@ -19,7 +19,7 @@
 	var viewer = OpenSeadragon({
 	    id:            "<%=@image.upload_file_name.parameterize%>",
 	    prefixUrl:     "/openseadragon/images/",
-	    tileSources:   "/data/<%=@image.file_name_prefix%>/<%=@image.file_name_prefix%>.dzi",
+	    tileSources:   "/<@=Rails.application.config.data_directory%>/<%=@image.file_name_prefix%>/<%=@image.file_name_prefix%>.dzi",
 	});
 
 	var data = JSON.parse(results);

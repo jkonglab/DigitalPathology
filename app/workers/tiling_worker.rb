@@ -15,7 +15,7 @@ class TilingWorker
     if image && !image.path.blank? && !image.processing && annotation && !run.processing
         algorithm_path = Rails.root.to_s + '/algorithms/matlab'
         run_data_path = Rails.root.to_s + '/algorithms/run_data/'
-        data_file_path = Rails.root.to_s + '/public/data/'
+        data_file_path = Rails.root.to_s + '/public/' + Rails.application.config.data_directory + '/'
         image_path = data_file_path + image.upload_file_name
         run_folder = 'run_' + run.id.to_s + '_' + run_time.to_s
         run.update_attributes!(:run_at=>run_time, :processing=>true, :tiles_processed=>0)
