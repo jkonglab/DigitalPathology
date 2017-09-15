@@ -32,7 +32,9 @@
 
 #top-nav{
     z-index:6;
+    width:100%;
 }
+
 .bmd-layout-drawer .list-group {
     padding-top: 1rem;
 }
@@ -183,15 +185,20 @@
 }
 
 @include media-breakpoint-down(sm) {
+    .full-width-container{
+        padding:0px;
+    }
+
   .images_show, .runs_show{
     height:calc(100% - 50px);
-  }
-
-  #top-nav{
-    position:fixed;
-  }
-  .full-width-container{
-    padding:50px 0px 0px 0px;
+    
+    #top-nav{
+        position:fixed;
+    }
+    
+    .full-width-container{
+        padding:50px 0px 0px 0px;
+    }
   }
 
   .image-name{
