@@ -124,7 +124,8 @@
 
 .images_show, .runs_show{
     .full-width-container{
-        padding:0px;
+        padding-left:0px;
+        padidng-right:0px;
     }
 
     .navbar-toggler{
@@ -179,4 +180,42 @@
     :-moz-placeholder { /* Firefox 18- */
       color:#ccc;
     }
+}
+
+@include media-breakpoint-down(sm) {
+  .images_show, .runs_show{
+    height:calc(100% - 50px);
+  }
+
+  #top-nav{
+    position:fixed;
+  }
+  .full-width-container{
+    padding:50px 0px 0px 0px;
+  }
+
+  .image-name{
+    max-width:100px;
+  }
+
+  .bmd-layout-drawer .list-group .list-group-item {
+    padding-right: 1rem;
+    padding-left: 1rem;
+  }
+
+  .bmd-layout-canvas .bmd-drawer-f-l>.bmd-layout-drawer{
+    width:150px;
+  }
+
+  .bmd-layout-canvas :not(.bmd-drawer-out).bmd-drawer-in.bmd-drawer-f-l>.bmd-layout-content{
+    margin-left:150px;
+  }
+
+  .bmd-layout-canvas .list-group-item :first-child{
+     margin-right:.5rem;
+  }
+
+  .bmd-layout-canvas .navbar-brand{
+    font-size:1rem;
+  }
 }
