@@ -29,8 +29,8 @@
 	function onBeforeSend(formData, file) {
 		console.log("Before Send");
 		formData.append("test_field", "test_value");
-		   if (file.name.indexOf(".svs") < 0) {
-       		alert("Your file type is not supported. Please upload an SVS file ");
+		   if (file.name.indexOf(".svs") < 0 && file.name.indexOf(".ndpi") < 0) {
+       		alert("Your file type is not supported. Please upload an SVS or NDPI file ");
        		 return false;
     	}
 		return formData;
@@ -103,7 +103,7 @@
 <div class="container">
 	<br/><br/>
 	<h1>Upload Image</h1>
-	<h4>Only SVS file formats supported at this time</h4>
+	<h4>Only SVS and NDPI file formats supported at this time</h4>
 	<br/><br/>
 	<form action="#" method="GET" class="form image_form">
 		<div class="upload" data-upload-options='{"action":"/images"}'></div>
