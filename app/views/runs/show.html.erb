@@ -13,7 +13,7 @@
 			<p>Status:<br/><b><%=@run.status_words%></b></p>
 			<p>Image Title:<br/><b><%=@image.title%></b></p>
 			<p>Algorithm Ran:<br/><b><%=@algorithm.name%> (ID: <%=@algorithm.id%>)</b></p>
-			<% if @run.runat %>
+			<% if @run.run_at %>
 				<p>Started:<br/><b><%=Time.at(@run.run_at).in_time_zone.to_formatted_s(:db) %></b></p>
 			<% end %>
 			<%if @run.complete %>
