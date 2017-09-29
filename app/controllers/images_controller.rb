@@ -2,7 +2,7 @@ class ImagesController < ApplicationController
   before_action :authenticate_user!, :only => [:create, :new]
     
   def index
-      @images = Image.all
+      @images = Image.all.order('id asc')
   end  
   
   def new
