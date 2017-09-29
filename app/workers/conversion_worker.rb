@@ -20,11 +20,17 @@ class ConversionWorker
             cd #{file_name_prefix};
             python3 #{python_file_path}/deepzoom_tile.py ../#{file_name}}
 
+        dzi_file = File.open(data_file_path + "/#{file_name_prefix}" + "/#{file_name_prefix}.dzi") { |f| Nokogiri::XML(f) }
+        height = dzi_file.css('xmlns|Size').first["Height"]
+        width = dzi_file.css('xmlns|Size').first["Width"]
+
         image.update_attributes!(
             :format=>'jpeg', 
             :path=> '/' + Rails.application.config.data_directory + '/' + file_name_prefix + '/' + file_name_prefix + '_files' + '/',
             :file_name_prefix => file_name_prefix,
-            :processing=>false)
+            :processing=>false,
+            :height => height,
+            :width => width)
     end
 
   end

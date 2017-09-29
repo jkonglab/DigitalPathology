@@ -2,4 +2,4 @@
 :concurrency: 3
 :pidfile: ./tmp/sidekiq.pid
 production:
-  :concurrency: 20
+  :concurrency: 10
