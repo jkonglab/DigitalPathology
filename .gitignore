@@ -27,3 +27,6 @@ npm-debug.log
 *DS_Store
 env/.Python
 env/bin/activate
+.env
+imageviewer.conf
+/public/dp-data/*
