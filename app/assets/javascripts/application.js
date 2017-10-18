@@ -13,7 +13,7 @@
 
 //= require jquery3
 //= require jquery_ujs
-//= require underscore
+//= require underscore/underscore
 //= require bootstrap
 //= require backbone/backbone
 //= require backbone-forms
