@@ -12,6 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "backbone": "^1.3.3",
+    "backbone-forms": "^0.14.1",
     "openseadragon": "^2.2.1",
     "openseadragon-annotations": "^1.0.2"
   },

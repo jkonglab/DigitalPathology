@@ -5,16 +5,15 @@ Rails.application.routes.draw do
 
   # You can have the root of your site routed with "root"
   root 'pages#home'
-  resources :images
+  resources :images do
+    member do
+      post 'single_data' => 'images#add_single_clinical_data'
+      post 'upload_data' => 'images#add_upload_clinical_data'
+    end
+  end
   resources :annotations
   resources :runs
   get '/about' => 'pages#about'
-  
-  resources :clinical_data do
-    collection do
-      post 'single' => 'clinical_data#create_single'
-    end
-  end
 
   require 'sidekiq/web'
   mount Sidekiq::Web => '/sidekiq'

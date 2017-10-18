@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170825223927) do
+ActiveRecord::Schema.define(version: 20171018193648) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -57,6 +57,7 @@ ActiveRecord::Schema.define(version: 20170825223927) do
     t.string   "upload_file_name"
     t.string   "file_name_prefix"
     t.integer  "user_id"
+    t.json     "clinical_data"
   end
 
   add_index "images", ["user_id"], name: "index_images_on_user_id", using: :btree

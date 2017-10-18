@@ -92,6 +92,17 @@
     width: 100%;
 }
 
+
+.image_search {
+  input, select{
+    padding:5px
+  }
+
+  width: fit-content;
+  max-width:700px;
+  margin: 0px auto;
+}
+
 .pull-xs-right{
 	.material-icons{
 		color:white;

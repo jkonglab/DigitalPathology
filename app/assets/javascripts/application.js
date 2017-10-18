@@ -13,7 +13,11 @@
 
 //= require jquery3
 //= require jquery_ujs
+//= require underscore
 //= require bootstrap
+//= require backbone/backbone
+//= require backbone-forms
+//= require backbone-forms/distribution/editors/list
 //= require formstone/dist/js/core
 //= require formstone/dist/js/upload
 //= require_tree ../../../node_modules/openseadragon/build
