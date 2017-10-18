@@ -33,10 +33,10 @@
 		  	</tr>
 		  </thead>
 		  <tbody>
-	  			<%@clinical.each do |key| %>
+	  			<%@image.clinical_data.keys.each do |key| %>
 	  			<tr class="clinical_data-link">
-	  				<td><%=key.meta_key%></td>
-	  				<td><%=key.meta_value%></td>
+	  				<td><%=key%></td>
+	  				<td><%=@image.clinical_data[key]%></td>
 	  			</tr>
 	  			<% end %>
 	  		</tbody>
@@ -48,9 +48,8 @@
 			Only JSON file format is accepted at this time
 		</header>
 		<div class="upload-data" style="padding:15px;">
-			<%= form_for image_json do |f| %>
+			<%= form_for :image,  url: {action: :add_upload_clinical_data} do |f| %>
 		  		<%= f.file_field :upload %>
-				<%= f.hidden_field :image_id, :value=> image.id %>
 		  	<%= f.submit 'Upload', :style=>'float:right', :class=>"btn-raised btn btn-success"%>
 			<% end %>
 		</div>
@@ -61,18 +60,16 @@
 			});
 
 			function submitData(){
-				var image_id = <%=image.id %>;
 				var modal_data_key = $('#quick_input_field_key').val();
 				var modal_data_value = $('#quick_input_field').val();
 		 		var separator = (window.location.href.indexOf("?")===-1)?"?":"&";
 
 		 		var payload = {
-		 			id: image_id,
 		 			meta_key: modal_data_key, 
 		 			meta_value: modal_data_value
 		 		};
 
-		 		$.post("/clinical_data/single", payload, function(data){
+		 		$.post("/images/<%=image.id%>/single_data", payload, function(data){
 		 			location.reload();
 		 		});
 			}

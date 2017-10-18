@@ -1,12 +1,16 @@
 class ImagesController < ApplicationController
   before_action :authenticate_user!, :only => [:create, :new]
+  before_action :set_image, :only => [:show, :add_single_clinical_data, :add_upload_clinical_data]
     
   def index
-      @images = Image.all.order('id asc')
+    query_params = params['q'] || {}
+    query_builder = QueryBuilder.new(query_params)
+    @q = query_builder.to_ransack
+    @images= @q.result.reorder(query_builder.sort_order)
   end  
   
   def new
-    @image = Image.new
+    @images = Image.new
   end
 
   def create
@@ -24,11 +28,32 @@ class ImagesController < ApplicationController
   end
 
   def show
-    @image = Image.find(params[:id])
     @run = @image.runs.new
     @annotation = Annotation.new
-    @clinical = ClinicalDatum.where(image_id: params[:id])
-    @image_json = ClinicalDatum.new
+  end
+
+  def add_single_clinical_data
+    key = params[:meta_key]
+    value = params[:meta_value]
+    data = @image.clinical_data || {}
+    data[key] = value
+    @image.update_attributes!(:clinical_data=>data)
+    redirect_to :back
+  end
+
+  def add_upload_clinical_data
+    data = @image.clinical_data || {}
+    json_file = params[:image][:upload].read
+    begin
+      json_hash = JSON.parse(json_file)
+      json_hash.each do |key,value|
+        data[key] = value
+      end
+      @image.update_attributes!(:clinical_data=>data)
+      redirect_to :back
+    rescue JSON::ParserError
+      redirect_to :back, alert: 'Error parsing JSON file.  Please validate the file using a linter and make sure keys are double quoted!'
+    end
   end
 
   private
@@ -42,4 +67,8 @@ class ImagesController < ApplicationController
     return Image.create(:title => image_title, :upload_file_name => new_file_name)
   end
   
+
+  def set_image
+    @image = Image.find(params[:id])
+  end
 end
