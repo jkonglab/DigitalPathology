@@ -33,10 +33,10 @@
 		  	</tr>
 		  </thead>
 		  <tbody>
-	  			<%@image.clinical_data.keys.each do |key| %>
+	  			<%@clinical_data.keys.each do |key| %>
 	  			<tr class="clinical_data-link">
 	  				<td><%=key%></td>
-	  				<td><%=@image.clinical_data[key]%></td>
+	  				<td><%=@clinical_data[key]%></td>
 	  			</tr>
 	  			<% end %>
 	  		</tbody>

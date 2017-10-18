@@ -30,6 +30,7 @@ class ImagesController < ApplicationController
   def show
     @run = @image.runs.new
     @annotation = Annotation.new
+    @clinical_data = @image.clinical_data || {}
   end
 
   def add_single_clinical_data
