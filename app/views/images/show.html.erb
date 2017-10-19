@@ -29,22 +29,43 @@
 	</div>
 </div>
 
+<div id="general-modal" class="modal fade" role="dialog">
+	<div class="modal-dialog" style="margin-top:100px;">
+   		<div class="modal-content">
+     		<div class="modal-header">
+       			<button type="button" class="close" data-dismiss="modal">&times;</button>
+      			<h4 id="general-modal-title" class="modal-title"></h4>
+     		</div>
+    		<div class="modal-body">
+				<div class="md-form" style="margin-right: 0">
+					<input type="hidden" id="quick_input_field_key" class="form-control">
+		   			<input type="text" id="quick_input_field" class="form-control">
+				</div>
+    		</div>
+    		<div class="modal-footer">
+		       	<button onclick="submitData()" class="btn btn-primary">Submit</button>
+		    </div>
+    	</div>
+    </div>
+</div>
+
+<div id="run-modal" class="modal fade" role="dialog">
+	<div class="modal-dialog"  style="margin-top:200px;">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+      			<h4 id="general-modal-title" class="modal-title">Run Analysis on ROI</h4>
+			</div>
+			<div class="modal-body">
+				<%= render partial: "runs/form" %>
+			</div>
+			<div class="modal-footer">
+			</div>
+		</div>
+	</div>
+</div>
+
 <script>
-
-	var changeSlide = function() {
-		var slice_num = slice_slider.bootstrapSlider('getValue');
-		var current_bounds = viewer.viewport.getBounds();
-		$.get( "<%=@image.id%>/get_slice?slice="+slice_num.toString(), function( data ) {
-			viewer.open("/<%=Rails.application.config.data_directory%>/" + data.file_name_prefix + "/" + data.file_name_prefix + ".dzi");
-			viewer.viewport.fitBounds(current_bounds);
-			viewer.annotations.clean()
-			bindAnnotationRows();
-		});
-	};
-
-	var slice_slider = $("#sliceNavigator").bootstrapSlider({reversed : true})
-		.on('change', changeSlide);
-
 	var viewer = OpenSeadragon({
 		preserveViewport: true,
 	    id:            "openseadragon-container",
@@ -110,42 +131,21 @@
 	    }
 	}
 
+	<% if @image.threed? %>
+		var changeSlide = function() {
+			var slice_num = slice_slider.bootstrapSlider('getValue');
+			var current_bounds = viewer.viewport.getBounds();
+			$.get( "<%=@image.id%>/get_slice?slice="+slice_num.toString(), function( data ) {
+				viewer.open("/<%=Rails.application.config.data_directory%>/" + data.file_name_prefix + "/" + data.file_name_prefix + ".dzi");
+				viewer.viewport.fitBounds(current_bounds);
+				viewer.annotations.clean()
+				bindAnnotationRows();
+			});
+		};
+
+		var slice_slider = $("#sliceNavigator").bootstrapSlider({reversed : true}).on('change', changeSlide);
+	<% end %>
 </script>
 
-<div id="general-modal" class="modal fade" role="dialog">
-	<div class="modal-dialog" style="margin-top:100px;">
-   		<div class="modal-content">
-     		<div class="modal-header">
-       			<button type="button" class="close" data-dismiss="modal">&times;</button>
-      			<h4 id="general-modal-title" class="modal-title"></h4>
-     		</div>
-    		<div class="modal-body">
-				<div class="md-form" style="margin-right: 0">
-					<input type="hidden" id="quick_input_field_key" class="form-control">
-		   			<input type="text" id="quick_input_field" class="form-control">
-				</div>
-    		</div>
-    		<div class="modal-footer">
-		       	<button onclick="submitData()" class="btn btn-primary">Submit</button>
-		    </div>
-    	</div>
-    </div>
-</div>
-
-<div id="run-modal" class="modal fade" role="dialog">
-	<div class="modal-dialog"  style="margin-top:200px;">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal">&times;</button>
-      			<h4 id="general-modal-title" class="modal-title">Run Analysis on ROI</h4>
-			</div>
-			<div class="modal-body">
-				<%= render partial: "runs/form" %>
-			</div>
-			<div class="modal-footer">
-			</div>
-		</div>
-	</div>
-</div>
 
 
