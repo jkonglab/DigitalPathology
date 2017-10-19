@@ -65,14 +65,14 @@ class ImagesController < ApplicationController
       image = current_user.images.where(:parent_id => nil).find(id)
       if image
         first_image = first_image || image
-        image.update_attributes!(:slice_order => i, :image_type => IMAGE_TYPE_THREED)
+        image.update_attributes!(:slice_order => i, :image_type => Image::IMAGE_TYPE_THREED)
         i += 1
       end
     end
 
     parent_image = current_user.images.create!(
       :title => '3D Volume: ' + first_image.title, 
-      :image_type => IMAGE_TYPE_THREED, 
+      :image_type => Image::IMAGE_TYPE_THREED, 
       :visibility => first_image.visibility,
       :processing => 0,
       :path => first_image.path,
