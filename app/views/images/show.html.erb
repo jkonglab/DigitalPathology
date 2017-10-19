@@ -4,7 +4,7 @@
 			<%= render partial: "drawer_home", locals: { image: @image } %>
 		</div>
 		<div class="drawer-tab drawer-annotations">
-			<%= render partial: "drawer_annotations", locals: { annotation: @annotation, image: @image } %>
+			<%= render partial: "drawer_annotations", locals: { annotation: @annotation, image: @slice } %>
 		</div>
 		<div class="drawer-tab drawer-data">
 			<%= render partial: "drawer_data", locals: { image_json: @image_json, image: @image } %>
@@ -13,8 +13,14 @@
 
     <div class="bmd-layout-content">
 		<div class="row">
-			<div class="col-12">
-				<div id="<%=@image.upload_file_name.parameterize%>" class="openseadragon">
+			<div class="col-11" style="padding-right:0px;">
+				<div id="openseadragon-container" class="openseadragon">
+				</div>
+			</div>
+			<div style="background:#aaa;" class="col-1">
+				<div style="margin-top:100px;">
+					<h3>Slice</h3>
+					<input id="sliceNavigator" class="form-control" type="text" data-slider-min="0" data-slider-max="<%=@slices.length - 1%>" data-slider-step="1" data-slider-value="0" data-slider-orientation="vertical"/>
 				</div>
 			</div>
 		</div>
@@ -22,10 +28,26 @@
 </div>
 
 <script>
+
+	var changeSlide = function() {
+		var slice_num = slice_slider.bootstrapSlider('getValue');
+		var current_bounds = viewer.viewport.getBounds();
+		$.get( "<%=@image.id%>/get_slice?slice="+slice_num.toString(), function( data ) {
+			viewer.open("/<%=Rails.application.config.data_directory%>/" + data.file_name_prefix + "/" + data.file_name_prefix + ".dzi");
+			viewer.viewport.fitBounds(current_bounds);
+			viewer.annotations.clean()
+			bindAnnotationRows();
+		});
+	};
+
+	var slice_slider = $("#sliceNavigator").bootstrapSlider({reversed : true})
+		.on('change', changeSlide);
+
 	var viewer = OpenSeadragon({
-	    id:            "<%=@image.upload_file_name.parameterize%>",
+		preserveViewport: true,
+	    id:            "openseadragon-container",
 	    prefixUrl:     "/openseadragon/images/",
-	    tileSources:   "/<%=Rails.application.config.data_directory%>/<%=@image.file_name_prefix%>/<%=@image.file_name_prefix%>.dzi",
+	    tileSources:   "/<%=Rails.application.config.data_directory%>/<%=@slice.file_name_prefix%>/<%=@slice.file_name_prefix%>.dzi"
 	});
 
 	viewer.initializeAnnotations();

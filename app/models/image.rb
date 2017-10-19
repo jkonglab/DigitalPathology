@@ -3,6 +3,10 @@ class Image < ActiveRecord::Base
 	has_many :runs
 	belongs_to :user
 
+  enum visibility: [:hidden, :publik]
+  enum image_type: [:twod, :threed, :fourd]
+
+
 	def self.ransackable_attributes(auth_object = nil)
   		super - ['id', 'created_at', 'format', 'slug', 'path', 'overlap', 'tile_size', 'updated_at', 'file_name_prefix', "user_id"]
 	end
@@ -10,7 +14,6 @@ class Image < ActiveRecord::Base
   def self.ransackable_scopes(auth_object = nil)
     [:meta_search]
   end
-
 	
   def self.meta_search(*fields)
     query = self

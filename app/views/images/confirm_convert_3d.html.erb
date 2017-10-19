@@ -1,0 +1,45 @@
+<div class="container">
+	<br/><br/>
+	<h1>Confirm 3D Conversion</h1>
+	<h4>Please confirm the order of images that you would like to convert into a single 3D volume.</h4>
+		<ul>
+			<li>Drag rows to rearrange the order of image slices within the volume</li>
+			<li>The top row is considered the 0th slice, and will be used to set the visibility (privacy), clinical data and title of the volume</li>
+			<li>Uncheck a row to exclude the image from the volume</li>
+		</ul>
+	</h4>
+	<br/><br/>
+	<%= form_tag convert_3d_images_path do %>
+		<%= submit_tag "Confirm", :style=>"float:right", :class=> 'btn btn-success btn-raised'%>
+		<br/><br/>
+		<div class="image-table">
+			<table class="table table-hover">
+			  <thead>
+			  	<tr>
+			  		<th></th>
+				  	<th>ID</th>
+				  	<th>Image Name</th>
+				  	<th>Date Uploaded</th>
+				  	<th>Status</th>
+			  	</tr>
+			  </thead>
+			  	<tbody>
+				  	<% @images.each do |image| %>
+				  		<tr class="image-link" data-link="<% if !image.path.blank?%><%=image_path(image)%><% end %>">
+				  			<td><%= check_box_tag "image_ids[]", image.id, :default=> true%></td>
+				  			<td><%=image.id%></td>
+				  			<td><%=image.title%></td>
+				  			<td><%=image.created_at%></td>
+				  			<td><% if image.processing %>Processing<% elsif !image.path.blank?%>Available<%else%>Awaiting Processing<% end%></td>
+				  		</tr>
+				  	<% end %>
+			  	</tbody>
+			</table>
+		</div>
+	<% end %>
+
+</div>
+
+<script>
+    $('tbody').sortable();
+</script>

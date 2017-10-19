@@ -1,0 +1,86 @@
+<div class="container">
+<br/><br/>
+<h1>My Images</h1>
+<h4>The list below is a repository of your uploaded images</h4>
+<br/><br/>
+
+ <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#searchForm" aria-expanded="false" aria-controls="searchForm">
+    Search & Filter
+ </button>
+
+<div class="collapse" id="searchForm">
+  <div id="searchFormCard" class="card card-body" style="padding:20px 0px;">
+		<div id="searchFormCardContent" style="margin:0px auto; max-width:500px">
+		<button class="btn btn-raised btn-success" type="buttoon">Search</button>
+		</div>
+	</div>
+</div>
+
+<br/><br/>
+
+<%= link_to new_image_path do %>
+	<button style="float:right" class="btn btn-success">+ Upload New Image</button>
+<% end %>
+<br/><br/>
+<div class="image-table">
+	<table class="table table-hover">
+	  <thead>
+	  	<tr>
+	  		<th></th>
+		  	<th><%= sort_link @q, :id, "ID"%></th>
+		  	<th><%= sort_link @q, :title, "Image Name"%></th>
+		  	<th><%= sort_link @q, :uploaded_at, "Date Uploaded"%></th>
+		  	<th>Status</th>
+		  	<th>Privacy</th>
+	  	</tr>
+	  </thead>
+	  <%= form_tag confirm_3d_images_path do %>
+	  	<%= submit_tag "Convert to 3D Volume", :style=> 'float:right', :class=> 'btn btn-success btn-raised'%>
+		  <tbody>
+		  	<% @images.each do |image| %>
+		  		<tr class="image-link" data-link="<% if !image.path.blank?%><%=image_path(image)%><% end %>">
+		  			<td><%= check_box_tag "image_ids[]", image.id %></td>
+		  			<td><%=image.id%></td>
+		  			<td><%=image.title%></td>
+		  			<td><%=image.created_at%></td>
+		  			<td><% if image.processing %>Processing<% elsif !image.path.blank?%>Available<%else%>Awaiting Processing<% end%></td>
+		  			<td><% if image.hidden? %>Private<%else%>Public<%end%></td>
+		  		</tr>
+		  	<% end %>
+		  </tbody>
+	  <% end %>
+	</table>
+</div>
+</div>
+
+<script>
+var SearchForm = Backbone.Model.extend({
+		data: {
+			'processing': 'Complete'
+		},
+    schema: {
+  		title:
+  			{ title: 'Image Title', 
+  				type: 'Text', 
+  				editorClass: 'form-control',
+  				editorAttrs: { name: 'q[title]' }
+  			},
+      processing:
+      	{ title: 'Upload Status', 
+      		type: 'Select', 
+      		options: ['Complete', 'Processing'], 
+      		editorClass: 'form-control',
+      		editorAttrs: { name: 'q[processing]'}
+  			}
+    },
+    submitButton: 'Submit'
+});
+
+var searchform = new SearchForm();
+
+var form = new Backbone.Form({
+    model: searchform
+}).render();
+
+$('#searchFormCardContent').prepend(form.el);
+</script>

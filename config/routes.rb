@@ -6,9 +6,15 @@ Rails.application.routes.draw do
   # You can have the root of your site routed with "root"
   root 'pages#home'
   resources :images do
+    collection do
+      get 'my_images' => 'images#my_images'
+      post 'convert_3d' => 'images#convert_3d'
+      post 'confirm_3d' => 'images#confirm_convert_3d'
+    end
     member do
       post 'single_data' => 'images#add_single_clinical_data'
       post 'upload_data' => 'images#add_upload_clinical_data'
+      get 'get_slice' => 'images#get_slice'
     end
   end
   resources :annotations

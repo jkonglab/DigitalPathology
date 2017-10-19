@@ -13,6 +13,8 @@
 
 //= require jquery3
 //= require jquery_ujs
+//= require jquery-ui
+//= require bootstrap-slider
 //= require underscore/underscore
 //= require bootstrap
 //= require backbone/backbone
@@ -26,8 +28,10 @@
 
 
 $(function(){
-	$("tr.image-link").click(function() {
-		window.location = $(this).attr('data-link');
+	$("tr.image-link").click(function(e) {
+		if(e.target.type != 'checkbox'){
+			window.location = $(this).attr('data-link');
+		}
 	});
 
   	$('body').bootstrapMaterialDesign();

@@ -1,11 +1,13 @@
 class ImagesController < ApplicationController
   before_action :authenticate_user!, :only => [:create, :new]
-  before_action :set_image, :only => [:show, :add_single_clinical_data, :add_upload_clinical_data]
+  before_action :set_image, :only => [:show, :add_single_clinical_data, :add_upload_clinical_data, :get_slice]
+  respond_to :json, only: [:get_slice]
+
     
   def index
     query_params = params['q'] || {}
     query_builder = QueryBuilder.new(query_params)
-    @q = query_builder.to_ransack
+    @q = query_builder.to_ransack(Image.where(:visibility=>:publik, :parent_id=>nil))
     @images= @q.result.reorder(query_builder.sort_order)
   end  
   
@@ -16,7 +18,7 @@ class ImagesController < ApplicationController
   def create
     uploaded_io = params[:file]
     original_filename = uploaded_io.original_filename #myfile.svs
-    image = generate_new_image(original_filename)
+    image = generate_new_image(original_filename, current_user.id)
 
     File.open(Rails.root.join('public', Rails.application.config.data_directory, image.upload_file_name), 'wb') do |file|
         file.write(uploaded_io.read)
@@ -31,6 +33,56 @@ class ImagesController < ApplicationController
     @run = @image.runs.new
     @annotation = Annotation.new
     @clinical_data = @image.clinical_data || {}
+    @slices = Image.where(:parent_id => @image.id).order('slice_order asc') if @image.threed?
+    @slice = @image.threed? ? @slices.first : @image
+  end
+
+  def get_slice
+    @slice = Image.where(:parent_id => @image.id).order('slice_order asc')[params[:slice].to_i]
+    respond_with @slice
+  end
+
+  def my_images
+    query_params = params['q'] || {}
+    query_builder = QueryBuilder.new(query_params)
+    @q = query_builder.to_ransack(current_user.images.where(:parent_id=>nil))
+    @images= @q.result.reorder(query_builder.sort_order)
+  end
+
+  def confirm_convert_3d
+    image_ids = params['image_ids']
+    @images = current_user.images.where('parent_id IS NULL AND id IN (?)', image_ids).sort_by{|image| image.id}
+    if @images.length < 1
+      return redirect_to my_images_images_path, alert: 'Volume could not be created because all selected images already belong to another volume!'
+    end
+  end
+
+  def convert_3d
+    image_ids = params['image_ids']
+    i = 0
+    first_image = nil
+    image_ids.each do |id|
+      image = current_user.images.where(:parent_id => nil).find(id)
+      if image
+        first_image = first_image || image
+        image.update_attributes!(:slice_order => i, :image_type => :threed)
+        i += 1
+      end
+    end
+
+    parent_image = current_user.images.create!(
+      :title => '3D Volume: ' + first_image.title, 
+      :image_type => :threed, 
+      :visibility => first_image.visibility,
+      :processing => 0,
+      :path => first_image.path,
+      :clinical_data => first_image.clinical_data
+    )
+
+    images = Image.where('id in (?)', image_ids)
+    images.update_all(:parent_id=> parent_image.id)
+    images.update_all(:visibility=> parent_image.visibility)
+    redirect_to my_images_images_path, notice: 'Images converted into 3D volume'
   end
 
   def add_single_clinical_data
@@ -59,13 +111,13 @@ class ImagesController < ApplicationController
 
   private
 
-  def generate_new_image(original_filename)
+  def generate_new_image(original_filename, user_id)
     image_suffix =  original_filename.split('.')[-1]
     image_title = original_filename.split('.'+image_suffix)[0]
     image_unique_id = Image.last ? Image.last.id + 1 : 2
 
     new_file_name = image_title + '-' + image_unique_id.to_s + '.' + image_suffix
-    return Image.create(:title => image_title, :upload_file_name => new_file_name)
+    return Image.create(:title => image_title, :upload_file_name => new_file_name, :user_id=>user_id, :image_type => :twod)
   end
   
 

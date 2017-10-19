@@ -11,5 +11,7 @@
  * file per style scope.
  *
  *= require_tree ../../../bower_components/formstone/dist/css
+ *= require jquery-ui
+ *= require bootstrap-slider
  *= require_tree .
  */

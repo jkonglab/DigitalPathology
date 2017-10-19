@@ -29,8 +29,12 @@ class QueryBuilder
     @query
   end
 
-  def to_ransack()
-    ransack = Image.ransack(query)
+  def to_ransack(context=nil)
+    if context
+      ransack = context.ransack(query)
+    else
+      ransack = Image.ransack(query)
+    end
     ransack.sorts = sort_order
     ransack
   end
