@@ -3,7 +3,13 @@ class Image < ActiveRecord::Base
 	has_many :runs
 	belongs_to :user
 
-  enum visibility: [:hidden, :publik]
+  VISIBILITY_PRIVATE = 0
+  VISIBILITY_PUBLIC = 1
+  IMAGE_TYPE_TWOD = 0
+  IMAGE_TYPE_THREED = 1
+  IMAGE_TYPE_FOURD = 2
+
+  enum visibility: { hidden: 0, visible: 1 }
   enum image_type: [:twod, :threed, :fourd]
 
 

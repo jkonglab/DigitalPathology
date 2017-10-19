@@ -7,7 +7,7 @@ class ImagesController < ApplicationController
   def index
     query_params = params['q'] || {}
     query_builder = QueryBuilder.new(query_params)
-    @q = query_builder.to_ransack(Image.where(:visibility=>:publik, :parent_id=>nil))
+    @q = query_builder.to_ransack(Image.where(:visibility => Image::VISIBILITY_PUBLIC, :parent_id=>nil))
     @images= @q.result.reorder(query_builder.sort_order)
   end  
   
@@ -65,14 +65,14 @@ class ImagesController < ApplicationController
       image = current_user.images.where(:parent_id => nil).find(id)
       if image
         first_image = first_image || image
-        image.update_attributes!(:slice_order => i, :image_type => :threed)
+        image.update_attributes!(:slice_order => i, :image_type => IMAGE_TYPE_THREED)
         i += 1
       end
     end
 
     parent_image = current_user.images.create!(
       :title => '3D Volume: ' + first_image.title, 
-      :image_type => :threed, 
+      :image_type => IMAGE_TYPE_THREED, 
       :visibility => first_image.visibility,
       :processing => 0,
       :path => first_image.path,
@@ -117,7 +117,7 @@ class ImagesController < ApplicationController
     image_unique_id = Image.last ? Image.last.id + 1 : 2
 
     new_file_name = image_title + '-' + image_unique_id.to_s + '.' + image_suffix
-    return Image.create(:title => image_title, :upload_file_name => new_file_name, :user_id=>user_id, :image_type => :twod)
+    return Image.create(:title => image_title, :upload_file_name => new_file_name, :user_id=>user_id, :image_type => Image::IMAGE_TYPE_TWOD)
   end
   
 
