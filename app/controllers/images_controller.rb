@@ -33,7 +33,7 @@ class ImagesController < ApplicationController
     @run = @image.runs.new
     @annotation = Annotation.new
     @clinical_data = @image.clinical_data || {}
-    @slices = Image.where(:parent_id => @image.id).order('slice_order asc') if @image.threed?
+    @slices = Image.where(:parent_id => @image.id).order('slice_order asc')
     @slice = @image.threed? ? @slices.first : @image
   end
 
