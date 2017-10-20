@@ -1,0 +1,40 @@
+<div class="container">
+	<br/><br/>
+	<h1>Confirm Deletion</h1>
+	<h4>Please the images that you would like to delete.</h4>
+		<ul>
+			<li>Please note that deletion is permanent and deleted images cannot be retrieved.</li>
+			<li>Uncheck a row to exclude the image from deletion</li>
+		</ul>
+	</h4>
+	<br/><br/>
+	<%= form_tag delete_images_path do %>
+		<%= submit_tag "Confirm Delete", :style=>"float:right", :class=> 'btn btn-success btn-raised btn-danger'%>
+		<br/><br/>
+		<div class="image-table">
+			<table class="table table-hover">
+			  <thead>
+			  	<tr>
+			  		<th></th>
+				  	<th>ID</th>
+				  	<th>Image Name</th>
+				  	<th>Date Uploaded</th>
+				  	<th>Status</th>
+			  	</tr>
+			  </thead>
+			  	<tbody>
+				  	<% @images.each do |image| %>
+				  		<tr class="image-link" data-link="<% if !image.path.blank?%><%=image_path(image)%><% end %>">
+				  			<td><%= check_box_tag "image_ids[]", image.id, :default=> true%></td>
+				  			<td><%=image.id%></td>
+				  			<td><%=image.title%></td>
+				  			<td><%=image.created_at%></td>
+				  			<td><% if image.processing %>Processing<% elsif !image.path.blank?%>Available<%else%>Awaiting Processing<% end%></td>
+				  		</tr>
+				  	<% end %>
+			  	</tbody>
+			</table>
+		</div>
+	<% end %>
+
+</div>

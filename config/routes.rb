@@ -10,6 +10,8 @@ Rails.application.routes.draw do
       get 'my_images' => 'images#my_images'
       post 'convert_3d' => 'images#convert_3d'
       post 'confirm_3d' => 'images#confirm_convert_3d'
+      post 'confirm_delete' => 'images#confirm_delete'
+      post 'delete' => 'images#delete'
     end
     member do
       post 'single_data' => 'images#add_single_clinical_data'

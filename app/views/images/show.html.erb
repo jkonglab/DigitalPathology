@@ -18,11 +18,10 @@
 				</div>
 			</div>
 			<% if @image.threed? %>
-				<div style="background:#aaa;" class="col-1">
-					<div style="margin-top:100px;">
-						<h3>Slice</h3>
+				<div class="col-1 slider-container">
+						<button id="slideUp"><i class="material-icons" role="presentation">arrow_drop_up</i></button>
 						<input id="sliceNavigator" class="form-control" type="text" data-slider-min="0" data-slider-max="<%=@slices.length - 1%>" data-slider-step="1" data-slider-value="0" data-slider-orientation="vertical"/>
-					</div>
+						<button id="slideDown"><i class="material-icons" role="presentation">arrow_drop_down</i></button>
 				</div>
 			<% end %>
 		</div>
@@ -144,6 +143,20 @@
 		};
 
 		var slice_slider = $("#sliceNavigator").bootstrapSlider({reversed : true}).on('change', changeSlide);
+
+		$('#slideUp').bind('click', function(){
+			var currentSlide = slice_slider.bootstrapSlider('getValue');
+			if(currentSlide < <%=@slices.length - 1%>){
+				slice_slider.bootstrapSlider('setValue', currentSlide + 1, true, true);
+			}
+		});
+
+		$('#slideDown').bind('click', function(){
+			var currentSlide = slice_slider.bootstrapSlider('getValue');
+			if(currentSlide > 0){
+				slice_slider.bootstrapSlider('setValue', currentSlide - 1, true, true);
+			}
+		});
 	<% end %>
 </script>
 

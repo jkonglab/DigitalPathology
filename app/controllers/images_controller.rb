@@ -49,11 +49,31 @@ class ImagesController < ApplicationController
     @images= @q.result.reorder(query_builder.sort_order)
   end
 
+  def confirm_delete
+    image_ids = params['image_ids']
+    @images = current_user.images.where('id IN (?)', image_ids)
+    
+    if @images.length == 1
+      image = @images[0]
+      image.delete!
+      return redirect_to my_images_image_path, notice: "Image #{image.title} deleted"
+    elsif @images.length == 0
+      return redirect_to my_images_image_path, notice: 'No valid images selected for deletion'
+    end
+  end
+
+  def delete
+    image_ids = params['image_ids']
+    @images = current_user.images.where('id IN (?)', image_ids)
+    @images.delete_all
+    return redirect_to my_images_images_path, notice: "#{@images.length} images deleted"
+  end
+
   def confirm_convert_3d
     image_ids = params['image_ids']
-    @images = current_user.images.where('parent_id IS NULL AND id IN (?)', image_ids).sort_by{|image| image.id}
+    @images = current_user.images.where('image_type != ? AND id IN (?)', Image::IMAGE_TYPE_THREED, image_ids).sort_by{|image| image.id}
     if @images.length < 1
-      return redirect_to my_images_images_path, alert: 'Volume could not be created because all selected images already belong to another volume!'
+      return redirect_to my_images_images_path, alert: 'Volume could not be created because all selected images already are/attached to a 3D volume!'
     end
   end
 

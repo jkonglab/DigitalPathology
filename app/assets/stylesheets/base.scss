@@ -236,3 +236,17 @@
     font-size:1rem;
   }
 }
+
+.slider-container{
+  padding-left:0px; 
+  background:#eee; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction:column;
+  margin-top:-20px;
+
+  .slider-vertical{
+    margin-top:22px;
+  }
+}
