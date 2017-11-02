@@ -29,7 +29,8 @@
 	function onBeforeSend(formData, file) {
 		console.log("Before Send");
 		formData.append("test_field", "test_value");
-		   if (file.name.indexOf(".svs") < 0 && file.name.indexOf(".ndpi") < 0) {
+		var file_name_lower = file.name.toLowerCase();
+		   if (file_name_lower.indexOf(".svs") < 0 && file_name_lower.indexOf(".ndpi") < 0 && file_name_lower.indexOf(".jpg") < 0 && file_name_lower.indexOf(".jpeg") < 0 && file_name_lower.indexOf(".tif") < 0)) {
        		alert("Your file type is not supported. Please upload an SVS or NDPI file ");
        		 return false;
     	}
