@@ -1,0 +1,20 @@
+{
+  "name": "backbone-forms",
+  "version": "0.14.1",
+  "main": "distribution/backbone-forms.js",
+  "dependencies": {
+    "backbone": "1.0"
+  },
+  "devDependencies": {},
+  "homepage": "https://github.com/powmedia/backbone-forms",
+  "_release": "0.14.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.14.1",
+    "commit": "7aad9e3be590b0bda964f6156b7a438e89d00e45"
+  },
+  "_source": "https://github.com/powmedia/backbone-forms.git",
+  "_target": "^0.14.1",
+  "_originalSource": "backbone-forms",
+  "_direct": true
+}

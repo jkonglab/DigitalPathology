@@ -19,7 +19,6 @@
 /node_modules
 /python/env
 npm-debug.log
-/bower_components
 /node_modules
 /algorithms/run_data/*
 /public/data/*
