@@ -15,6 +15,11 @@
 #include <math.h>
 #endif
 
+#if !defined(UTILITY)
+#define UTILITY
+#include "utility.h"
+#endif
+
 #include <openslide.h>
 
 #include <sys/types.h>
@@ -118,7 +123,7 @@ int getRegionImage(char *inputNDPI, unsigned char *ROI, long SX, long SY, long w
         ROI[height*width*2+height*col+row] = ((val >> 0) & 0xFF);
     }
     
-    //for (i = 0; i< width * height; i++) printf("ROI[%d]=%d\n",i,ROI[i+width*height*1]);
+    // for (i = 0; i< width * height; i++) printf("ROI[%d]=%d\n",i,ROI[i+width*height*1]);
     
     free(buf);
     
@@ -177,7 +182,7 @@ int getThumbnailWSI_getSize(char *inputNDPI, int length, int64_t *thumb_width, i
     *thumb_height = height;
     
    
-	printf("The generating thumbnail for %s is %" PRId64 "x%" PRId64 " pixels\n", inputNDPI, *thumb_width, *thumb_height);
+	printf("The generating thumbnail for %s is %lld x%lld pixels\n", inputNDPI, *thumb_width, *thumb_height);
 
 	return validlayer;
     
@@ -307,7 +312,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
                 dim_array[0] = height; //NOTE: number of row defined by mxSetDimensions
                 dim_array[1] = width;//NOTE: //number of col defined by mxSetDimensions
                 dim_array[2] = 3;
-
             }
             else if (nrhs==6){
                 x = mxGetScalar(prhs[1]);
@@ -333,18 +337,17 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
             }
             else {mexErrMsgTxt("input parameters are wrong for type==1.");}
             
-            
             plhs[0] = mxCreateNumericArray(0,0,mxUINT8_CLASS,mxREAL);
-            mxSetDimensions(plhs[0], (const size_t*) dim_array, number_dims);
             mxSetData(plhs[0], mxMalloc(sizeof(unsigned char)*width*height*3));
-            image = (unsigned char *) mxGetPr(plhs[0]);
+            mxSetDimensions(plhs[0], (const mwSize*) dim_array, number_dims);
+            image = (unsigned char *) mxGetData(plhs[0]);
             
             getRegionImage(inputNDPI, image, x, y, width, height, level);
-            
-            //for(int i=0; i<height; i++)
-            //    for(int j=0; j<width; j++)
-            //        printf("row:%d \t col:%d \tR=%d,G=%d,B=%d\n", i,j,image[height*j+i], image[height*width+height*j+i], image[height*width*2+height*j+i]);
-            
+//             
+//             for(int i=0; i<height; i++)
+//                for(int j=0; j<width; j++)
+//                    printf("row:%d \t col:%d \tR=%d,G=%d,B=%d\n", i,j,image[height*j+i], image[height*width+height*j+i], image[height*width*2+height*j+i]);
+//             
             
             break;
 
@@ -372,7 +375,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
             dim_array[0]=height; //number of row defined by mxSetDimensions
             dim_array[1]=width;//number of col defined by mxSetDimensions
             dim_array[2]=3;
-            mxSetDimensions(plhs[0], (const size_t*) dim_array, number_dims);
+            mxSetDimensions(plhs[0], (const mwSize*) dim_array, number_dims);
             mxSetData(plhs[0], mxMalloc(sizeof(unsigned char)*dim_array[0]*dim_array[1]*dim_array[2]));
             image = (unsigned char *) mxGetPr(plhs[0]);
             //printf("number of element:%d\n",mxGetNumberOfElements(plhs[0]));

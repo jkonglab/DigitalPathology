@@ -19,7 +19,9 @@ code_dir = './Bspline/';
 addpath(genpath(code_dir));
 
 if exist('./openSlide_c.mexmaci64','file')~=3 && exist('./openSlide_c.mexa64','file')~=3
-   mex -I/usr/local/include/openslide/ -L/usr/local/lib -lopenslide openSlide_c.cpp
+   %mex -I/usr/local/include/openslide/ -L/usr/local/lib -lopenslide
+   %openSlide_c.cpp -compatibleArrayDims
+   mex -I/usr/include/openslide/ -L/usr/lib64/ -lopenslide openSlide_c.cpp -compatibleArrayDims  
 end
 
 lowResLevel = 8;
