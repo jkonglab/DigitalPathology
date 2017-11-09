@@ -18,7 +18,7 @@ function output = high_low_level_registration_method5(inputdir, outputdir, x_poi
 code_dir = './Bspline/';
 addpath(genpath(code_dir));
 
-if exist('./openSlide_c.mexmaci64','file')~=3
+if exist('./openSlide_c.mexmaci64','file')~=3 && exist('./openSlide_c.mexa64','file')~=3
    mex -I/usr/local/include/openslide/ -L/usr/local/lib -lopenslide openSlide_c.cpp
 end
 
