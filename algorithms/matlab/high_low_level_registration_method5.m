@@ -55,7 +55,7 @@ y = 34000; height = 4*1024; % (width, height) use coordinate system associated w
 %generate reference image
 type = 1;
 reference = openSlide_c([svsdir inputNDPIs{refIdx}], int64(x), int64(y), int64(width), int64(height), highResLevel, type);
-%imshow(reference,[]);
+imshow(reference,[]);
 imwrite(reference, sprintf('%sreg_slide_%02d.jpg',outputdir, refIdx), 'Mode', 'lossy', 'Quality', 25);
 
 x_highResLevel = round(x/(2^highResLevel));
@@ -140,7 +140,7 @@ for i = (refIdx-1):-1:1
     b = manual_registeredIm(:,:,3); b(~outbound_TF) = interp_b;
     manual_registeredIm = cat(3, r,g,b);
     
-    %imshow(manual_registeredIm,[]);
+    imshow(manual_registeredIm,[]);
     imwrite(manual_registeredIm, sprintf('%sreg_slide_%02d.tif',outputdir, i));
     %imwrite(manual_registeredIm, sprintf('%sreg_slide_%02d.jpg',outputdir, i),  'Mode', 'lossy', 'Quality', 25);
     
@@ -211,7 +211,7 @@ for i = (refIdx+1):1:nIms
     b = manual_registeredIm(:,:,3); b(~outbound_TF) = interp_b;
     manual_registeredIm = cat(3, r,g,b);
     
-    %imshow(manual_registeredIm,[]);
+    imshow(manual_registeredIm,[]);
     imwrite(manual_registeredIm, sprintf('%sreg_slide_%02d.tif',outputdir, i));
     %imwrite(manual_registeredIm, sprintf('%sreg_slide_%02d.jpg',outputdir, i),  'Mode', 'lossy', 'Quality', 25);
     
