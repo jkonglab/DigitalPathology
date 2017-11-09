@@ -15,13 +15,6 @@
 #include <math.h>
 #endif
 
-#if !defined(UTILITY)
-#define UTILITY
-#include "utility.h"
-#endif
-
-
-
 #include <openslide.h>
 
 #include <sys/types.h>
@@ -342,7 +335,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
             
             
             plhs[0] = mxCreateNumericArray(0,0,mxUINT8_CLASS,mxREAL);
-            mxSetDimensions(plhs[0], (const int *) dim_array, number_dims);
+            mxSetDimensions(plhs[0], (const size_t*) dim_array, number_dims);
             mxSetData(plhs[0], mxMalloc(sizeof(unsigned char)*width*height*3));
             image = (unsigned char *) mxGetPr(plhs[0]);
             
@@ -379,7 +372,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
             dim_array[0]=height; //number of row defined by mxSetDimensions
             dim_array[1]=width;//number of col defined by mxSetDimensions
             dim_array[2]=3;
-            mxSetDimensions(plhs[0], (const int *) dim_array, number_dims);
+            mxSetDimensions(plhs[0], (const size_t*) dim_array, number_dims);
             mxSetData(plhs[0], mxMalloc(sizeof(unsigned char)*dim_array[0]*dim_array[1]*dim_array[2]));
             image = (unsigned char *) mxGetPr(plhs[0]);
             //printf("number of element:%d\n",mxGetNumberOfElements(plhs[0]));
