@@ -49,6 +49,7 @@
     z-index:6;
     width:100%;
     background-color: #0D2776 !important;
+    flex-direction:row;
 }
 
 .bmd-layout-drawer .list-group {
@@ -162,6 +163,9 @@
     .full-width-container{
       height:calc(100% - 60px);
     }
+    .navbar-toggler{
+      display:none;
+    }
 }
 
 .filelists { margin: 20px 0; }
@@ -214,6 +218,10 @@
 }
 
 @include media-breakpoint-down(sm) {
+
+  table td{
+   font-size:12px;
+  }
   .images_show, .runs_show{
     height:calc(100% - 60px);
     

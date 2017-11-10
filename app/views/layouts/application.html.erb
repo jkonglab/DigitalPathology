@@ -19,8 +19,8 @@
 <body style="width:100%; height:100%;">
 <div style="width:100%; height:100%;" class="<%=params[:controller]%>_<%=params[:action]%>">
   <nav id="top-nav"  class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-    <button style="margin-right:10px;" class="sidebar-toggler navbar-toggler" type="button" data-toggle="drawer" data-target="#viewer-sidebar" aria-expanded="false">
-      <i class="material-icons">menu</i>
+    <button style="margin-right:5px;" class="sidebar-toggler navbar-toggler" type="button" data-toggle="drawer" data-target="#viewer-sidebar" aria-expanded="false">
+      <span class="navbar-toggler-icon"></span>
     </button>
     <a class="navbar-brand" href="/">
       <img style="width:100px; margin-right:10px;" src="<%=asset_path("public/emory.png")%>"/>
@@ -37,7 +37,7 @@
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" id="images-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Images</a>
           <div class="dropdown-menu" aria-labelledby="images-dropdown">
-            <a class="dropdown-item" href="/images">All Images</a>
+            <a class="dropdown-item" href="/images">Public Archive</a>
             <a class="dropdown-item" href="/images/new">Upload</a>
           </div>
         </li>
