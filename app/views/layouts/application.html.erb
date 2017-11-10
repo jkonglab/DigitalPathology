@@ -72,8 +72,6 @@
                 <% end %>
               <% end %>
               <a href="/about"><button class="dropdown-item" type="button">About</button></a>
-              <button class="dropdown-item" type="button">Contact</button>
-              <button class="dropdown-item" type="button">Legal information</button>
               <% if current_user %>
                 <%= link_to destroy_user_session_path, :method=>'delete' do %>
                   <button class="dropdown-item" type="button">Logout</button>
