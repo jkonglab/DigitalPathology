@@ -40,7 +40,8 @@ class AnalysisWorker
           new_image = Image.create!(
             :title => "Run #{@run.id.to_s}: #{image_title}", 
             :user_id=>@run.user_id, 
-            :image_type => Image::IMAGE_TYPE_TWOD)
+            :image_type => Image::IMAGE_TYPE_TWODad,
+            :generated_by_run_id => run_id)
 
           new_file_name = "#{new_image.id}_#{file_name}"
           new_image.update_attributes(:upload_file_name => new_file_name)
@@ -72,7 +73,13 @@ class AnalysisWorker
       end
     end
 
-    @run.reload.increment!(:tiles_processed)
+    begin
+      @run.reload.increment!(:tiles_processed)
+    rescue ActiveRecord::StaleObjectError
+      @run.reload.increment!(:tiles_processed)
+    retry
+    end
+
     if @run.reload.tiles_processed >= @run.total_tiles
       @run.update_attributes!(:complete => true)
     end

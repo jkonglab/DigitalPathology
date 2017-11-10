@@ -31,6 +31,7 @@ class ImagesController < ApplicationController
 
   def show
     @run = @image.runs.new
+    @algorithm = @image.threed? ? Algorithm.all : Algorithm.where('output_type NOT IN (?)', Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"])
     @annotation = Annotation.new
     @clinical_data = @image.clinical_data || {}
     @slices = Image.where(:parent_id => @image.id).order('slice_order asc')

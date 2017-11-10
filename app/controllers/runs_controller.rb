@@ -9,6 +9,7 @@ class RunsController < ApplicationController
     @run = Run.find(params[:id])
     @algorithm = @run.algorithm
     @image = @run.image
+    @images = Image.where(:generated_by_run_id=>@run.id).order('id desc')
     @annotation = @run.annotation
     @results = @run.results
     @results_svg = @results.pluck(:svg_data)

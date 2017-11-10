@@ -26,7 +26,7 @@
 	<table class="table table-hover">
 	  <thead>
 	  	<tr>
-	  		<th></th>
+	  		<th><input type="checkbox" id="select_all"/></th>
 		  	<th><%= sort_link @q, :id, "ID"%></th>
 		  	<th><%= sort_link @q, :title, "Image Name"%></th>
 		  	<th><%= sort_link @q, :uploaded_at, "Date Uploaded"%></th>
@@ -40,7 +40,7 @@
 		  <tbody>
 		  	<% @images.each do |image| %>
 		  		<tr class="image-link" data-link="<% if !image.path.blank?%><%=image_path(image)%><% end %>">
-		  			<td><%= check_box_tag "image_ids[]", image.id %></td>
+		  			<td><%= check_box_tag "image_ids[]", image.id, false, class: 'image-check-box'%></td>
 		  			<td><%=image.id%></td>
 		  			<td><%=image.title%></td>
 		  			<td><%=image.created_at%></td>
@@ -55,33 +55,42 @@
 </div>
 
 <script>
-var SearchForm = Backbone.Model.extend({
-		data: {
-			'processing': 'Complete'
-		},
-    schema: {
-  		title:
-  			{ title: 'Image Title', 
-  				type: 'Text', 
-  				editorClass: 'form-control',
-  				editorAttrs: { name: 'q[title]' }
-  			},
-      processing:
-      	{ title: 'Upload Status', 
-      		type: 'Select', 
-      		options: ['Complete', 'Processing'], 
-      		editorClass: 'form-control',
-      		editorAttrs: { name: 'q[processing]'}
-  			}
-    },
-    submitButton: 'Submit'
-});
+	var SearchForm = Backbone.Model.extend({
+			data: {
+				'processing': 'Complete'
+			},
+	    schema: {
+	  		title:
+	  			{ title: 'Image Title', 
+	  				type: 'Text', 
+	  				editorClass: 'form-control',
+	  				editorAttrs: { name: 'q[title]' }
+	  			},
+	      processing:
+	      	{ title: 'Upload Status', 
+	      		type: 'Select', 
+	      		options: ['Complete', 'Processing'], 
+	      		editorClass: 'form-control',
+	      		editorAttrs: { name: 'q[processing]'}
+	  			}
+	    },
+	    submitButton: 'Submit'
+	});
 
-var searchform = new SearchForm();
+	var searchform = new SearchForm();
 
-var form = new Backbone.Form({
-    model: searchform
-}).render();
+	var form = new Backbone.Form({
+	    model: searchform
+	}).render();
 
-$('#searchFormCardContent').prepend(form.el);
+	$('#searchFormCardContent').prepend(form.el);
+	// Select all
+	$("#select_all").click( function() {
+		if($(this).is(':checked')){
+	    	$(".image-check-box").attr('checked', true);
+		}
+	   	else{
+	   		$(".image-check-box").attr('checked', false);
+	   	}
+	});
 </script>

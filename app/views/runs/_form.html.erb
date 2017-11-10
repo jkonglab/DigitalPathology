@@ -2,7 +2,7 @@
 	<%= f.hidden_field :image_id, :value=> @image.id %>
 	<div class="form-group">
 		<%= f.label :algorithm_id, "Select an algorithm to run" %>
-		<%= f.collection_select :algorithm_id, Algorithm.all, :id, :name, {include_blank: 'Please select'}, { class: 'form-control' } %>
+		<%= f.collection_select :algorithm_id, @algorithm, :id, :name, {include_blank: 'Please select'}, { class: 'form-control' } %>
 	</div>
 
 	<div id="annotation-select" class="form-group">

@@ -1,0 +1,68 @@
+<div class="container">
+	<br/><br/>
+	<h1>Analysis <%=@run.id%>: 3D Volume Generation</h1>
+	<h4>Slices from your 3D volume generation will appear below. <br/>Upon completion, you may review the slice stack to convert it to a 3D volume.</h4>
+
+	<div style="padding:10px">
+		<p>Progress:<br/><b><%=@images.length%>/40 (<%=100*@images.length.to_f/40%>%)</b></p>
+		<p>Image Title:<br/><b><%=@image.title%></b></p>
+		<p>Algorithm Ran:<br/><b><%=@algorithm.name%> (ID: <%=@algorithm.id%>)</b></p>
+		<% if @run.run_at %>
+			<p>Started:<br/><b><%=Time.at(@run.run_at).in_time_zone.to_formatted_s(:db) %></b></p>
+		<% end %>
+		<%if @run.complete %>
+			<p>Completed:<br/><b><%=@run.updated_at.in_time_zone.to_formatted_s(:db) %> (Took <%=distance_of_time_in_words(Time.at(@run.run_at), @run.updated_at)%>)</b></p>
+		<% end %>
+		<p>Algorithm Parameters:</p>
+		<ul>
+		<% i = 0 %>
+		<% @algorithm.parameters.sort_by { |k| k["order"] }.each do |parameter|%> 
+	 		<li><%=parameter["title"]%> <b><%=@run.parameters[i]%></b></li>
+	 		<% i += 1 %>
+		<% end %>
+		</ul>
+	</div>
+
+	<div class="image-table">
+		<table class="table table-hover">
+		  <thead>
+		  	<tr>
+		  		<th><input type="checkbox" id="select_all"/></th>
+			  	<th>ID</th>
+			  	<th>Image Name</th>
+			  	<th>Generated At</th>
+			  	<th>Status</th>
+			  	<th>Privacy</th>
+		  	</tr>
+		  </thead>
+		  <%= form_tag confirm_3d_images_path do %>
+		  	  <%= submit_tag "Convert to 3D Volume", :style=> 'float:right', :class=> 'btn btn-success btn-raised'%>
+
+			  <tbody>
+			  	<% @images.each do |image| %>
+			  		<tr class="image-link" data-link="<% if !image.path.blank?%><%=image_path(image)%><% end %>">
+			  			<td><%= check_box_tag "image_ids[]", image.id, false, class: 'image-check-box' %></td>
+			  			<td><%=image.id%></td>
+			  			<td><%=image.title%></td>
+			  			<td><%=image.created_at%></td>
+			  			<td><% if image.processing %>Processing<% elsif !image.path.blank?%>Available<%else%>Awaiting Processing<% end%></td>
+			  			<td><% if image.hidden? %>Private<%else%>Public<%end%></td>
+			  		</tr>
+			  	<% end %>
+			  </tbody>
+		  <% end %>
+		</table>
+	</div>
+</div>
+
+<script>
+    // Select all
+    $("#select_all").click( function() {
+    	if($(this).is(':checked')){
+        	$(".image-check-box").attr('checked', true);
+    	}
+       	else{
+       		$(".image-check-box").attr('checked', false);
+       	}
+    });
+</script>

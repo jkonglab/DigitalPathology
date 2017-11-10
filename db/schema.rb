@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171110015758) do
+ActiveRecord::Schema.define(version: 20171110081230) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -47,7 +47,7 @@ ActiveRecord::Schema.define(version: 20171110015758) do
   end
 
   create_table "images", force: :cascade do |t|
-    t.string   "title",            default: ""
+    t.string   "title",               default: ""
     t.string   "slug"
     t.string   "format"
     t.string   "path"
@@ -57,15 +57,16 @@ ActiveRecord::Schema.define(version: 20171110015758) do
     t.integer  "width"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "processing",       default: false
+    t.boolean  "processing",          default: false
     t.string   "upload_file_name"
     t.string   "file_name_prefix"
     t.integer  "user_id"
     t.json     "clinical_data"
-    t.integer  "image_type",       default: 1
+    t.integer  "image_type",          default: 1
     t.integer  "parent_id"
     t.integer  "slice_order"
-    t.integer  "visibility",       default: 0
+    t.integer  "visibility",          default: 0
+    t.integer  "generated_by_run_id"
   end
 
   add_index "images", ["user_id"], name: "index_images_on_user_id", using: :btree
@@ -94,6 +95,7 @@ ActiveRecord::Schema.define(version: 20171110015758) do
     t.integer  "run_at"
     t.integer  "total_tiles"
     t.integer  "tiles_processed", default: 0
+    t.integer  "lock_version",    default: 0, null: false
   end
 
   add_index "runs", ["user_id"], name: "index_runs_on_user_id", using: :btree
