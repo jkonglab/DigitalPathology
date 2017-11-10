@@ -3,7 +3,8 @@ class Algorithm < ActiveRecord::Base
 
 	PARAMETER_TYPE_LOOKUP={
 		"numeric" => 1,
-		"boolean" => 2
+		"boolean" => 2,
+		"string" => 3
 	}
 
 	LANGUAGE_LOOKUP={
@@ -17,6 +18,7 @@ class Algorithm < ActiveRecord::Base
 	}
 
 	OUTPUT_TYPE_LOOKUP={
+		"3d_volume" => 0,
 		"contour" => 1,
 		"scalar" => 2,
 		"points" => 3

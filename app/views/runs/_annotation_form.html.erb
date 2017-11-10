@@ -1,0 +1,3 @@
+<%= form_for(@run) do |f| %>
+	<%= f.collection_select :annotation_id, @image.annotations, :id, :label, {}, { class: 'form-control' } %>
+<% end %>

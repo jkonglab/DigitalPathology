@@ -22,10 +22,10 @@
 	  			<td class="hidden-sm-down"><%=run.id%></td>
 	  			<td class="image-name"><%=run.image.title%></td>
 	  			<td class="hidden-sm-up"><b><%=run.algorithm.name%></b> on <b><%=run.annotation.label%></b><br/><br/>
-	  			<small><%=Time.at(run.run_at).in_time_zone.to_formatted_s(:db)%></small></td>
+	  			<small><%=Time.at(run.run_at).in_time_zone.to_formatted_s(:db) if run.run_at %></small></td>
 	  			<td class="hidden-sm-down"><%=run.algorithm.name%></td>
 	  			<td class="hidden-sm-down"><%=run.annotation.label%></td>
-	  			<td class="hidden-sm-down"><%=Time.at(run.run_at).in_time_zone.to_formatted_s(:db)%></td>
+	  			<td class="hidden-sm-down"><%=Time.at(run.run_at).in_time_zone.to_formatted_s(:db) if run.run_at %></td>
 	  			<td><% if run.complete %>Complete<%elsif run.processing %>Processing (<%=run.tiles_processed%>/<%=run.total_tiles%>)<%else%>In Queue<% end%></td>
 	  		</tr>
 	  	<% end %>

@@ -1,23 +1,25 @@
 class AnalysisWorker
   include Sidekiq::Worker
 
-  def perform(run_id, tile_x, tile_y, tile_size)
+  def perform(run_id, tile_x, tile_y, tile_width, tile_height)
   	@run = Run.find(run_id)
   	@algorithm = @run.algorithm
     @image = @run.image
-    @tile_x = tile_x
-    @tile_y = tile_y
-    @tile_size = tile_size
+    @tile_x = tile_x.to_i
+    @tile_y = tile_y.to_i
+    @tile_width = tile_width.to_i
+    @tile_height = tile_height.to_i
 
     algorithm_language = Algorithm::LANGUAGE_LOOKUP_INVERSE[@algorithm.language]
   	algorithm_path = Rails.root.to_s + '/algorithms/'+algorithm_language
   	image_path = Rails.root.to_s + '/public/' + Rails.application.config.data_directory + '/' + @image.upload_file_name
     run_folder = Rails.root.to_s + '/algorithms/run_data/' + 'run_' + @run.id.to_s + '_' + @run.run_at.to_s
     output_file_name = '/output_' + tile_x.to_s + '_' + tile_y.to_s + '.json'
+    
+    parameters = convert_parameters_cell_array_string(@run.parameters)
 
     if @algorithm.language == Algorithm::LANGUAGE_LOOKUP["matlab"]
-      %x{cd #{algorithm_path};
-  		  matlab -nodisplay -r "main('#{image_path}','#{run_folder}',#{@run.parameters},'#{@algorithm.name}',#{tile_x},#{tile_y},#{tile_size}); exit;"
+      %x{cd #{algorithm_path}; matlab -nodisplay -r "main('#{image_path}','#{run_folder}',#{parameters},'#{@algorithm.name}',#{tile_x},#{tile_y},#{tile_width},#{tile_height}); exit;"
       }
     end
 
@@ -30,30 +32,61 @@ class AnalysisWorker
       end
     end
 
-    output_file = File.read(run_folder + output_file_name)
-    outputs = JSON.parse(output_file)
-    outputs.each do |output|
-      if @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["contour"]
-        svg_data = convert_to_svg_contour(output)
-      elsif @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["points"]
-        svg_data = convert_to_svg_points(output)
-      else
-        svg_data = ""
+    if @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"]
+      Dir.entries(run_folder + '/').each do |file_name|
+        if file_name.include?('.tif')
+          image_suffix =  file_name.split('.')[-1]
+          image_title = file_name.split('.' + image_suffix)[0]
+          new_image = Image.create!(
+            :title => "Run #{@run.id.to_s}: #{image_title}", 
+            :user_id=>@run.user_id, 
+            :image_type => Image::IMAGE_TYPE_TWOD)
+          new_file_name = "#{new_image.id}_#{file_name}"
+
+
+          new_image.update_attributes(
+            :upload_file_name => new_file_name
+          )
+          %x{cd #{run_folder};
+            mv #{file_name} #{new_file_name}
+          }
+
+          ConversionWorker.perform_async(new_image.id, run_folder)
+        end
       end
+    else
+      output_file = File.read(run_folder + output_file_name)
+      outputs = JSON.parse(output_file)
+      outputs.each do |output|
+        if @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["contour"]
+          svg_data = convert_to_svg_contour(output)
+        elsif @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["points"]
+          svg_data = convert_to_svg_points(output)
+        else
+          svg_data = ""
+        end
 
-      new_result = @run.results.new(:tile_x => tile_x,
-        :tile_y => tile_y,
-        :raw_data => output,
-        :svg_data => svg_data,
-        :run_at => @run.run_at)
+        new_result = @run.results.new(:tile_x => tile_x,
+          :tile_y => tile_y,
+          :raw_data => output,
+          :svg_data => svg_data,
+          :run_at => @run.run_at)
 
-      new_result.save
+        new_result.save
+      end
     end
 
     @run.reload.increment!(:tiles_processed)
-    if @run.reload.tiles_processed == @run.total_tiles
+    if @run.reload.tiles_processed >= @run.total_tiles
       @run.update_attributes!(:complete => true)
     end
+  end
+
+  def convert_parameters_cell_array_string(parameters)
+    converted_parameters = parameters.to_json.gsub('"', "'")
+    converted_parameters[0] = '{'
+    converted_parameters[-1] = '}'
+    return converted_parameters
   end
 
   def convert_to_svg_contour(contour)

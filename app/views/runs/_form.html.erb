@@ -2,28 +2,34 @@
 	<%= f.hidden_field :image_id, :value=> @image.id %>
 	<div class="form-group">
 		<%= f.label :algorithm_id, "Select an algorithm to run" %>
-		<%= f.collection_select :algorithm_id, Algorithm.all, :id, :name, {}, { class: 'form-control' } %>
+		<%= f.collection_select :algorithm_id, Algorithm.all, :id, :name, {include_blank: 'Please select'}, { class: 'form-control' } %>
 	</div>
 
-	<div class="form-group">
+	<div id="annotation-select" class="form-group">
 		<%= f.label :annotation_id, 'Select Annotation ROI' %>
-		<%= f.collection_select :annotation_id, @image.annotations, :id, :label, {}, { class: 'form-control' } %>
 	</div>
 	<br/><br/>
 	<h5>Algorithm Parameters</h5>
 	<hr/>
-	 <%= fields_for :parameters, @run.parameters do |parameter_fields| %>
-	 	<% Algorithm.find(1).parameters.each do |parameter|%> <!-- TODO INTEGRATE ANOTHER ALGORITHM -->
-	 		<div class="form-group">
-	 			<%= parameter_fields.label parameter["key"].to_sym, parameter["title"] %>
-	 			<% if parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["numeric"] %>
-					<%= parameter_fields.number_field parameter["key"].to_sym, { value: parameter["default_value"], 
-						class: 'form-control', :required => parameter["required"]} %>
-				<% elsif parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["boolean"] %>
-					<%= parameter_fields.check_box parameter["key"].to_sym %>
-				<% end %>
-			</div>
-		<% end %>
-  	<% end %>
+	
+	<div id="algorithm-parameters-form">
+	</div>
   	<%= f.submit "Start Analysis", {class: "float-right btn-raised btn-success"} %>
 <%end %>
+
+<script>
+	$('#run_algorithm_id').change(function(){
+		$.get( '<%=parameter_form_algorithms_path%>', {
+			  	'image_id': <%= @image.id %>,
+			  	'algorithm_id': $(this).val()
+		}).done(function(partial){
+			$('#algorithm-parameters-form').html(partial);
+		});
+
+		$.get( '<%=annotation_form_runs_path%>', {
+				'image_id': <%= @image.id %>
+		}).done(function(partial){
+			$('#annotation-select').html(partial);
+		})
+	});
+</script>

@@ -1,4 +1,4 @@
-function output = high_low_level_registration_method5(inputdir, outputdir, x_point, y_point, width, height)
+function output = high_low_registration_main_function(outputdir, inputdir, x_point, y_point, width, height)
 
 %Inputs:
 %inputdir: (string) Path to the folder where the input .ndpis are kept
@@ -51,14 +51,17 @@ type = 2;
 [colNUM, rowNUM] = openSlide_c([svsdir inputNDPIs{refIdx}], highResLevel, type);
 
 %coordinate system of level 0 svs image, staring at (x=col=0, y=row=0)
-x = 28000; width =  4*1024;  % (x,y) use level 0 coodinate system; 
-y = 34000; height = 4*1024; % (width, height) use coordinate system associated with highResLevel
+% (x,y) use level 0 coodinate system; 
+% (width, height) use coordinate system associated with highResLevel
+x = x_point;  
+y = y_point;
 
 %generate reference image
 type = 1;
 reference = openSlide_c([svsdir inputNDPIs{refIdx}], int64(x), int64(y), int64(width), int64(height), highResLevel, type);
-imshow(reference,[]);
-imwrite(reference, sprintf('%sreg_slide_%02d.jpg',outputdir, refIdx), 'Mode', 'lossy', 'Quality', 25);
+%imshow(reference,[]);
+%imwrite(reference, sprintf('%sreg_slide_%02d.jpg',outputdir, refIdx), 'Mode', 'lossy', 'Quality', 25);
+imwrite(reference, sprintf('%sreg_slide_%02d.tif',outputdir, refIdx));
 
 x_highResLevel = round(x/(2^highResLevel));
 y_highResLevel = round(y/(2^highResLevel));
@@ -142,7 +145,7 @@ for i = (refIdx-1):-1:1
     b = manual_registeredIm(:,:,3); b(~outbound_TF) = interp_b;
     manual_registeredIm = cat(3, r,g,b);
     
-    imshow(manual_registeredIm,[]);
+    %imshow(manual_registeredIm,[]);
     imwrite(manual_registeredIm, sprintf('%sreg_slide_%02d.tif',outputdir, i));
     %imwrite(manual_registeredIm, sprintf('%sreg_slide_%02d.jpg',outputdir, i),  'Mode', 'lossy', 'Quality', 25);
     
@@ -213,7 +216,7 @@ for i = (refIdx+1):1:nIms
     b = manual_registeredIm(:,:,3); b(~outbound_TF) = interp_b;
     manual_registeredIm = cat(3, r,g,b);
     
-    imshow(manual_registeredIm,[]);
+    %imshow(manual_registeredIm,[]);
     imwrite(manual_registeredIm, sprintf('%sreg_slide_%02d.tif',outputdir, i));
     %imwrite(manual_registeredIm, sprintf('%sreg_slide_%02d.jpg',outputdir, i),  'Mode', 'lossy', 'Quality', 25);
     

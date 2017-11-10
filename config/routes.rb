@@ -20,7 +20,16 @@ Rails.application.routes.draw do
     end
   end
   resources :annotations
-  resources :runs
+  resources :runs do
+    collection do
+      get 'annotation_form' => 'runs#annotation_form'
+    end
+  end
+  resources :algorithms do
+    collection do
+      get 'parameter_form' => 'algorithms#parameter_form'
+    end
+  end
   get '/about' => 'pages#about'
 
   require 'sidekiq/web'

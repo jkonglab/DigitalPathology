@@ -137,7 +137,11 @@ class ImagesController < ApplicationController
     image_unique_id = Image.last ? Image.last.id + 1 : 2
 
     new_file_name = image_title + '-' + image_unique_id.to_s + '.' + image_suffix
-    return Image.create(:title => image_title, :upload_file_name => new_file_name, :user_id=>user_id, :image_type => Image::IMAGE_TYPE_TWOD)
+    return Image.create(
+      :title => image_title, 
+      :upload_file_name => new_file_name, 
+      :user_id=>user_id, 
+      :image_type => Image::IMAGE_TYPE_TWOD)
   end
   
 

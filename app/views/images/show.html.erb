@@ -81,9 +81,7 @@
 		$('.'+clicked_tab).css('opacity',0).addClass('active').animate({opacity: 1}, 50);
 
 		if(clicked_tab == 'drawer-annotations'){
-			$( ".openseadragon-canvas svg" ).mouseup(function() {
-				promptAndSaveAnnotation();
-			});
+			bindAnnotationPrompt();
 		}else{
 			viewer.stopDrawing();
 		}
@@ -101,6 +99,12 @@
 		$('.stop-draw').hide();
 	});
 
+	function bindAnnotationPrompt(){
+		$( ".openseadragon-canvas svg" ).mouseup(function() {
+				promptAndSaveAnnotation();
+		});
+	}
+
 	function bindAnnotationRows(){
 		$('.annotation-row').unbind().click(function(){
 			var annotation_data = JSON.parse($(this).attr('annotation-data'))[0];
@@ -113,13 +117,21 @@
 	function promptAndSaveAnnotation(){
 		var annotation_label = prompt("Please label your annotation", "");
 	    if (annotation_label != null) {
-	    	all_annotations = viewer.annotations.get();
+	    	var all_annotations = viewer.annotations.get();
+	   		var new_annotation = all_annotations.slice(-1)[0];
+	   		var bbox = $('.openseadragon-canvas svg path').slice(-1)[0].getBBox();
+
+	    	// Must act on the original array in order to change the existing annotation display
 	    	all_annotations[all_annotations.length-1][1]["d"] = all_annotations[all_annotations.length-1][1]["d"] + 'Z';
 	    	viewer.annotations.set(all_annotations);
 	        $.post( '<%= annotations_path %>.json', {
 			  	'image_id': <%= @image.id %>,
 			  	'label': annotation_label,
-			  	'data': JSON.stringify([all_annotations[all_annotations.length-1]])
+			  	'data': JSON.stringify([new_annotation]),
+			  	'x': bbox.x,
+			  	'y': bbox.y,
+			  	'width':bbox.width,
+			  	'height':bbox.height
 			})
 	        .done(function(data){
 	        	$( ".annotations-table" ).prepend("<tr class='annotation-row' annotation-data='" + JSON.stringify(data.data) + "'><td>" + data.label + "</td><td>" + data.created_at + "</td></tr>" );
@@ -134,10 +146,22 @@
 		var changeSlide = function() {
 			var slice_num = slice_slider.bootstrapSlider('getValue');
 			var current_bounds = viewer.viewport.getBounds();
+			var saved_annotations = viewer.annotations.get();
 			$.get( "<%=@image.id%>/get_slice?slice="+slice_num.toString(), function( data ) {
 				viewer.open("/<%=Rails.application.config.data_directory%>/" + data.file_name_prefix + "/" + data.file_name_prefix + ".dzi");
 				viewer.viewport.fitBounds(current_bounds);
-				viewer.annotations.clean()
+				viewer.stopDrawing(); 
+				$('.start-draw').show(); 
+				$('.stop-draw').hide();
+				viewer.shutdownAnnotations();
+				viewer.initializeAnnotations();
+				var checkAnnotationsActive = setInterval(function(){
+					if(viewer.areAnnotationsActive()){
+						viewer.annotations.set(saved_annotations);
+						bindAnnotationPrompt();
+						clearInterval(checkAnnotationsActive);
+					}
+				}, 100)
 				bindAnnotationRows();
 			});
 		};

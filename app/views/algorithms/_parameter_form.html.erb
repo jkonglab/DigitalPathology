@@ -1,0 +1,15 @@
+<%= fields_for :parameters, @run.parameters do |parameter_fields| %>
+ 	<% @algorithm.parameters.each do |parameter|%> <!-- TODO INTEGRATE ANOTHER ALGORITHM -->
+ 		<% if !parameter["hard_coded"] && !parameter["annotation_derived"] %>
+ 		<div class="form-group">
+ 			<%= parameter_fields.label parameter["key"].to_sym, parameter["title"] %>
+ 			<% if parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["numeric"] %>
+				<%= parameter_fields.number_field parameter["key"].to_sym, { value: parameter["default_value"], 
+					class: 'form-control', :required => parameter["required"]} %>
+			<% elsif parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["boolean"] %>
+				<%= parameter_fields.check_box parameter["key"].to_sym %>
+			<% end %>
+		</div>
+		<% end %>
+	<% end %>
+<% end %>

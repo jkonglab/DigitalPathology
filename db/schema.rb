@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171019190501) do
+ActiveRecord::Schema.define(version: 20171110015758) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -30,6 +30,10 @@ ActiveRecord::Schema.define(version: 20171019190501) do
     t.datetime "updated_at"
     t.string   "label"
     t.integer  "user_id"
+    t.integer  "width"
+    t.integer  "height"
+    t.integer  "x_point"
+    t.integer  "y_point"
   end
 
   add_index "annotations", ["user_id"], name: "index_annotations_on_user_id", using: :btree
