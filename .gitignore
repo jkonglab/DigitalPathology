@@ -16,10 +16,8 @@
 /log/*
 !/log/.keep
 /tmp
-/node_modules
 /python/env
 npm-debug.log
-/node_modules
 /algorithms/run_data/*
 /public/data/*
 /public/assets/*
