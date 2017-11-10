@@ -40,7 +40,7 @@ class AnalysisWorker
           new_image = Image.create!(
             :title => "Run #{@run.id.to_s}: #{image_title}", 
             :user_id=>@run.user_id, 
-            :image_type => Image::IMAGE_TYPE_TWODad,
+            :image_type => Image::IMAGE_TYPE_TWOD,
             :generated_by_run_id => run_id)
 
           new_file_name = "#{new_image.id}_#{file_name}"
