@@ -72,7 +72,7 @@ class ImagesController < ApplicationController
 
   def confirm_convert_3d
     image_ids = params['image_ids']
-    @images = current_user.images.where('image_type != ? AND id IN (?)', Image::IMAGE_TYPE_THREED, image_ids).sort_by{|image| image.id}
+    @images = current_user.images.where('image_type != ? AND id IN (?)', Image::IMAGE_TYPE_THREED, image_ids).sort_by{|image| image.title}
     if @images.length < 1
       return redirect_to my_images_images_path, alert: 'Volume could not be created because all selected images already are/attached to a 3D volume!'
     end
