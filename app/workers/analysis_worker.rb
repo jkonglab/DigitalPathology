@@ -41,16 +41,12 @@ class AnalysisWorker
             :title => "Run #{@run.id.to_s}: #{image_title}", 
             :user_id=>@run.user_id, 
             :image_type => Image::IMAGE_TYPE_TWOD)
+
           new_file_name = "#{new_image.id}_#{file_name}"
-
-
-          new_image.update_attributes(
-            :upload_file_name => new_file_name
-          )
+          new_image.update_attributes(:upload_file_name => new_file_name)
           %x{cd #{run_folder};
             mv #{file_name} #{new_file_name}
           }
-
           ConversionWorker.perform_async(new_image.id, run_folder)
         end
       end
