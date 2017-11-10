@@ -1,0 +1,51 @@
+<div style='text-align:center'>
+	 <button class="btn btn-primary btn-raised" type="button" data-toggle="collapse" data-target="#searchForm" aria-expanded="false" aria-controls="searchForm">
+	    Search & Filter
+	 </button>
+	 </div>
+<div class="collapse" id="searchForm">
+  <div id="searchFormCard" class="card card-body">
+		<div id="searchFormCardContent">
+		</div>
+	</div>
+</div>
+
+<script>
+	var SearchForm = Backbone.Model.extend({
+		data: {
+			'processing': 'Complete'
+		},
+	    schema: {
+	  		title:
+	  			{ title: 'Image Title', 
+	  				type: 'Text', 
+	  				editorClass: 'form-control',
+	  				editorAttrs: { name: 'q[title]' }
+	  			},
+	      processing:
+	      	{ title: 'Upload Status', 
+	      		type: 'Select', 
+	      		options: ['Complete', 'Processing'], 
+	      		editorClass: 'form-control',
+	      		editorAttrs: { name: 'q[processing]'}
+	  			},
+	  	   image_type:
+	  	   	{
+	  	   		title: 'Image Type',
+	  	   		type: 'Select',
+	  	   		options: ['2D', '3D'],
+	  	   		editorClass: 'form-control',
+	  	   		editorAttrs: { name: 'q[image_type'}
+	  	   	}
+	    }
+	});
+
+	var searchform = new SearchForm();
+
+	var form = new Backbone.Form({
+	    model: searchform
+	}).render();
+
+	$('#searchFormCardContent').html(form.el);
+	$('#searchFormCardContent form').append('<button class="btn btn-raised btn-success" type="buttoon">Search</button>');
+</script>

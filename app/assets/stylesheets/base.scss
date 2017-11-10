@@ -1,18 +1,33 @@
-/*
- * This is a manifest file that'll be compiled into application.css, which will include all the files
- * listed below.
- *
- * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
- * or any plugin's vendor/assets/stylesheets directory can be referenced here using a relative path.
- *
- * You're free to add application-wide styles to this file and they'll appear at the bottom of the
- * compiled file so the styles you add here take precedence over styles defined in any styles
- * defined in the other CSS/SCSS files in this directory. It is generally better to create a new
- * file per style scope.
- *
- */
 
-@import "bootstrap";
+.btn-primary{
+  background-color: #0D2776 !important;
+}
+
+.full-width-container{
+  height:100%; 
+  width:100%; 
+  position:relative;
+}
+
+#searchFormCardContent .form-control{
+  margin-bottom:15px;
+}
+
+#searchFormCard{
+  margin-top:10px;
+  padding:20px 0px;
+
+  #searchFormCardContent{
+    width:50%;
+    margin-top:10px 0px 10px 0px;
+    margin:0px auto; 
+    max-width:500px
+  }
+}
+
+#application-alert{
+  padding-top:70px;
+}
 
 .openseadragon{
     background:#eee;
@@ -33,6 +48,7 @@
 #top-nav{
     z-index:6;
     width:100%;
+    background-color: #0D2776 !important;
 }
 
 .bmd-layout-drawer .list-group {
@@ -103,7 +119,7 @@
   margin: 0px auto;
 }
 
-.pull-xs-right{
+#top-nav .navbar-right{
 	.material-icons{
 		color:white;
 	}
@@ -127,21 +143,24 @@
  
 }
 
-.full-width-container{
-    padding:50px;
+.modal-header{
+  flex-direction:column;
 }
 
-.navbar-toggler{
-    display:none;
+.full-width-container{
+    padding-top:60px;
+}
+
+.sidebar-toggler{
+  display:none;
 }
 
 .images_show, .runs_show{
-    .full-width-container{
-        padding:0px;
+    .sidebar-toggler{
+      display:block !important;
     }
-
-    .navbar-toggler{
-        display:block;
+    .full-width-container{
+      height:calc(100% - 60px);
     }
 }
 
@@ -195,12 +214,8 @@
 }
 
 @include media-breakpoint-down(sm) {
-    .full-width-container{
-        padding:0px;
-    }
-
   .images_show, .runs_show{
-    height:calc(100% - 50px);
+    height:calc(100% - 60px);
     
     #top-nav{
         position:fixed;

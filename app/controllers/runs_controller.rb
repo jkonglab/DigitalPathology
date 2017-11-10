@@ -9,7 +9,8 @@ class RunsController < ApplicationController
     @run = Run.find(params[:id])
     @algorithm = @run.algorithm
     @image = @run.image
-    @images = Image.where(:generated_by_run_id=>@run.id).order('id desc')
+    @slices = Image.where('generated_by_run_id IN (?) AND (image_type = ? OR parent_id IS NOT NULL)', @run.id, Image::IMAGE_TYPE_TWOD).order('id desc')
+    @threed_volume = Image.where('generated_by_run_id IN (?) AND image_type = ? AND parent_id IS NULL', @run.id, Image::IMAGE_TYPE_THREED).first
     @annotation = @run.annotation
     @results = @run.results
     @results_svg = @results.pluck(:svg_data)

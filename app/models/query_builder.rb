@@ -13,9 +13,12 @@ class QueryBuilder
     return @query if @query.present?
 
     @query = {
-      'processing_eq' => query_params['processing'].present? ? (query_params['processing'] == 'Complete' ? 0 : 1) : 0,
       'title_cont' => query_params['title']
     }
+
+    if query_params['processing'].present?
+      @query['processing_eq'] = query_params['processing'] == 'Complete' ? 0 : 1
+    end
 
     reserved_params = [*Image.column_names, *query.keys, *RESERVED_PARAMS]
     meta_searchers = query_params.except(*reserved_params)

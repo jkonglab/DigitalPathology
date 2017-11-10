@@ -1,45 +1,48 @@
-
 <head>
-  <title>Imageviewer</title>
-  <!-- Material Design fonts -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" crossorigin="anonymous"></script>
-  <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => false %>
+  <title>Digital Pathology: Emory University Biomedical Informatics</title>
+  <script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js" integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U" crossorigin="anonymous"></script>
   <%= javascript_include_tag 'application', 'data-turbolinks-track' => false %>
-  <%= csrf_meta_tags %>
+  <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => false %>
+
   <!-- Bootstrap Material Design -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/4.0.2/bootstrap-material-design.min.css">
+  <link rel="stylesheet" href="https://fezvrasta.github.io/bootstrap-material-design/dist/css/bootstrap-material-design.min.css">
+  <script src="https://fezvrasta.github.io/bootstrap-material-design/dist/js/bootstrap-material-design.min.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/js/ie10-viewport-bug-workaround.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+  <%= csrf_meta_tags %>
 </head>
 
-
 <body>
-  <div class="<%=params[:controller]%>_<%=params[:action]%>">
-  <div id="top-nav" class="navbar navbar-inverse bg-inverse">
-    <button class="navbar-toggler" type="button" data-toggle="drawer" data-target="#dw-1" aria-expanded="false">
-      <span class="sr-only">Toggle drawer</span>
+<div class="<%=params[:controller]%>_<%=params[:action]%>">
+  <nav id="top-nav"  class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+    <button style="margin-right:10px;" class="sidebar-toggler navbar-toggler" type="button" data-toggle="drawer" data-target="#viewer-sidebar" aria-expanded="false">
       <i class="material-icons">menu</i>
     </button>
-    <ul class="nav navbar-nav">
-      <li class="nav-item">
-        <a class="hidden-sm-down nav-link active" href="/">Home</a>
-        <a style="margin-left:0px;" class="hidden-sm-up nav-link active" href="/">DP Home</a>
-      </li>
-      <li class="nav-item hidden-sm-down">
-        <a class="nav-link" href="#">About<a>
-      </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Images</a>
-        <div class="dropdown-menu" aria-labelledby="dropdown01">
-          <a class="dropdown-item" href="/images">All Images</a>
-          <a class="dropdown-item" href="/images/new">Upload</a>
-        </div>
-      </li>
-    </ul>
-    <ul class="nav navbar-nav pull-xs-right">
+    <a class="navbar-brand" href="/">
+      <img style="width:100px; margin-right:10px;" src="<%=asset_path("public/emory.png")%>"/>
+      Digital Pathology
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#left-navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="left-navbar">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/about">About<a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" id="images-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Images</a>
+          <div class="dropdown-menu" aria-labelledby="images-dropdown">
+            <a class="dropdown-item" href="/images">All Images</a>
+            <a class="dropdown-item" href="/images/new">Upload</a>
+          </div>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
         <% if !current_user %>
           <li class="nav-item">
             <%=link_to new_user_session_path, :style=>'line-height:15px;', :class=> 'nav-link' do %>
@@ -48,47 +51,40 @@
           </li>
         <% else %>
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle"  style="line-height:15px;" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Account</a>
-            <div class="dropdown-menu" aria-labelledby="dropdown01">
+            <a class="nav-link dropdown-toggle"  style="line-height:15px;" id="account-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Account</a>
+            <div class="dropdown-menu" aria-labelledby="account-dropdown">
               <a class="dropdown-item" href="<%=runs_path%>">My Analyses</a>
               <a class="dropdown-item" href="<%=my_images_images_path%>">My Images</a>
             </div>
           </li>
         <% end %>
-      <li class="nav-item">
-        <div class="bmd-form-group bmd-collapse-inline pull-xs-right">
-          <button class="btn bmd-btn-icon collapsed" for="search" data-toggle="collapse" data-target="#collapse-search-1" aria-controls="collapse-search-1" aria-expanded="false">
-            <i class="material-icons">search</i>
-          <div class="ripple-container"></div></button>
-          <span id="collapse-search-1" class="width collapse" aria-expanded="false" style="width: 0px;">
-            <input class="form-control" type="text" id="search" placeholder="Enter your query...">
-          </span>
-        </div>
-      </li>
-      <li class="nav-item">
-        <div class="dropdown">
-          <button class="btn bmd-btn-icon btn-secondary dropdown-toggle" type="button" id="more-menu-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <i class="material-icons" >more_vert</i>
-          <div class="ripple-container"></div></button>
-          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="more-menu-1">
-            <% if !current_user %>
-              <%=link_to new_user_session_path do %>
-                <button class="dropdown-item" type="button">Sign In</button>
+        <li class="nav-item">
+          <div class="dropdown">
+            <button class=" d-none d-md-block btn bmd-btn-icon btn-secondary dropdown-toggle" type="button" id="more-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="material-icons" >more_vert</i>
+              <div class="ripple-container"></div>
+            </button>
+            <a class="nav-link d-md-none dropdown-toggle"  style="line-height:15px;" id="more-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">More</a>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="more-menu">
+              <% if !current_user %>
+                <%=link_to new_user_session_path do %>
+                  <button class="dropdown-item" type="button">Sign In</button>
+                <% end %>
               <% end %>
-            <% end %>
-            <a href="/about"><button class="dropdown-item" type="button">About</button></a>
-            <button class="dropdown-item" type="button">Contact</button>
-            <button class="dropdown-item" type="button">Legal information</button>
-            <% if current_user %>
-              <%= link_to destroy_user_session_path, :method=>'delete' do %>
-                <button class="dropdown-item" type="button">Logout</button>
+              <a href="/about"><button class="dropdown-item" type="button">About</button></a>
+              <button class="dropdown-item" type="button">Contact</button>
+              <button class="dropdown-item" type="button">Legal information</button>
+              <% if current_user %>
+                <%= link_to destroy_user_session_path, :method=>'delete' do %>
+                  <button class="dropdown-item" type="button">Logout</button>
+                <% end %>
               <% end %>
-            <% end %>
+            </div>
           </div>
-        </div>
-      </li>
-    </ul>
-  </div>
+        </li>
+      </ul>
+    </div>
+  </nav>
 
   <% if notice.present? %>
     <div class="alert alert-info" id="application-alert">
@@ -108,7 +104,7 @@
     </div>
   <% end %>
 
-  <div class="full-width-container" style="height:100%; width:100%; position:relative;">
+  <div class="full-width-container">
     <%= yield %>
   </div>
 </div>

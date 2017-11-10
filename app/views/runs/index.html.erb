@@ -7,25 +7,25 @@
 	<table class="table table-hover">
 	  <thead>
 	  	<tr>
-		  	<th class="hidden-sm-down">ID</th>
+		  	<th class="d-none d-md-table-cell">ID</th>
 		  	<th>Image</th>
-		  	<th class="hidden-sm-up">Run</th>
-		  	<th class="hidden-sm-down">Algorithm</th>
-		  	<th class="hidden-sm-down">ROI</th>
-		  	<th class="hidden-sm-down">Date Run</th>
+		  	<th class="d-md-none">Run</th>
+		  	<th class="d-none d-md-table-cell">Algorithm</th>
+		  	<th class="d-none d-md-table-cell">ROI</th>
+		  	<th class="d-none d-md-table-cell">Date Run</th>
 		  	<th>Status</th>
 	  	</tr>
 	  </thead>
 	  <tbody>
 	  	<% @runs.each do |run| %>
 	  		<tr class="image-link <% if run.complete %>table-success<%elsif run.processing%>table-info<%else%>table-warning<%end%>" data-link="<%=run_path(run)%>">
-	  			<td class="hidden-sm-down"><%=run.id%></td>
+	  			<td class="d-none d-md-table-cell"><%=run.id%></td>
 	  			<td class="image-name"><%=run.image.title%></td>
-	  			<td class="hidden-sm-up"><b><%=run.algorithm.name%></b> on <b><%=run.annotation.label%></b><br/><br/>
+	  			<td class="d-md-none"><b><%=run.algorithm.name%></b> on <b><%=run.annotation.label%></b><br/><br/>
 	  			<small><%=Time.at(run.run_at).in_time_zone.to_formatted_s(:db) if run.run_at %></small></td>
-	  			<td class="hidden-sm-down"><%=run.algorithm.name%></td>
-	  			<td class="hidden-sm-down"><%=run.annotation.label%></td>
-	  			<td class="hidden-sm-down"><%=Time.at(run.run_at).in_time_zone.to_formatted_s(:db) if run.run_at %></td>
+	  			<td class="d-none d-md-table-cell"><%=run.algorithm.name%></td>
+	  			<td class="d-none d-md-table-cell"><%=run.annotation.label%></td>
+	  			<td class="d-none d-md-table-cell"><%=Time.at(run.run_at).in_time_zone.to_formatted_s(:db) if run.run_at %></td>
 	  			<td><% if run.complete %>Complete<%elsif run.processing %>Processing (<%=run.tiles_processed%>/<%=run.total_tiles%>)<%else%>In Queue<% end%></td>
 	  		</tr>
 	  	<% end %>

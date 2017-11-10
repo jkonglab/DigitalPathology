@@ -1,5 +1,5 @@
 <div class="bmd-layout-container bmd-drawer-f-l bmd-drawer-in">
-	<div id="dw-1" class="bmd-layout-drawer bg-faded" aria-expanded="false" aria-hidden="false">
+	<div id="viewer-sidebar" class="bmd-layout-drawer bg-faded" aria-expanded="false" aria-hidden="false">
 		<div class="drawer-tab active drawer-home">
 			<%= render partial: "drawer_home", locals: { image: @image } %>
 		</div>
@@ -32,8 +32,8 @@
 	<div class="modal-dialog" style="margin-top:100px;">
    		<div class="modal-content">
      		<div class="modal-header">
-       			<button type="button" class="close" data-dismiss="modal">&times;</button>
       			<h4 id="general-modal-title" class="modal-title"></h4>
+      			<button type="button" class="close" data-dismiss="modal">&times;</button>
      		</div>
     		<div class="modal-body">
 				<div class="md-form" style="margin-right: 0">
@@ -81,23 +81,27 @@
 		$('.'+clicked_tab).css('opacity',0).addClass('active').animate({opacity: 1}, 50);
 
 		if(clicked_tab == 'drawer-annotations'){
-			bindAnnotationPrompt();
+			startDrawing();
 		}else{
-			viewer.stopDrawing();
+			stopDrawing();
 		}
 	});
 
-	$('.start-draw').click(function(){
-		viewer.startDrawing(); 
-		$('.start-draw').hide(); 
-		$('.stop-draw').show();
-	});
+	$('.start-draw').click(startDrawing);
+	$('.stop-draw').click(stopDrawing);
 
-	$('.stop-draw').click(function(){
+	function stopDrawing(){
 		viewer.stopDrawing(); 
 		$('.start-draw').show(); 
 		$('.stop-draw').hide();
-	});
+	}
+
+	function startDrawing(){
+		viewer.startDrawing(); 
+		bindAnnotationPrompt();
+		$('.start-draw').hide(); 
+		$('.stop-draw').show();
+	}
 
 	function bindAnnotationPrompt(){
 		$( ".openseadragon-canvas svg" ).mouseup(function() {
@@ -147,21 +151,19 @@
 			var slice_num = slice_slider.bootstrapSlider('getValue');
 			var current_bounds = viewer.viewport.getBounds();
 			var saved_annotations = viewer.annotations.get();
+
 			$.get( "<%=@image.id%>/get_slice?slice="+slice_num.toString(), function( data ) {
 				viewer.open("/<%=Rails.application.config.data_directory%>/" + data.file_name_prefix + "/" + data.file_name_prefix + ".dzi");
 				viewer.viewport.fitBounds(current_bounds);
-				viewer.stopDrawing(); 
-				$('.start-draw').show(); 
-				$('.stop-draw').hide();
+				stopDrawing();
 				viewer.shutdownAnnotations();
 				viewer.initializeAnnotations();
 				var checkAnnotationsActive = setInterval(function(){
 					if(viewer.areAnnotationsActive()){
 						viewer.annotations.set(saved_annotations);
-						bindAnnotationPrompt();
 						clearInterval(checkAnnotationsActive);
 					}
-				}, 100)
+				}, 1)
 				bindAnnotationRows();
 			});
 		};

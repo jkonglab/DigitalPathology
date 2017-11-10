@@ -31,11 +31,11 @@ class ImagesController < ApplicationController
 
   def show
     @run = @image.runs.new
-    @algorithm = @image.threed? ? Algorithm.all : Algorithm.where('output_type NOT IN (?)', Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"])
+    @algorithm = @image.threed? && @image.parent_id.blank? ? Algorithm.all : Algorithm.where('output_type NOT IN (?)', Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"])
     @annotation = Annotation.new
     @clinical_data = @image.clinical_data || {}
     @slices = Image.where(:parent_id => @image.id).order('slice_order asc')
-    @slice = @image.threed? ? @slices.first : @image
+    @slice = @image.threed? && @image.parent_id.blank? ? @slices.first : @image
   end
 
   def get_slice
@@ -74,7 +74,7 @@ class ImagesController < ApplicationController
     image_ids = params['image_ids']
     @images = current_user.images.where('image_type != ? AND id IN (?)', Image::IMAGE_TYPE_THREED, image_ids).sort_by{|image| image.title}
     if @images.length < 1
-      return redirect_to my_images_images_path, alert: 'Volume could not be created because all selected images already are/attached to a 3D volume!'
+      return redirect_to my_images_images_path, alert: 'Volume could not be created because all selected images are already attached to a 3D volume.'
     end
   end
 
@@ -97,7 +97,8 @@ class ImagesController < ApplicationController
       :visibility => first_image.visibility,
       :processing => 0,
       :path => first_image.path,
-      :clinical_data => first_image.clinical_data
+      :clinical_data => first_image.clinical_data,
+      :generated_by_run_id => first_image.generated_by_run_id
     )
 
     images = Image.where('id in (?)', image_ids)

@@ -16,12 +16,9 @@
 //= require jquery-ui
 //= require bootstrap-slider
 //= require underscore/underscore
-//= require bootstrap
 //= require backbone/backbone
 //= require backbone-forms
 //= require backbone-forms/distribution/editors/list
-//= require bootstrap-material-design/dist/js/material
-//= require bootstrap-material-design/dist/js/ripples
 //= require formstone/dist/js/core
 //= require formstone/dist/js/upload
 //= require_tree ../../../node_modules/openseadragon/build
@@ -35,4 +32,5 @@ $(function(){
 			window.location = $(this).attr('data-link');
 		}
 	});
+	$(document).ready(function() { $('body').bootstrapMaterialDesign(); });
 });

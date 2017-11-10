@@ -2,21 +2,9 @@
 <br/><br/>
 <h1>Digital Pathology Image Archive</h1>
 <h4>The list below is a repository of all the images that are available for public access</h4>
-<br/><br/>
+<br/>
 
- <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#searchForm" aria-expanded="false" aria-controls="searchForm">
-    Search & Filter
- </button>
-
-<div class="collapse" id="searchForm">
-  <div id="searchFormCard" class="card card-body" style="padding:20px 0px;">
-		<div id="searchFormCardContent" style="margin:0px auto; max-width:500px">
-		<button class="btn btn-raised btn-success" type="buttoon">Search</button>
-		</div>
-	</div>
-</div>
-
-<br/><br/>
+<%= render partial: "search_form" %>
 
 <%= link_to new_image_path do %>
 	<button style="float:right" class="btn btn-success">+ Upload New Image</button>
@@ -28,7 +16,7 @@
 	  	<tr>
 		  	<th><%= sort_link @q, :id, "ID"%></th>
 		  	<th><%= sort_link @q, :title, "Image Name"%></th>
-		  	<th><%= sort_link @q, :uploaded_at, "Date Uploaded"%></th>
+		  	<th><%= sort_link @q, :uploaded_at, "Uploaded"%></th>
 		  	<th>Status</th>
 	  	</tr>
 	  </thead>
@@ -45,35 +33,3 @@
 	</table>
 </div>
 </div>
-
-<script>
-var SearchForm = Backbone.Model.extend({
-		data: {
-			'processing': 'Complete'
-		},
-    schema: {
-  		title:
-  			{ title: 'Image Title', 
-  				type: 'Text', 
-  				editorClass: 'form-control',
-  				editorAttrs: { name: 'q[title]' }
-  			},
-      processing:
-      	{ title: 'Upload Status', 
-      		type: 'Select', 
-      		options: ['Complete', 'Processing'], 
-      		editorClass: 'form-control',
-      		editorAttrs: { name: 'q[processing]'}
-  			}
-    },
-    submitButton: 'Submit'
-});
-
-var searchform = new SearchForm();
-
-var form = new Backbone.Form({
-    model: searchform
-}).render();
-
-$('#searchFormCardContent').prepend(form.el);
-</script>
