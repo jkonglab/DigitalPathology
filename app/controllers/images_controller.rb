@@ -66,8 +66,9 @@ class ImagesController < ApplicationController
   def delete
     image_ids = params['image_ids']
     @images = current_user.images.where('id IN (?)', image_ids)
+    length = @images.length
     @images.delete_all
-    return redirect_to my_images_images_path, notice: "#{@images.length} images deleted"
+    return redirect_to my_images_images_path, notice: "#{length} images deleted"
   end
 
   def confirm_convert_3d
