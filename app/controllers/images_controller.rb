@@ -56,8 +56,8 @@ class ImagesController < ApplicationController
     
     if @images.length == 1
       image = @images[0]
-      images = Image.where('id IN (?) or parent_id IN (?)', image.id, image.id)
-      images.destroy!
+      images = Image.where('(id IN (?) or parent_id IN (?))', image.id, image.id)
+      images.delete_all
       return redirect_to my_images_image_path, notice: "Image #{image.title} deleted"
     elsif @images.length == 0
       return redirect_to my_images_image_path, notice: 'No valid images selected for deletion'
