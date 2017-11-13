@@ -151,6 +151,7 @@
 			var slice_num = slice_slider.bootstrapSlider('getValue');
 			var current_bounds = viewer.viewport.getBounds();
 			var saved_annotations = viewer.annotations.get();
+			var is_drawing_mode = $('.drawer-annotations').hasClass('active');
 
 			$.get( "<%=@image.id%>/get_slice?slice="+slice_num.toString(), function( data ) {
 				viewer.open("/<%=Rails.application.config.data_directory%>/" + data.file_name_prefix + "/" + data.file_name_prefix + ".dzi");
@@ -161,6 +162,11 @@
 				var checkAnnotationsActive = setInterval(function(){
 					if(viewer.areAnnotationsActive()){
 						viewer.annotations.set(saved_annotations);
+						if(is_drawing_mode){
+							startDrawing();
+						}else{
+							stopDrawing();
+						}
 						clearInterval(checkAnnotationsActive);
 					}
 				}, 1)
