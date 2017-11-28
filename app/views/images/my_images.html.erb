@@ -26,10 +26,10 @@
 		  	<%= submit_tag "Convert to 3D Volume", :style=> 'float:right', :class=> 'btn btn-success btn-raised'%>
 			  <tbody>
 			  	<% @images.each do |image| %>
-			  		<tr class="image-link" data-link="<% if !image.path.blank?%><%=image_path(image)%><% end %>">
+			  		<tr class="image-link">
 			  			<td><%= check_box_tag "image_ids[]", image.id, false, class: 'image-check-box'%></td>
 			  			<td class="d-none d-md-table-cell"><%=image.id%></td>
-			  			<td><%=image.title%></td>
+			  			<td><a href="<% if !image.path.blank?%><%=image_path(image)%><% end %>"><%=image.title%></a></td>
 			  			<td><%=image.created_at%></td>
 			  			<td class="d-none d-md-table-cell"><% if image.processing %>Processing<% elsif !image.path.blank?%>Available<%else%>Awaiting Processing<% end%></td>
 			  			<td><% if image.hidden? %>Private<%else%>Public<%end%></td>
