@@ -136,11 +136,12 @@ class ImagesController < ApplicationController
   private
 
   def generate_new_image(original_filename, user_id)
-    image_suffix =  original_filename.split('.')[-1]
+    original_filename = original_filename.gsub(' ', '_')
+    image_suffix = original_filename.split('.')[-1]
     image_title = original_filename.split('.'+image_suffix)[0]
     image_unique_id = Image.last ? Image.last.id + 1 : 2
-
-    new_file_name = image_title + '-' + image_unique_id.to_s + '.' + image_suffix
+    random_hash = ('a'..'z').to_a.shuffle[0,8].join
+    new_file_name = random_hash + '-' + image_title + '-' + image_unique_id.to_s + '.' + image_suffix
     return Image.create(
       :title => image_title, 
       :upload_file_name => new_file_name, 
