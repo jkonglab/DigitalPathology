@@ -28,7 +28,7 @@
 
 $(function(){
 	$("tr.image-link").click(function(e) {
-		if(e.target.type != 'checkbox'){
+		if(e.target.type != 'checkbox' && $(this).attr('data-link')){
 			window.location = $(this).attr('data-link');
 		}
 	});
