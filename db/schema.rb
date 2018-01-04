@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171113001800) do
+ActiveRecord::Schema.define(version: 20180104011326) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -97,6 +97,7 @@ ActiveRecord::Schema.define(version: 20171113001800) do
     t.integer  "total_tiles"
     t.integer  "tiles_processed", default: 0
     t.integer  "lock_version",    default: 0, null: false
+    t.integer  "tile_size"
   end
 
   add_index "runs", ["user_id"], name: "index_runs_on_user_id", using: :btree

@@ -89,6 +89,6 @@ class RunsController < ApplicationController
 
   private
     def run_params
-    	params.require(:run).permit(:image_id, :algorithm_id, :parameters, :annotation_id)
+    	params.require(:run).permit(:image_id, :algorithm_id, :parameters, :annotation_id, :tile_size)
   	end
 end
