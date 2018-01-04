@@ -11,7 +11,7 @@ class AnalysisWorker
     @tile_height = tile_height.to_i
 
     algorithm_language = Algorithm::LANGUAGE_LOOKUP_INVERSE[@algorithm.language]
-  	algorithm_path = Rails.root.to_s + '/algorithms/'+algorithm_language
+  	algorithm_path = Rails.root.to_s + "/algorithms/#{algorithm_language}"
   	image_path = Rails.root.to_s + '/public/' + Rails.application.config.data_directory + '/' + @image.upload_file_name
     run_folder = Rails.root.to_s + '/algorithms/run_data/' + 'run_' + @run.id.to_s + '_' + @run.run_at.to_s
     output_file_name = '/output_' + tile_x.to_s + '_' + tile_y.to_s + '.json'
@@ -19,8 +19,7 @@ class AnalysisWorker
     parameters = convert_parameters_cell_array_string(@run.parameters)
 
     if @algorithm.language == Algorithm::LANGUAGE_LOOKUP["matlab"]
-      %x{cd #{algorithm_path}; matlab -nodisplay -r "main('#{image_path}','#{run_folder}',#{parameters},'#{@algorithm.name}',#{tile_x},#{tile_y},#{tile_width},#{tile_height}); exit;"
-      }
+      %x{cd #{algorithm_path}; matlab -nodisplay -r "main('#{image_path}','#{run_folder}',#{parameters},'#{@algorithm.name}',#{tile_x},#{tile_y},#{tile_width},#{tile_height}); exit;"}
     end
 
     timer = 0
@@ -33,27 +32,9 @@ class AnalysisWorker
     end
 
     if @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"]
-      Dir.entries(run_folder + '/').each do |file_name|
-        if file_name.include?('.tif')
-          image_suffix =  file_name.split('.')[-1]
-          image_title = file_name.split('.' + image_suffix)[0]
-          new_image = Image.create!(
-            :title => "Run #{@run.id.to_s}: #{image_title}", 
-            :user_id=>@run.user_id, 
-            :image_type => Image::IMAGE_TYPE_TWOD,
-            :generated_by_run_id => run_id)
-
-          new_file_name = "#{new_image.id}_#{file_name}"
-          new_image.update_attributes(:upload_file_name => new_file_name)
-          %x{cd #{run_folder};
-            mv #{file_name} #{new_file_name}
-          }
-          ConversionWorker.perform_async(new_image.id, run_folder)
-        end
-      end
+      handle_3d_volume_output_generation(run_folder)
     else
-      output_file = File.read(run_folder + output_file_name)
-      outputs = JSON.parse(output_file)
+      outputs = JSON.parse(File.read(run_folder + output_file_name))
       outputs.each do |output|
         if @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["contour"]
           svg_data = convert_to_svg_contour(output)
@@ -82,6 +63,27 @@ class AnalysisWorker
 
     if @run.reload.tiles_processed >= @run.total_tiles
       @run.update_attributes!(:complete => true)
+    end
+  end
+
+  def handle_3d_volume_output_generation(run_folder)
+    Dir.entries(run_folder + '/').each do |file_name|
+      if file_name.include?('.tif')
+        image_suffix =  file_name.split('.')[-1]
+        image_title = file_name.split('.' + image_suffix)[0]
+        new_image = Image.create!(
+          :title => "Run #{@run.id.to_s}: #{image_title}", 
+          :user_id=>@run.user_id, 
+          :image_type => Image::IMAGE_TYPE_TWOD,
+          :generated_by_run_id => @run.id)
+
+        new_file_name = "#{new_image.id}_#{file_name}"
+        new_image.update_attributes(:upload_file_name => new_file_name)
+        %x{cd #{run_folder};
+          mv #{file_name} #{new_file_name}
+        }
+        ConversionWorker.perform_async(new_image.id, run_folder)
+      end
     end
   end
 
@@ -124,8 +126,24 @@ class AnalysisWorker
   end
 
   def convert_to_svg_points(point)
-    #NOT YET IMPLEMENTED
-    return points
+    point_x = point[0].to_i
+    point_y = point[1].to_i
+    vector_width = (((@tile_x.to_i + point_x).to_f / @image.width) * 100).round(2)
+    vector_height = (((@tile_y.to_i + point_y).to_f / @image.height) * 100).round(2)
+    
+    svg_data = ["circle", {
+      "cx"=>vector_width,
+      "cy"=>vector_height,
+      "r"=>0.2,
+      "fill"=> "none",
+      "stroke"=> "red",
+      "stroke-width"=> 1,
+      "stroke-linejoin"=> "round",
+      "stroke-linecap"=> "round",
+      "vector-effect"=> "non-scaling-stroke"
+    }]
+
+    return svg_data
   end
 
 end

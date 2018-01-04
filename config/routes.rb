@@ -24,6 +24,10 @@ Rails.application.routes.draw do
     collection do
       get 'annotation_form' => 'runs#annotation_form'
     end
+
+    member do 
+      get 'download_results' => 'runs#download_results'
+    end
   end
   resources :algorithms do
     collection do
