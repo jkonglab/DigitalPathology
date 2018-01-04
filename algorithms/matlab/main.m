@@ -1,5 +1,7 @@
 function result = main(image_path, run_folder_path, extra_parameters_array, algorithm_name, tile_x, tile_y, tile_width, tile_height)
    addpath('.')
+   addpath(['./' algorithm_name]) 
+
    
    if tile_width ~= 0 && tile_height ~= 0
       Rows = [tile_x, tile_x + tile_width - 1];

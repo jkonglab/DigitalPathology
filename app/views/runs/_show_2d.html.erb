@@ -6,13 +6,14 @@
 		</span>
 		<header>
   			<span style="white-space:pre-wrap;" class="navbar-brand">Analysis Results</span>
+  			<%=link_to download_results_run_path(@run.id) do%><span>Download Raw Output</span><% end %>
 		</header>
 		
 		<div style="padding:10px">
 			<p>Analysis ID:<br/><b><%=@run.id%></b></p>
 			<p>Status:<br/><b><%=@run.status_words%></b></p>
 			<p>Image Title:<br/><b><%=@image.title%></b></p>
-			<p>Algorithm Ran:<br/><b><%=@algorithm.name%> (ID: <%=@algorithm.id%>)</b></p>
+			<p>Algorithm Ran:<br/><b><%=@algorithm.title%> (ID: <%=@algorithm.id%>)</b></p>
 			<% if @run.run_at %>
 				<p>Started:<br/><b><%=Time.at(@run.run_at).in_time_zone.to_formatted_s(:db) %></b></p>
 			<% end %>
