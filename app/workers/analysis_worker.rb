@@ -100,8 +100,8 @@ class AnalysisWorker
     contour.each do |point|
       point_x = point[0].to_i
       point_y = point[1].to_i
-      vector_width = (((@tile_x.to_i + point_x).to_f / @image.width) * 100).round(2)
-      vector_height = (((@tile_y.to_i + point_y).to_f / @image.height) * 100).round(2)
+      vector_width = (((@tile_x.to_i + point_x).to_f / @image.width) * 100)
+      vector_height = (((@tile_y.to_i + point_y).to_f / @image.height) * 100)
 
       if svg_data_string.length == 0
         svg_data_string += "M" + vector_width.to_s + ' ' + vector_height.to_s
@@ -128,8 +128,8 @@ class AnalysisWorker
   def convert_to_svg_points(point)
     point_x = point[0].to_i
     point_y = point[1].to_i
-    vector_width = (((@tile_x.to_i + point_x).to_f / @image.width) * 100).round(2)
-    vector_height = (((@tile_y.to_i + point_y).to_f / @image.height) * 100).round(2)
+    vector_width = (((@tile_x.to_i + point_x).to_f / @image.width) * 100)
+    vector_height = (((@tile_y.to_i + point_y).to_f / @image.height) * 100)
     
     svg_data = ["circle", {
       "cx"=>vector_width,
