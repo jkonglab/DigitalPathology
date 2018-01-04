@@ -7,10 +7,14 @@
 
 	<div id="annotation-select" class="form-group">
 	</div>
+
+	<div class="form-group">
+		<%= f.label :tile_size, "Tile Size (in pixels)" %>
+		<%= f.number_field :tile_size, {max: 1000, value:200} %>
+	</div>
 	<br/><br/>
 	<h5>Algorithm Parameters</h5>
 	<hr/>
-	
 	<div id="algorithm-parameters-form">
 	</div>
   	<%= f.submit "Start Analysis", {class: "float-right btn-raised btn-success"} %>

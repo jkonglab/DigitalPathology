@@ -2,8 +2,6 @@ class TilingWorker
   include Sidekiq::Worker
   require 'csv'
 
-  TILING_FACTOR = 100
-
   def perform(run_id)
     run = Run.find(run_id)
     image = run.image
@@ -13,6 +11,7 @@ class TilingWorker
     x_coordinates = []
     y_coordinates = []
     num_tiles_counter = 0
+    tile_size = run.tile_size || 200
 
     if image && !image.path.blank? && !image.processing && annotation && !run.processing
         algorithm_path = Rails.root.to_s + '/algorithms/matlab'
@@ -45,7 +44,7 @@ class TilingWorker
             end
 
             %x{cd #{algorithm_path};
-                matlab -nodisplay -r "tiling('#{image_path}','#{run_data_path + run_folder}', #{TILING_FACTOR}); exit;"
+                matlab -nodisplay -r "tiling('#{image_path}','#{run_data_path + run_folder}', #{tile_size}); exit;"
             }
 
             timer = 0
@@ -63,7 +62,7 @@ class TilingWorker
                 num_tiles_counter += 1
                 tile_x = tile.split(',')[0].to_i
                 tile_y = tile.split(',')[1].to_i
-                AnalysisWorker.perform_async(run_id, tile_x, tile_y, TILING_FACTOR, TILING_FACTOR)
+                AnalysisWorker.perform_async(run_id, tile_x, tile_y, tile_size, tile_size)
             end
         end
         run.update_attributes!(:total_tiles=>num_tiles_counter)

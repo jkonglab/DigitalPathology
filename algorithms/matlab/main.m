@@ -4,8 +4,8 @@ function result = main(image_path, run_folder_path, extra_parameters_array, algo
 
    
    if tile_width ~= 0 && tile_height ~= 0
-      Rows = [tile_x, tile_x + tile_width - 1];
-      Cols = [tile_y, tile_y + tile_height - 1];
+      Rows = [tile_y, tile_y + tile_height - 1];
+      Cols = [tile_x, tile_x + tile_width - 1];
       if contains(image_path, '.ndpi') || contains(image_path, '.svs')
         tiled_roi = imread(image_path,'Index',1,'PixelRegion',{Rows,Cols});
       else
