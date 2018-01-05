@@ -1,7 +1,8 @@
 class Image < ActiveRecord::Base
 	has_many :annotations
 	has_many :runs
-	belongs_to :user
+  has_many :user_image_ownerships
+	has_many :users, :through => :user_image_ownerships
 
   VISIBILITY_PRIVATE = 0
   VISIBILITY_PUBLIC = 1
