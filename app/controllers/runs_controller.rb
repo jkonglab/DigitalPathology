@@ -2,7 +2,7 @@ class RunsController < ApplicationController
   before_action :authenticate_user!, :only => [:create, :index, :show]
 
   def index
-    @runs = current_user.runs
+    @runs = current_user.runs.order('id desc')
   end
 
   def show
