@@ -134,10 +134,10 @@ class AnalysisWorker
     svg_data = ["circle", {
       "cx"=>vector_width,
       "cy"=>vector_height,
-      "r"=>0.1,
-      "fill"=> "red",
+      "r"=>0.05,
+      "fill"=> "none",
       "stroke"=> "red",
-      "stroke-width"=> 0.1,
+      "stroke-width"=> 1,
       "stroke-linejoin"=> "round",
       "stroke-linecap"=> "round",
       "vector-effect"=> "non-scaling-stroke"
