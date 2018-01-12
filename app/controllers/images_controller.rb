@@ -24,7 +24,7 @@ class ImagesController < ApplicationController
         file.write(uploaded_io.read)
     end
 
-    ConversionWorker.perform_async(images.id)
+    ConversionWorker.perform_async(image.id)
 
     redirect_to images_path, notice: 'Image created, please wait for it to be processed.'
   end
@@ -34,12 +34,12 @@ class ImagesController < ApplicationController
     @algorithm = @image.threed? && @image.parent_id.blank? ? Algorithm.all : Algorithm.where('output_type NOT IN (?)', Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"])
     @annotation = Annotation.new
     @clinical_data = @image.clinical_data || {}
-    @slices = Image.where(:parent_id => @images.id).order('slice_order asc')
+    @slices = Image.where(:parent_id => @image.id).order('slice_order asc')
     @slice = @image.threed? && @image.parent_id.blank? ? @slices.first : @image
   end
 
   def get_slice
-    @slice = Image.where(:parent_id => @images.id).order('slice_order asc')[params[:slice].to_i]
+    @slice = Image.where(:parent_id => @image.id).order('slice_order asc')[params[:slice].to_i]
     respond_with @slice
   end
 
@@ -56,7 +56,7 @@ class ImagesController < ApplicationController
     
     if @images.length == 1
       image = @images[0]
-      images = Image.where('(images.id IN (?) or parent_id IN (?))', images.id, images.id)
+      images = Image.where('(images.id IN (?) or parent_id IN (?))', image.id, image.id)
       images.delete_all
       return redirect_to my_images_images_path, notice: "Image #{image.title} deleted"
     elsif @images.length == 0
@@ -104,7 +104,7 @@ class ImagesController < ApplicationController
     )
 
     images = Image.where('id in (?)', image_ids)
-    images.update_all(:parent_id=> parent_images.id)
+    images.update_all(:parent_id=> parent_image.id)
     images.update_all(:visibility=> parent_image.visibility)
     redirect_to my_images_images_path, notice: 'Images converted into 3D volume'
   end
