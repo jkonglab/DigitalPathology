@@ -62,19 +62,25 @@ class RunsController < ApplicationController
     output = []
 
     @results.each do |result|
-      raw_data = result.raw_data
+      result_hash = {}
+      result_hash["tile_coordinate"] = [result.tile_x, result.tile_y]
+      result_hash["local_coordinates"] = result.raw_data
+      result_hash["tile_size"] = result.run.tile_size
+      absolute_data = result.raw_data.deep_dup
 
       if @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["contour"]
-        raw_data.map{ |data_item|
+        absolute_data.map{ |data_item|
           data_item[0] += result.tile_x
           data_item[1] += result.tile_y
         }
       elsif @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["points"]
-        raw_data[0] += result.tile_x
-        raw_data[1] += result.tile_y
+        absolute_data[0] += result.tile_x
+        absolute_data[1] += result.tile_y
       end
 
-      output << raw_data
+      result_hash["absolute_coordinates"] = absolute_data
+
+      output << result_hash
     end
 
     send_data output.to_json, :type => 'application/json; header=present', :disposition => "attachment; filename=results.json"

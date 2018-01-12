@@ -52,11 +52,11 @@ class ImagesController < ApplicationController
 
   def confirm_delete
     image_ids = params['image_ids']
-    @images = current_user.images.where('id IN (?)', image_ids)
+    @images = current_user.images.where('images.id IN (?)', image_ids)
     
     if @images.length == 1
       image = @images[0]
-      images = Image.where('(id IN (?) or parent_id IN (?))', image.id, image.id)
+      images = Image.where('(images.id IN (?) or parent_id IN (?))', image.id, image.id)
       images.delete_all
       return redirect_to my_images_images_path, notice: "Image #{image.title} deleted"
     elsif @images.length == 0
@@ -66,7 +66,7 @@ class ImagesController < ApplicationController
 
   def delete
     image_ids = params['image_ids']
-    @images = current_user.images.where('id IN (?)', image_ids)
+    @images = current_user.images.where('images.id IN (?)', image_ids)
     length = @images.length
     @images.delete_all
     return redirect_to my_images_images_path, notice: "#{length} images deleted"
@@ -74,7 +74,7 @@ class ImagesController < ApplicationController
 
   def confirm_convert_3d
     image_ids = params['image_ids']
-    @images = current_user.images.where('image_type != ? AND id IN (?)', Image::IMAGE_TYPE_THREED, image_ids).sort_by{|image| image.title}
+    @images = current_user.images.where('image_type != ? AND images.id IN (?)', Image::IMAGE_TYPE_THREED, image_ids).sort_by{|image| image.title}
     if @images.length < 1
       return redirect_to my_images_images_path, alert: 'Volume could not be created because all selected images are already attached to a 3D volume.'
     end

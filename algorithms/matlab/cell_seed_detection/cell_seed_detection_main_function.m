@@ -6,9 +6,18 @@ clc;
 
 %load image
 I=input;
+INTENSITY_THR = 200;
+
+r = I(:,:,1);g = I(:,:,2);b = I(:,:,3);
+if all([mean(r(:)) mean(g(:)) mean(b(:))] > INTENSITY_THR)
+    clear r g b;
+    return;
+end
+
 edgeThreshold = 0.6;
 amount = 0.6;
 B = localcontrast(I, edgeThreshold, amount);
+
 stains =[0.554688  0.380814  0.191667;...   %Red
            0.781334  0.87215   0.862937;...   %Green
            0.286075  0.307141  0.46755];     %Blue
@@ -17,6 +26,7 @@ stains =[0.554688  0.380814  0.191667;...   %Red
 [Deconvolved, colorImage] = ColorDeconvolution_FullNewVer(I, stains, [true true true]);
 Hemat = Deconvolved(:,:,1);
 Eosin = Deconvolved(:,:,2);
+
 
 %complement and smooth image
 sigma=5;%1,5; %important!
@@ -30,6 +40,7 @@ uint8f = uint8(f);
 marker = imopen(uint8f, strel('disk',10));
 recon = imreconstruct(marker,uint8f, 8);
 dif = uint8f - recon;
+
 
 %voting with sign of eigenvalues from Hessian matrix
 vote = zeros(size(dif));
@@ -82,7 +93,6 @@ for i = 1:length(v)
     d(:,2) = min(size(vote,1), d(:,2));
     otsuTF = otsuBW((d(:,1)-1)*size(vote,1)+d(:,2))';
     b = ismember(L, find( otsuTF & ([c.Area]>(minA+exp(alpha*vnorm(i)))) ) );
-    %b = ismember(L, find([c.Area]> max(20, minA-2*v(i))) );
     
     L = bwlabel(b, 4);
     c = regionprops(L, 'Centroid');
@@ -107,7 +117,7 @@ for i = 1:length(v)
     
     c = [peaks; c];
     dist_length = 0;
-        
+    
     while true %merge by distance metric
         
         D = pdist(c,'euclidean');
@@ -139,9 +149,7 @@ for i = 1:length(v)
         remainingMergeTF = [false(1, minInd)  mergeTF(minInd, minInd+1:end)];
         c(remainingMergeTF',:) = [];
         
-        %fprintf('cluster %d adjacent points by distance metric: minD=%d\n', sum(minLineMergeTF), minD);
         dist_length = dist_length + sum(minLineMergeTF)-1;
-        
     end
     
     
@@ -159,7 +167,6 @@ for i = 1:length(v)
 end
 
 peaks_stage1 = peaks;
-
 fprintf('----------------------------------------------------------------\n\n');
 
 fprintf('Stage 2: Merge peaks with distance and canny edge constraints...\n');
@@ -204,7 +211,6 @@ while true %merge by distance metric and canny edge points
     remainingMergeTF = [false(1, minInd)  (mergeTF(minInd, minInd+1:end) & ~edgeTF(minInd,minInd+1:end))];
     peaks(remainingMergeTF',:) = [];
     
-    %fprintf('cluster %d adjacent points by distance metric: minD=%d and canny edge\n', sum(minLineMergeTF), minD);
     canny_dist_length = canny_dist_length + sum(minLineMergeTF)-1;
     
 end
