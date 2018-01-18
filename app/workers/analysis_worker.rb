@@ -115,8 +115,8 @@ class AnalysisWorker
     svg_data = ["path", {
       "fill"=> "none",
       "d"=> svg_data_string,
-      "stroke"=> "green",
-      "stroke-width"=> 1,
+      "stroke"=> "lime",
+      "stroke-width"=> 2,
       "stroke-linejoin"=> "round",
       "stroke-linecap"=> "round",
       "vector-effect"=> "non-scaling-stroke"
@@ -136,8 +136,8 @@ class AnalysisWorker
       "cy"=>vector_height,
       "r"=>0.05,
       "fill"=> "none",
-      "stroke"=> "green",
-      "stroke-width"=> 1,
+      "stroke"=> "lime",
+      "stroke-width"=> 3,
       "stroke-linejoin"=> "round",
       "stroke-linecap"=> "round",
       "vector-effect"=> "non-scaling-stroke"
