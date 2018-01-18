@@ -12,8 +12,8 @@ class RunsController < ApplicationController
     @slices = Image.where('generated_by_run_id IN (?) AND (image_type = ? OR parent_id IS NOT NULL)', @run.id, Image::IMAGE_TYPE_TWOD).order('id desc')
     @threed_volume = Image.where('generated_by_run_id IN (?) AND image_type = ? AND parent_id IS NULL', @run.id, Image::IMAGE_TYPE_THREED).first
     @annotation = @run.annotation
-    @results = @run.results
-    @results_svg = @results.pluck(:svg_data)
+    @results = @run.results.order('id asc');
+    @results_data = @results.pluck(:svg_data, :id, :exclude)
   end
 
   def create
@@ -57,7 +57,7 @@ class RunsController < ApplicationController
 
   def download_results
     @run = Run.find(params[:id])
-    @results = @run.results
+    @results = @run.results.where('exclude IS NOT true').order('id asc')
     @algorithm = @run.algorithm
     output = []
 

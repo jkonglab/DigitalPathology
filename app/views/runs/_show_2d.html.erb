@@ -43,26 +43,69 @@
 
 <script>
 
-	var results = '<%= raw(@results_svg.to_json) %>';
+	var results_data = JSON.parse('<%= raw(@results_data.to_json) %>');
+	var results_svg = [];
 	var annotation = '<%=raw(@annotation.data.to_json) %>';
 	var viewer = OpenSeadragon({
 	    id:            "<%=@image.upload_file_name.parameterize%>",
 	    prefixUrl:     "/openseadragon/images/",
 	    tileSources:   "/<%=Rails.application.config.data_directory%>/<%=@image.file_name_prefix%>/<%=@image.file_name_prefix%>.dzi",
 	});
+	var exclude_indices = [];
 
-	var data = JSON.parse(results);
+	_.each(results_data, function(element, index){
+		element[0][1]["index"] = index;
+		element[0][1]["data-id"] = element[1];
+		if(element[2] === true){
+			element[0][1]["style"] = "opacity:0.5";
+			element[0][1]["exclude"] = true;
+		}
+		results_svg.push(element[0]);
+	});
+
 	var annotation_data = JSON.parse(annotation)[0];
-	data.push(annotation_data);
+	results_svg.push(annotation_data);
 	viewer.initializeAnnotations();
 	waitForAnnotationInitialize();
 
 	function waitForAnnotationInitialize(){
     if(viewer.areAnnotationsActive()){
-        viewer.annotations.set(data);
+        viewer.annotations.set(results_svg);
+
+        $('.openseadragon-container').click(function(e){
+	    	if($(e.target).is('circle')){
+	    		var index = $(e.target).attr('index');
+	    		excludeResult(index);
+	    	}
+	    });
     }
     else{
         setTimeout(waitForAnnotationInitialize, 250);
+    }
+
+    function excludeResult(index){
+	   	var current_annotations = viewer.annotations.get();
+
+		if (index > -1) {
+			var id = current_annotations[index][1]["data-id"];
+			var action = current_annotations[index][1]["exclude"] === true ? 'include' : 'exclude';
+
+			$.ajax({
+  				method: "PUT",
+  				url: "/results/"+id+"/"+action+".json"
+			})
+	  		.done(function() {
+	  			if(action == 'exclude'){
+    				current_annotations[index][1]["style"] = "opacity:0.5";
+    				current_annotations[index][1]["exclude"] = true;
+    			}else{
+    				current_annotations[index][1]["style"] = "";
+    				current_annotations[index][1]["exclude"] = false;
+
+    			}
+				viewer.annotations.set(current_annotations);
+	  		});
+		}
     }
 }
 
