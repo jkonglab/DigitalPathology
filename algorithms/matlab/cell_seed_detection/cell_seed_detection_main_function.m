@@ -7,6 +7,7 @@ clc;
 %load image
 I=input;
 INTENSITY_THR = 200;
+peaks = [];
 
 r = I(:,:,1);g = I(:,:,2);b = I(:,:,3);
 if all([mean(r(:)) mean(g(:)) mean(b(:))] > INTENSITY_THR)
