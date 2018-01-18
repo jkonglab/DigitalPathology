@@ -3,6 +3,7 @@ class Image < ActiveRecord::Base
 	has_many :runs
   has_many :user_image_ownerships
 	has_many :users, :through => :user_image_ownerships
+  has_many :results, through: :runs
 
   VISIBILITY_PRIVATE = 0
   VISIBILITY_PUBLIC = 1

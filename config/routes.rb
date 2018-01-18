@@ -34,6 +34,14 @@ Rails.application.routes.draw do
       get 'parameter_form' => 'algorithms#parameter_form'
     end
   end
+
+  resources :results do
+    member do
+      put 'exclude' => 'results#exclude'
+      put 'include' => 'results#include'
+    end
+  end
+  
   get '/about' => 'pages#about'
 
   require 'sidekiq/web'
