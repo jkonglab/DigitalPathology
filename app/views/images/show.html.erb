@@ -112,9 +112,7 @@
 	function bindAnnotationRows(){
 		$('.annotation-row').unbind().click(function(){
 			var annotation_data = JSON.parse($(this).attr('annotation-data'))[0];
-			var existing_annotations = viewer.annotations.get();
-			existing_annotations.push(annotation_data);
-			viewer.annotations.set(existing_annotations);
+			viewer.annotations.set([annotation_data]);
 		});
 	}
 
