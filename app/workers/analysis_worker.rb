@@ -71,6 +71,7 @@ class AnalysisWorker
       if file_name.include?('.tif')
         image_suffix =  file_name.split('.')[-1]
         image_title = file_name.split('.' + image_suffix)[0]
+        
         new_image = Image.create!(
           :title => "Run #{@run.id.to_s}: #{image_title}", 
           :user_id=>@run.user_id, 

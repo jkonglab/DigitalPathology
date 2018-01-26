@@ -8,8 +8,15 @@
 					class: 'form-control', :required => parameter["required"]} %>
 			<% elsif parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["boolean"] %>
 				<%= parameter_fields.check_box parameter["key"].to_sym %>
+			<% elsif parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["color"] %>
+				<%= parameter_fields.text_field parameter["key"].to_sym, { value: parameter["default_value"], class: 'color-wheel'} %>
 			<% end %>
 		</div>
 		<% end %>
 	<% end %>
 <% end %>
+
+<script>
+$(".color-wheel").spectrum({
+});
+</script>

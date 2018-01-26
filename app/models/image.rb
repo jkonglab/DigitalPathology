@@ -13,20 +13,29 @@ class Image < ActiveRecord::Base
 
   enum visibility: { hidden: 0, visible: 1 }
   enum image_type: [:twod, :threed, :fourd]
+  after_create :create_user_image_ownership
 
 
-def self.create_new_image(original_filename, user_id)
+  def self.create_new_image(original_filename, user_id)
     original_filename = original_filename.gsub(' ', '_')
     image_suffix = original_filename.split('.')[-1]
     image_title = original_filename.split('.'+image_suffix)[0]
     image_unique_id = Image.last ? Image.last.id + 1 : 2
     random_hash = ('a'..'z').to_a.shuffle[0,8].join
     new_file_name = random_hash + '-' + image_title + '-' + image_unique_id.to_s + '.' + image_suffix
-    return Image.create(
+    image = Image.create(
       :title => image_title, 
       :upload_file_name => new_file_name, 
       :user_id=>user_id, 
       :image_type => Image::IMAGE_TYPE_TWOD)
+  
+    return image
+  end
+
+  def create_user_image_ownership
+    return UserImageOwnership.create!(
+      :user_id=>self.user_id,
+      :image_id=>self.id)
   end
 
 	def self.ransackable_attributes(auth_object = nil)

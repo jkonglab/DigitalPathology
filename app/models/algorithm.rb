@@ -4,7 +4,8 @@ class Algorithm < ActiveRecord::Base
 	PARAMETER_TYPE_LOOKUP={
 		"numeric" => 1,
 		"boolean" => 2,
-		"string" => 3
+		"string" => 3,
+		"color" => 4
 	}
 
 	LANGUAGE_LOOKUP={
