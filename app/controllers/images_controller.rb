@@ -57,7 +57,7 @@ class ImagesController < ApplicationController
     if @images.length == 1
       image = @images[0]
       images = Image.where('(images.id IN (?) or parent_id IN (?))', image.id, image.id)
-      images.delete_all
+      images.destroy_all
       return redirect_to my_images_images_path, notice: "Image #{image.title} deleted"
     elsif @images.length == 0
       return redirect_to my_images_images_path, notice: 'No valid images selected for deletion'
@@ -68,7 +68,7 @@ class ImagesController < ApplicationController
     image_ids = params['image_ids']
     @images = current_user.images.where('images.id IN (?)', image_ids)
     length = @images.length
-    @images.delete_all
+    @images.destroy_all
     return redirect_to my_images_images_path, notice: "#{length} images deleted"
   end
 

@@ -14,7 +14,7 @@ class Image < ActiveRecord::Base
   enum visibility: { hidden: 0, visible: 1 }
   enum image_type: [:twod, :threed, :fourd]
   after_create :create_user_image_ownership
-
+  before_destroy :destroy_children
 
   def self.create_new_image(original_filename, user_id)
     original_filename = original_filename.gsub(' ', '_')
@@ -30,6 +30,13 @@ class Image < ActiveRecord::Base
       :image_type => Image::IMAGE_TYPE_TWOD)
   
     return image
+  end
+
+  def destroy_children
+    self.annotations.destroy_all 
+    self.user_image_ownerships.destroy_all   
+    self.results.destroy_all
+    self.runs.destroy_all
   end
 
   def create_user_image_ownership
