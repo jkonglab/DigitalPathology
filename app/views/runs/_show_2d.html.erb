@@ -20,6 +20,7 @@
 			<%if @run.complete %>
 				<p>Completed:<br/><b><%=@run.updated_at.in_time_zone.to_formatted_s(:db) %> (Took <%=distance_of_time_in_words(Time.at(@run.run_at), @run.updated_at)%>)</b></p>
 			<% end %>
+			<p>Result Count:<br/><b><%=@run.results.count%></b></p>
 			<p>Algorithm Parameters:</p>
 		</div>
 		<ul>

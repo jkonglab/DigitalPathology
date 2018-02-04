@@ -1,4 +1,4 @@
-function Pos_Contour = ihc_main_function(input)
+function Pos_Contour_T = ihc_main_function(input)
 
 close all; clc;
 % 
@@ -55,11 +55,15 @@ Low_Pix_Num_Perc = Low_Pix_Num*100./length(DAB(:));
 Pos_Contour = getContour( DAB>=T1, ARC_LIMIT );
 Med_Contour = getContour( ((DAB<T1) & (DAB>=T2)), ARC_LIMIT );
 Low_Contour = getContour( DAB<T2, ARC_LIMIT );
-
+Pos_Contour_T = {};
 
 imshow(I,[]); hold on;
 for i = 1:length(Pos_Contour)
     b = Pos_Contour{i};
+    b_t = b;
     plot(b(:,2), b(:,1), 'g', 'LineWidth', 2);
+    b_t(:,1) = b(:,2);
+    b_t(:,2) = b(:,1);
+    Pos_Contour_T{i,1} = b_t;
 end
 end

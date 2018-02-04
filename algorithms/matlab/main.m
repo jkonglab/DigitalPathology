@@ -1,16 +1,16 @@
-function result = main(image_path, run_folder_path, extra_parameters_array, algorithm_name, tile_x, tile_y, tile_width, tile_height)
+function main_output = main(image_path, run_folder_path, extra_parameters_array, algorithm_name, tile_x, tile_y, tile_width, tile_height)
    addpath('.')
    addpath(['./' algorithm_name]) 
 
    
    if tile_width ~= 0 && tile_height ~= 0
-      Rows = [tile_y, tile_y + tile_height - 1];
-      Cols = [tile_x, tile_x + tile_width - 1];
+      Rows = [tile_y+1, tile_y + tile_height];
+      Cols = [tile_x+1, tile_x + tile_width];
       if contains(image_path, '.ndpi') || contains(image_path, '.svs')
         tiled_roi = imread(image_path,'Index',1,'PixelRegion',{Rows,Cols});
       else
         entire_image = imread(image_path);
-        tiled_roi = entire_image(tile_x+1:tile_x + tile_width - 1, tile_y+1:tile_y + tile_height - 1, :);
+        tiled_roi = entire_image(tile_y+1:tile_y + tile_height, tile_x+1:tile_x + tile_width, :);
       end
    else
       tiled_roi = [];
