@@ -2,8 +2,10 @@
 	<td><%=annotation.label%></td>
 	<td><%=annotation.created_at.to_s(:short)%></td>
 	<td>
-		<%=link_to annotation_path(annotation), :data => {:method=> :delete, :confirm => 'Are you sure you want to delete this annotation?'} do %>
-		<i style="font-size:18px;" class="material-icons" role="presentation">delete</i>
+		<% if annotation.runs.count == 0 %>
+			<%=link_to annotation_path(annotation), :data => {:method=> :delete, :confirm => 'Are you sure you want to delete this annotation?'} do %>
+			<i style="font-size:18px;" class="material-icons" role="presentation">delete</i>
+			<%end%>
 		<%end%>
 	</td>
 </tr>

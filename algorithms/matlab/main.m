@@ -10,7 +10,7 @@ function result = main(image_path, run_folder_path, extra_parameters_array, algo
         tiled_roi = imread(image_path,'Index',1,'PixelRegion',{Rows,Cols});
       else
         entire_image = imread(image_path);
-        tiled_roi = entire_image(tile_x:tile_x + tile_width - 1, tile_y:tile_y + tile_height - 1, :);
+        tiled_roi = entire_image(tile_x+1:tile_x + tile_width - 1, tile_y+1:tile_y + tile_height - 1, :);
       end
    else
       tiled_roi = [];
