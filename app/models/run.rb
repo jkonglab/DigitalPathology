@@ -5,6 +5,11 @@ class Run < ActiveRecord::Base
 	belongs_to :user
 	has_many :results
 
+	before_destroy :destroy_children
+
+	def destroy_children
+		self.results.destroy_all
+	end
 
 	def status_words
 		if self.complete

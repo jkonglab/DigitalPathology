@@ -35,7 +35,6 @@ class Image < ActiveRecord::Base
   def destroy_children
     self.annotations.destroy_all 
     self.user_image_ownerships.destroy_all   
-    self.results.destroy_all
     self.runs.destroy_all
   end
 
