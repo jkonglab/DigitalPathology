@@ -15,7 +15,7 @@
       <i class="material-icons" role="presentation">cancel</i>Stop Drawing
     </a>
     <a onclick="viewer.annotations.clean()" class="list-group-item">
-      <i class="material-icons" role="presentation">delete</i>Hide All
+      <i class="material-icons" role="presentation">delete</i>Clear
     </a>
   <% else%>
     <p style="padding:20px;">
@@ -31,15 +31,13 @@
     <thead>
       <tr>
         <th>Label</th>
-        <th>Created Date</th>
+        <th>Date</th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
       <% @image.annotations.order('id desc').each do |annotation| %>
-        <tr class="annotation-row" annotation-data="<%= annotation.data.to_json%>">
-          <td><%=annotation.label%></td>
-          <td><%=annotation.created_at.to_s(:short)%></td>
-        </tr>
+        <%= render partial: "annotation_row", locals: {annotation: annotation} %>
       <% end %>
     </tbody>
   </table>

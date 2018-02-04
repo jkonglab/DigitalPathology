@@ -1,6 +1,7 @@
 
 .btn-primary{
   background-color: #0D2776 !important;
+  color:white !important;
 }
 
 .full-width-container{
@@ -30,6 +31,7 @@
   float: left;
   width: 100%;
   margin-bottom: 0px;
+  z-index:5;
 }
 
 .openseadragon{
@@ -164,7 +166,7 @@
       display:block !important;
     }
     .full-width-container{
-      height:calc(100% - 60px);
+      height:100%;
     }
     .navbar-toggler{
       display:none;

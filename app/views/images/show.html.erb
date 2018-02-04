@@ -64,6 +64,9 @@
 	</div>
 </div>
 
+<script id="image_template" type="text/template">
+</script>
+
 <script>
 	var viewer = OpenSeadragon({
 		preserveViewport: true,
@@ -135,8 +138,8 @@
 			  	'width':bbox.width,
 			  	'height':bbox.height
 			})
-	        .done(function(data){
-	        	$( ".annotations-table" ).prepend("<tr class='annotation-row' annotation-data='" + JSON.stringify(data.data) + "'><td>" + data.label + "</td><td>" + data.created_at + "</td></tr>" );
+	        .done(function(partial_data){
+	        	$( ".annotations-table" ).prepend(partial_data);
 	        	bindAnnotationRows();
 	        });
 	    }else{

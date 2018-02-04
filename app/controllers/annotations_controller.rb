@@ -23,10 +23,17 @@ class AnnotationsController < ApplicationController
       :width=>width,
       :height=>height)
 
+    render :partial => 'images/annotation_row.html.erb', :locals => { :annotation=>@annotation }
+  end
+
+  def destroy
+    @annotation = current_user.annotations.where(:id=>params[:id])
+    if @annotation.count > 0
+      @annotation.first.delete
+    end
     respond_to do |format|
-    	format.html { redirect_to Image.find(image_id) }
-    	format.json  { render :json => @annotation }
-  	end
+      format.html { redirect_to :back, notice: "Annotation Deleted" }
+    end
   end
 
 end
