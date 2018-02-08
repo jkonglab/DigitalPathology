@@ -1,4 +1,4 @@
-function Pos_Contour_T = ihc_main_function(input)
+function Pos_Contour_T = ihc_main_function(input, stain_setting)
 
 close all; clc;
 % 
@@ -19,9 +19,24 @@ I=input;
 
 %define OD matrix; each column is associated with one stain (i.e. Hematoxylin, DAB, and red_marker)
 %        Hemat  DAB  red_marker
+
+if stain_setting == "1"
 stains =[0.650 0.368 0.103;...   %Red
     0.704 0.570 0.696;...   %Green
     0.286 0.731 0.711];     %Blue
+else if stain_setting == "2"
+stains =[0.65 0.70 0.29;...
+    0.07 0.99 0.11;...
+    0.27 0.57 0.78];
+else if stain_setting == "3"
+stains =[0.6500286 0.704031 0.2860126;...
+    0.26814753 0.57031375 0.77642715;...
+    0.7110272 0.42318153 0.5615672];
+else
+stains =[0.650 0.368 0.103;...   %Red
+    0.704 0.570 0.696;...   %Green
+    0.286 0.731 0.711];     %Blue
+end
 
 T1 = 150;  %threshold for strong vs. medium pixel
 T2 = 50;   %threshold for weak vs. medium pixel

@@ -10,6 +10,8 @@
 				<%= parameter_fields.check_box parameter["key"].to_sym %>
 			<% elsif parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["color"] %>
 				<%= parameter_fields.text_field parameter["key"].to_sym, { value: parameter["default_value"], class: 'color-wheel'} %>
+			<% elsif parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["select"] %>
+				<%= parameter_fields.select(parameter["key"].to_sym, options_for_select(parameter["options"], 1), {}, { class: 'form-control'} )%>
 			<% end %>
 		</div>
 		<% end %>
