@@ -6,7 +6,8 @@ class Algorithm < ActiveRecord::Base
 		"boolean" => 2,
 		"string" => 3,
 		"color" => 4,
-		"select" => 5
+		"select" => 5,
+		"array" => 6
 	}
 
 	LANGUAGE_LOOKUP={

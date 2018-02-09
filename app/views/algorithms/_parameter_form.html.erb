@@ -7,11 +7,13 @@
 				<%= parameter_fields.number_field parameter["key"].to_sym, { value: parameter["default_value"], 
 					class: 'form-control', :required => parameter["required"]} %>
 			<% elsif parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["boolean"] %>
-				<%= parameter_fields.check_box parameter["key"].to_sym %>
+				<%= parameter_fields.check_box parameter["key"].to_sym, :required => parameter["required"]%>
 			<% elsif parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["color"] %>
-				<%= parameter_fields.text_field parameter["key"].to_sym, { value: parameter["default_value"], class: 'color-wheel'} %>
+				<%= parameter_fields.text_field parameter["key"].to_sym, { value: parameter["default_value"], class: 'color-wheel', :required => parameter["required"]} %>
 			<% elsif parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["select"] %>
-				<%= parameter_fields.select(parameter["key"].to_sym, options_for_select(parameter["options"], 1), {}, { class: 'form-control'} )%>
+				<%= parameter_fields.select(parameter["key"].to_sym, options_for_select(parameter["options"], 1), {}, { class: 'form-control', :required => parameter["required"]} )%>
+			<% elsif parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["array"] %>
+				<%= parameter_fields.text_field parameter["key"].to_sym, { value: parameter["default_value"], required: parameter["required"], placeholder: parameter["placeholder"]} %>
 			<% end %>
 		</div>
 		<% end %>

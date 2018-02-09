@@ -1,4 +1,5 @@
 class RunsController < ApplicationController
+  respond_to :html, :json
   before_action :authenticate_user!, :only => [:create, :index, :show]
 
   def index
@@ -39,6 +40,15 @@ class RunsController < ApplicationController
           parameter_value = parameter_value.to_i
         elsif algorithm_parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["boolean"]
           parameter_value = parameter_value == "1"
+        elsif algorithm_parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["array"]
+          if !parameter_value.blank?
+            begin
+              parameter_value = JSON.parse(parameter_value)
+            rescue JSON::ParserError
+                redirect_to image, alert: 'Could not parse your inputted array in run parameters.  Please make sure your arrays are comma separated and contained within square brackets [like, this]'
+                return
+            end
+          end
         end
       end
       run_parameters << parameter_value
@@ -48,10 +58,7 @@ class RunsController < ApplicationController
 
   	if @run.save
   		TilingWorker.perform_async(@run.id)
-  		respond_to do |format|
-          	format.html { redirect_to @run, notice: 'New analysis created, please wait for it to finish running.' }
-          	format.json { render :show, status: :ok, location: @run }
-      	end
+      redirect_to @run, notice: 'New analysis created, please wait for it to finish running.'
   	end
   end
 

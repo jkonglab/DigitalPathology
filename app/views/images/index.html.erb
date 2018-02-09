@@ -22,7 +22,7 @@
 	  </thead>
 	  <tbody>
 	  	<% @images.each do |image| %>
-	  		<tr class="image-link" data-link="<% if !image.path.blank?%><%=image_path(image)%><% end %>">
+	  		<tr class="image-link" <% if !image.path.blank?%>data-link="<%=image_path(image)%>"<% end %>>
 	  			<td class="d-none d-md-table-cell"><%=image.id%></td>
 	  			<td><%=image.title%></td>
 	  			<td><%=image.created_at%></td>

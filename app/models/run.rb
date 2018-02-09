@@ -8,7 +8,7 @@ class Run < ActiveRecord::Base
 	before_destroy :destroy_children
 
 	def destroy_children
-		self.results.destroy_all
+		self.results.delete_all
 	end
 
 	def status_words

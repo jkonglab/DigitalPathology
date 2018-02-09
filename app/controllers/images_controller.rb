@@ -1,6 +1,7 @@
 class ImagesController < ApplicationController
   before_action :authenticate_user!, :only => [:create, :new]
-  before_action :set_image, :only => [:show, :add_single_clinical_data, :add_upload_clinical_data, :get_slice]
+  before_action :set_image_validated, :only => [:show, :add_single_clinical_data, :add_upload_clinical_data, :get_slice]
+  before_action :set_images_validated, :only =>[:confirm_delete, :delete, :make_public, :make_private]
   respond_to :json, only: [:get_slice]
 
     
@@ -25,8 +26,7 @@ class ImagesController < ApplicationController
     end
 
     ConversionWorker.perform_async(image.id)
-
-    redirect_to images_path, notice: 'Image created, please wait for it to be processed.'
+    redirect_to my_images_images_path, notice: 'Image created, please wait for it to be processed.'
   end
 
   def show
@@ -51,25 +51,26 @@ class ImagesController < ApplicationController
   end
 
   def confirm_delete
-    image_ids = params['image_ids']
-    @images = current_user.images.where('images.id IN (?)', image_ids)
-    
     if @images.length == 1
       image = @images[0]
       images = Image.where('(images.id IN (?) or parent_id IN (?))', image.id, image.id)
       images.destroy_all
       return redirect_to my_images_images_path, notice: "Image #{image.title} deleted"
-    elsif @images.length == 0
-      return redirect_to my_images_images_path, notice: 'No valid images selected for deletion'
     end
   end
 
   def delete
-    image_ids = params['image_ids']
-    @images = current_user.images.where('images.id IN (?)', image_ids)
     length = @images.length
     @images.destroy_all
     return redirect_to my_images_images_path, notice: "#{length} images deleted"
+  end
+
+  def make_public
+    @images.update_all(:visibility=>Image::VISIBILITY_PUBLIC)
+  end
+
+  def make_private
+    @images.update_all(:visibility=>Image::VISIBILITY_PRIVATE)
   end
 
   def confirm_convert_3d
@@ -135,7 +136,20 @@ class ImagesController < ApplicationController
 
   private
 
-  def set_image
+  def set_image_validated
     @image = Image.find(params[:id])
+    if @image.visibility == Image::VISIBILITY_PRIVATE && !(@image.users.pluck(:id).include?(current_user.id))
+      redirect_to images_path, alert: 'You do not have permission to access or edit this image'
+    end
   end
+
+  def set_images_validated
+    image_ids = params['image_ids']
+    @images = current_user.images.where('images.id IN (?)', image_ids)
+    if @images.length < 1
+      redirect_to images_path, alert: 'You do not have permission to edit any of these images'
+    end      
+  end
+
+
 end

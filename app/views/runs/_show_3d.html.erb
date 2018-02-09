@@ -43,7 +43,13 @@
 					  		<tr class="image-link">
 					  			<td><%= check_box_tag "image_ids[]", image.id, false, class: 'image-check-box' %></td>
 					  			<td><%=image.id%></td>
-					  			<td><%=image.title%></td>
+					  			<td>
+					  				<% if !image.path.blank?%>
+		  								<a href="<%=image_path(image)%>"><%=image.title%></a>
+				  					<% else%>
+				  						<%=image.title%>
+				  					<% end %>
+					  			</td>
 					  			<td><%=image.created_at%></td>
 					  			<td><% if image.processing %>Processing<% elsif !image.path.blank?%>Available<%else%>Awaiting Processing<% end%></td>
 					  			<td><% if image.hidden? %>Private<%else%>Public<%end%></td>
@@ -58,9 +64,22 @@
 			  		<% @slices.each do |image| %>
 				  		<tr class="image-link">
 				  			<td><%=image.id%></td>
-				  			<td><a href="<% if !image.path.blank?%><%=image_path(image)%><% end %>"><%=image.title%></a></td>
-				  			<td><%=image.created_at%></td>
-				  			<td><% if image.processing %>Processing<% elsif !image.path.blank?%>Available<%else%>Awaiting Processing<% end%></td>
+								<td>
+									<% if !image.path.blank?%>
+		  							<a href="<%=image_path(image)%>"><%=image.title%></a>
+				  				<% else%>
+				  					<%=image.title%>
+				  				<% end %>
+					  		</td>				  			
+					  		<td><%=image.created_at%></td>
+				  			<td><% if image.processing %>
+				  					Processing
+				  				<% elsif !image.path.blank?%>
+				  					Available
+				  				<%else%>
+				  					Awaiting Processing
+				  				<% end%>	
+				  			</td>
 				  			<td><% if image.hidden? %>Private<%else%>Public<%end%></td>
 				  		</tr>
 			  		<% end %>

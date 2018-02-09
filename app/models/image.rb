@@ -23,6 +23,7 @@ class Image < ActiveRecord::Base
     image_unique_id = Image.last ? Image.last.id + 1 : 2
     random_hash = ('a'..'z').to_a.shuffle[0,8].join
     new_file_name = random_hash + '-' + image_title + '-' + image_unique_id.to_s + '.' + image_suffix
+    new_file_name.gsub!(' ', '')
     image = Image.create(
       :title => image_title, 
       :upload_file_name => new_file_name, 
