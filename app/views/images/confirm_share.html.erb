@@ -1,0 +1,44 @@
+<div class="container">
+	<br/><br/>
+	<h1>Confirm Share</h1>
+	<h4>Please confirm the images that you would like to share.</h4>
+		<ul>
+			<li>Enter a user email that you'd like to share with</li>
+			<li>Please note that sharing is (currently) a permanent action and users with shared access can edit or delete the image.</li>
+			<li>Uncheck a row to exclude the image from sharing</li>
+		</ul>
+	</h4>
+	<br/><br/>
+
+	<%= form_tag share_images_path do %>
+		<%= label :user_email, "User Email (to share with): " %>
+	    <%= autocomplete_field :user, :email, autocomplete_user_email_images_path, :class => 'form-control', :style=>'display:inline-block; width:50%', :required=>true %> 
+		<%= submit_tag "Confirm Share", :style=>"float:right", :class=> 'btn btn-success btn-raised btn-success'%>
+		<br/><br/>
+		<div class="image-table">
+			<table class="table table-hover">
+			  <thead>
+			  	<tr>
+			  		<th></th>
+				  	<th>ID</th>
+				  	<th>Image Name</th>
+				  	<th>Date Uploaded</th>
+				  	<th>Status</th>
+			  	</tr>
+			  </thead>
+			  	<tbody>
+				  	<% @images.each do |image| %>
+				  		<tr class="image-link">
+				  			<td><%= check_box_tag "image_ids[]", image.id, :default=> true%></td>
+				  			<td><%=image.id%></td>
+				  			<td><a href="<% if !image.path.blank?%><%=image_path(image)%><% end %>"><%=image.title%></a></td>
+				  			<td><%=image.created_at%></td>
+				  			<td><% if image.processing %>Processing<% elsif !image.path.blank?%>Available<%else%>Awaiting Processing<% end%></td>
+				  		</tr>
+				  	<% end %>
+			  	</tbody>
+			</table>
+		</div>
+	<% end %>
+
+</div>

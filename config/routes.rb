@@ -11,7 +11,10 @@ Rails.application.routes.draw do
       post 'convert_3d' => 'images#convert_3d'
       post 'confirm_3d' => 'images#confirm_convert_3d'
       post 'confirm_delete' => 'images#confirm_delete'
+      post 'confirm_share' => 'images#confirm_share'
       post 'delete' => 'images#delete'
+      post 'share' => 'images#share'
+      get 'autocomplete_user_email' => 'images#autocomplete_user_email'
     end
     member do
       post 'single_data' => 'images#add_single_clinical_data'

@@ -39,6 +39,7 @@ gem 'devise'
 gem 'sidekiq', '~> 4.1.4'
 gem 'redis'
 gem 'ransack'
+gem 'rails-jquery-autocomplete'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

@@ -22,8 +22,9 @@
 		  	</tr>
 		  </thead>
 		  <%= form_tag confirm_3d_images_path do %>
-		  	<%= submit_tag "Delete Image", :style=>"float:right; margin-left:10px;", :class=>"btn-raised btn btn-danger", :formaction=> confirm_delete_images_path %>
-		  	<%= submit_tag "Convert to 3D Volume", :style=> 'float:right', :class=> 'btn btn-success btn-raised'%>
+		  	<%= submit_tag "Delete", :style=>"float:right; margin-left:10px;", :class=>"btn-raised btn btn-danger", :formaction=> confirm_delete_images_path %>
+		  	<%= submit_tag "Share", :style=>"float:right; margin-left:10px;", :class=>"btn-raised btn btn-primary", :formaction=> confirm_share_images_path %>
+		  	<%= submit_tag "Combine in 3D Volume", :style=> 'float:right', :class=> 'btn btn-success btn-raised'%>
 			  <tbody>
 			  	<% @images.each do |image| %>
 			  		<tr class="image-link">
