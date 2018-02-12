@@ -1,10 +1,10 @@
 class ConversionWorker
   include Sidekiq::Worker
 
-  def perform(image_id, data_file_path=nil)
+  def perform(image_id, data_file_path=nil, force_flag=false)
     image = Image.find(image_id)
 
-    if image.path.blank? && !image.processing
+    if (image.path.blank? && !image.processing) || force_flag
         image.update_attributes!(:processing=>true)
 
         python_file_path = Rails.root.to_s + '/python'
