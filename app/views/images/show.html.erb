@@ -4,7 +4,7 @@
 			<%= render partial: "drawer_home", locals: { image: @image } %>
 		</div>
 		<div class="drawer-tab drawer-annotations">
-			<%= render partial: "drawer_annotations", locals: { annotation: @annotation, image: @slice } %>
+			<%= render partial: "drawer_annotations", locals: { annotation: @annotation, image: @slice, annotations: @annotations } %>
 		</div>
 		<div class="drawer-tab drawer-data">
 			<%= render partial: "drawer_data", locals: { image_json: @image_json, image: @image } %>
@@ -56,7 +56,7 @@
       			<h4 id="general-modal-title" class="modal-title">Run Analysis on ROI</h4>
 			</div>
 			<div class="modal-body">
-				<%= render partial: "runs/form" %>
+				<%= render partial: "runs/form", locals: { slices: @slices } %>
 			</div>
 			<div class="modal-footer">
 			</div>

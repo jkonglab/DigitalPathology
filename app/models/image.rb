@@ -63,5 +63,13 @@ class Image < ActiveRecord::Base
     query
   end
 
+  def default_tile_size
+    if self.width && self.height
+      [self.width, self.height].min/100 < 100 ? 100 : [self.width, self.height].min/100
+    else
+      300
+    end
+  end
+
 end
 

@@ -1,6 +1,8 @@
 class ImagesController < ApplicationController
+  include ApplicationHelper
+
   before_action :authenticate_user!, :only => [:create, :new]
-  before_action :set_image_validated, :only => [:show, :add_single_clinical_data, :add_upload_clinical_data, :get_slice]
+  before_action :set_image_validated, :only => [:show, :add_single_clinical_data, :add_upload_clinical_data, :get_slice, :import_annotations]
   before_action :set_images_validated, :only =>[:confirm_delete, :delete, :make_public, :make_private, :confirm_share, :share]
   respond_to :json, only: [:get_slice]
 
@@ -34,6 +36,7 @@ class ImagesController < ApplicationController
     @run = @image.runs.new
     @algorithm = @image.threed? && @image.parent_id.blank? ? Algorithm.all : Algorithm.where('output_type NOT IN (?)', Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"])
     @annotation = Annotation.new
+    @annotations = @image.visibility == Image::VISIBILITY_PRIVATE ? @image.annotations.where(:user_id=>current_user.id).order('id desc') : @image.annotations
     @clinical_data = @image.clinical_data || {}
     @slices = Image.where(:parent_id => @image.id).order('slice_order asc')
     @slice = @image.threed? && @image.parent_id.blank? ? @slices.first : @image
@@ -84,7 +87,8 @@ class ImagesController < ApplicationController
 
   def make_public
     @images.update_all(:visibility=>Image::VISIBILITY_PUBLIC)
-  end
+    redirect_to my_images_images_path, notice: "#{@images.count} images made public"
+  end 
 
   def make_private
     @images.update_all(:visibility=>Image::VISIBILITY_PRIVATE)
@@ -146,6 +150,27 @@ class ImagesController < ApplicationController
       end
       @image.update_attributes!(:clinical_data=>data)
       redirect_to :back
+    rescue JSON::ParserError
+      redirect_to :back, alert: 'Error parsing JSON file.  Please validate the file using a linter and make sure keys are double quoted!'
+    end
+  end
+
+  def import_annotations
+    json_file = params[:image][:upload].read
+    begin
+      json = JSON.parse(json_file)
+      json.each do |annotation_hash|
+        annotation = @image.annotations.new
+        contour = annotation_hash["absolute_coordinates"]
+        contour_svg = convert_to_svg_contour(contour, @image)
+        annotation.user_id = current_user.id
+        annotation.update_attributes({
+          :data=>contour_svg,
+          :label=>annotation_hash["name"]
+          })
+        annotation.save!
+      end
+      redirect_to :back, notice: "{#json.length} annotations added successfully."
     rescue JSON::ParserError
       redirect_to :back, alert: 'Error parsing JSON file.  Please validate the file using a linter and make sure keys are double quoted!'
     end

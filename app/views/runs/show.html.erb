@@ -1,4 +1,4 @@
-<% if @run.image.threed? %>
+<% if @run.algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"] %>
 	<%= render partial: 'show_3d' %>
 <% else %>
 	<%= render partial: 'show_2d' %>

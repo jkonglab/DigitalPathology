@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   resources :images do
     collection do
       get 'my_images' => 'images#my_images'
+      post 'make_public' => 'images#make_public'
       post 'convert_3d' => 'images#convert_3d'
       post 'confirm_3d' => 'images#confirm_convert_3d'
       post 'confirm_delete' => 'images#confirm_delete'
@@ -20,6 +21,7 @@ Rails.application.routes.draw do
       post 'single_data' => 'images#add_single_clinical_data'
       post 'upload_data' => 'images#add_upload_clinical_data'
       get 'get_slice' => 'images#get_slice'
+      post 'import_annotations' => 'images#import_annotations'
     end
   end
   resources :annotations

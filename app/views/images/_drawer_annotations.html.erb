@@ -17,6 +17,17 @@
     <a onclick="viewer.annotations.clean()" class="list-group-item">
       <i class="material-icons" role="presentation">delete</i>Clear
     </a>
+  <header>
+      <span style="white-space:pre-wrap;" class="navbar-brand">Import</span>
+      Only JSON file format is accepted at this time
+    </header>
+    <div class="upload-data" style="padding:15px;">
+      <%= form_for :image,  url: {action: :import_annotations} do |f| %>
+          <%= f.file_field :upload %>
+      <%= f.submit 'Upload', :style=>'float:right', :class=>"btn-raised btn btn-success"%>
+      <% end %>
+    </div>
+
   <% else%>
     <p style="padding:20px;">
       You must <%= link_to new_user_session_path do %>log in<% end %> to save drawn annotations.
@@ -36,8 +47,8 @@
       </tr>
     </thead>
     <tbody>
-      <% @image.annotations.where(:user_id=>current_user.id).order('id desc').each do |annotation| %>
-        <%= render partial: "annotation_row", locals: {annotation: annotation} %>
+      <% @annotations.each do |annotation_item| %>
+        <%= render partial: "annotation_row", locals: {annotation: annotation_item} %>
       <% end %>
     </tbody>
   </table>

@@ -27,4 +27,12 @@ class Algorithm < ActiveRecord::Base
 		"points" => 3
 	}
 
+	def title_with_type
+		if self.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"] 
+			"3D Algorithm: #{self.title}" 
+		else 
+			"2D Algorithm: #{self.title}"
+		end
+  	end
+
 end
