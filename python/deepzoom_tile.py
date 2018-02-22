@@ -237,14 +237,14 @@ if __name__ == '__main__':
                 default=True, action='store_false',
                 help='display entire scan area')
     parser.add_option('-e', '--overlap', metavar='PIXELS', dest='overlap',
-                type='int', default=1,
+                type='int', default=0,
                 help='overlap of adjacent tiles [1]')
     parser.add_option('-f', '--format', metavar='{jpeg|png}', dest='format',
                 default='jpeg',
                 help='image format for tiles [jpeg]')
     parser.add_option('-j', '--jobs', metavar='COUNT', dest='workers',
                 type='int', default=4,
-                help='number of worker processes to start [4]')
+                help='number of worker processes to start [10]')
     parser.add_option('-o', '--output', metavar='NAME', dest='basename',
                 help='base name of output file')
     parser.add_option('-Q', '--quality', metavar='QUALITY', dest='quality',
@@ -254,8 +254,8 @@ if __name__ == '__main__':
                 action='store_true',
                 help='generate directory tree with HTML viewer')
     parser.add_option('-s', '--size', metavar='PIXELS', dest='tile_size',
-                type='int', default=254,
-                help='tile size [254]')
+                type='int', default=2000,
+                help='tile size [2000]')
 
     (opts, args) = parser.parse_args()
     try:

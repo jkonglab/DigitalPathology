@@ -1,12 +1,12 @@
 <%= form_for(@run) do |f| %>
 	<div class="form-group">
 		<%= f.label :algorithm_id, "Select an algorithm to run" %>
-		<%= f.collection_select :algorithm_id, @algorithm, :id, :title_with_type, {include_blank: 'Please select'}, { class: 'form-control' } %>
+		<%= f.collection_select :algorithm_id, @algorithm, :id, :title_with_type, {include_blank: 'Please select'}, { class: 'form-control', required: true } %>
 	</div>
 	<% if @image.threed? %>
 		<div class="form-group twod-algorithm-slice-select" style="display:none;">
 			<%= f.label :image_id, "Select a image slice for analysis (applicable for 2D algorithms)" %>
-			<%= f.collection_select :image_id, @slices, :id, :slice_order, {}, { class: 'form-control' } %>
+			<%= f.collection_select :image_id, @slices, :id, :slice_order, {}, { class: 'form-control', required: true } %>
 		</div>
 	<% else %>
 		<%= f.hidden_field :image_id, :value=> @image.id %>
@@ -17,7 +17,7 @@
 
 	<div class="form-group">
 		<%= f.label :tile_size, "Tile Size (in pixels)" %>
-		<%= f.number_field :tile_size, {max: 1000, value: @slice.default_tile_size} %>
+		<%= f.select :tile_size, [100,200,400,500,1000], {}, { class: 'form-control', required: true } %>
 	</div>
 	<br/><br/>
 	<h5>Algorithm Parameters</h5>
