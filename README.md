@@ -4,9 +4,9 @@
 2. `brew install git` or `yum install git`
    * `git clone` the project directory into a folder called `imageviewer`
 3. Install RVM: https://rvm.io/rvm/install
-	 * `source /home/ashen5/.rvm/scripts/rvm`
-	 * `rvm install 2.0.0`
-	 * `rvm use 2.0.0`, you may also want to set it to the default at this time
+	 * `\curl -sSL https://get.rvm.io | bash -s stable`
+	 * `rvm install 2.5.0`
+	 * `rvm use 2.5.0`, you may also want to set it to the default at this time
 	 * `gem install bundler` to be able to use Gemfile for installing gems in the future
 	 * `cd project_directory && bundle install` to install Rails and all gems 
 	   * if you are having trouble installing pg 0.1 8.4, follow the instructions here: https://stackoverflow.com/questions/6040583/cant-find-the-libpq-fe-h-header-when-trying-to-install-pg-gem
