@@ -8,11 +8,9 @@
 	 * `rvm install 2.5.0`
 	 * `rvm use 2.5.0`, you may also want to set it to the default at this time
 	 * `gem install bundler` to be able to use Gemfile for installing gems in the future
-	 * `cd project_directory && bundle install` to install Rails and all gems 
-	   * if you are having trouble installing pg 0.1 8.4, follow the instructions here: https://stackoverflow.com/questions/6040583/cant-find-the-libpq-fe-h-header-when-trying-to-install-pg-gem
-	 
 4. We use Postgres for our DB, so install that:
 	 * `brew install postgres` or https://wiki.postgresql.org/wiki/PostgreSQL_on_RedHat_Linux
+	 * Also brew/yum `install postgresql-devel`
 	 * `brew services start postgres` or whatever command to start the postgres DB server
 	 * DEVELOPMENT ONLY: Install PSequel http://www.psequel.com/
 5. `brew install python3` or `sudo yum install python34u python34u-wheel python34-devel.x86_64 python34-setuptools` We use python for conversion and heavy scripts
@@ -36,6 +34,8 @@
 12. Set up a `run_data` folder in your `/algorithms` folder of your app
 	* This folder is already in .gitignore and will not be tracked
 13. Navigate to the root folder and run `npm install`
+14. Navigate to the root folder and run `bundle install` to install Rails and all gems 
+	   * if you are having trouble installing pg 0.1 8.4, follow the instructions here: https://stackoverflow.com/questions/6040583/cant-find-the-libpq-fe-h-header-when-trying-to-install-pg-gem
 
 ## Test out that you can start the rails server
 * `rake db:create && rake db:migrate`
