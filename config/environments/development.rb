@@ -37,7 +37,6 @@ config.web_console.whiny_requests = false
   # Raises helpful error messages.
   config.assets.raise_runtime_errors = true
 
-  config.s3_bucket = 'pathology-imageviewer-dev'
   config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
   config.data_directory = 'data'
 

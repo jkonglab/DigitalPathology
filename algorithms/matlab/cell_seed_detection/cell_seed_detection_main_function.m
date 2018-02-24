@@ -235,6 +235,11 @@ for i = 1:size(peaks,1)
     
 end
 
+figure;imshow(I,[]);
+figure;imshow(I,[]);hold on;scatter(peaks(stage1TF,1), peaks(stage1TF,2), 100, 'c+');
+scatter(peaks(~stage1TF,1), peaks(~stage1TF,2), 100, 'c+');    
+
+
 end
 
 

@@ -1,4 +1,4 @@
-class CreateResultsTable < ActiveRecord::Migration
+class CreateResultsTable < ActiveRecord::Migration[4.2]
   def change
     create_table :results do |t|
     	t.references :run

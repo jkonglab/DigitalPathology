@@ -1,4 +1,4 @@
-class CreateClinicalData < ActiveRecord::Migration
+class CreateClinicalData < ActiveRecord::Migration[4.2]
   def change
     create_table :clinical_data do |t|
       t.integer :image_id

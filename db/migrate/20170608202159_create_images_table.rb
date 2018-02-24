@@ -1,12 +1,7 @@
-class CreateImagesTable < ActiveRecord::Migration
+class CreateImagesTable < ActiveRecord::Migration[4.2]
   def change
     create_table :images do |t|
       t.string :title, :default=> ''
-      t.string :slug
-      t.string :format
-      t.string :path, :null=>false
-      t.integer :overlap
-      t.integer :tile_size
       t.integer :height
       t.integer :width
       t.timestamps

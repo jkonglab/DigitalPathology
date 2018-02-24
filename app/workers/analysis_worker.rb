@@ -1,29 +1,24 @@
 class AnalysisWorker
   include Sidekiq::Worker
+  attr_accessor :run, :tile_x, :tile_y
 
-  def perform(run_id, tile_x, tile_y, tile_width, tile_height)
-  	@run = Run.find(run_id)
-  	@algorithm = @run.algorithm
+  def perform(run_id, tile_x, tile_y)
+    @run = Run.find(run_id)
+    @algorithm = @run.algorithm
     @image = @run.image
     @tile_x = tile_x.to_i
     @tile_y = tile_y.to_i
-    @tile_width = tile_width.to_i
-    @tile_height = tile_height.to_i
-
-    algorithm_language = Algorithm::LANGUAGE_LOOKUP_INVERSE[@algorithm.language]
-  	algorithm_path = Rails.root.to_s + "/algorithms/#{algorithm_language}"
-  	image_path = Rails.root.to_s + '/public/' + Rails.application.config.data_directory + '/' + @image.upload_file_name
-    run_folder = Rails.root.to_s + '/algorithms/run_data/' + 'run_' + @run.id.to_s + '_' + @run.run_at.to_s
-    output_file_name = '/output_' + tile_x.to_s + '_' + tile_y.to_s + '.json'
-    
+    @tile_width = @run.tile_size
+    @tile_height = @run.tile_size
+    output_file = File.join(@run.run_folder, "/output_#{tile_x.to_s}_#{tile_y.to_s}.json")
     parameters = convert_parameters_cell_array_string(@run.parameters)
 
     if @algorithm.language == Algorithm::LANGUAGE_LOOKUP["matlab"]
-      %x{cd #{algorithm_path}; matlab -nodisplay -r "main('#{image_path}','#{run_folder}',#{parameters},'#{@algorithm.name}',#{tile_x},#{tile_y},#{tile_width},#{tile_height}); exit;"}
+      %x{cd #{algorithm_path}; matlab -nodisplay -r "main('#{@image.tile_folder_path}','#{output_file}',#{parameters},'#{@algorithm.name}',#{@tile_x},#{@tile_y},#{@tile_width},#{@tile_height}); exit;"}
     end
 
     timer = 0
-    until File.exist?(run_folder + output_file_name)
+    until File.exist?(output_file)
       timer +=1
       sleep 1
       if timer > 300
@@ -32,9 +27,9 @@ class AnalysisWorker
     end
 
     if @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"]
-      handle_3d_volume_output_generation(run_folder)
+      handle_3d_volume_output_generation
     else
-      outputs = JSON.parse(File.read(run_folder + output_file_name))
+      outputs = JSON.parse(File.read(output_file))
       outputs.each do |output|
         if @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["contour"]
           svg_data = convert_to_svg_contour(output)
@@ -44,8 +39,8 @@ class AnalysisWorker
           svg_data = ""
         end
 
-        new_result = @run.results.new(:tile_x => tile_x,
-          :tile_y => tile_y,
+        new_result = @run.results.new(:tile_x => @tile_x,
+          :tile_y => @tile_y,
           :raw_data => output,
           :svg_data => svg_data,
           :run_at => @run.run_at)
@@ -61,13 +56,15 @@ class AnalysisWorker
     retry
     end
 
-    if @run.reload.tiles_processed >= @run.total_tiles
-      @run.update_attributes!(:complete => true)
-    end
+    @run.check_if_done
   end
 
-  def handle_3d_volume_output_generation(run_folder)
-    Dir.entries(run_folder + '/').each do |file_name|
+  def algorithm_path
+    return File.join(Rails.root.to_s, 'algorithms', Algorithm::LANGUAGE_LOOKUP_INVERSE[@algorithm.language])
+  end
+
+  def handle_3d_volume_output_generation
+    Dir.entries(@run.run_folder + '/').each do |file_name|
       if file_name.include?('.tif')
         image_suffix =  file_name.split('.')[-1]
         image_title = file_name.split('.' + image_suffix)[0]
@@ -80,10 +77,10 @@ class AnalysisWorker
 
         new_file_name = "#{new_image.id}_#{file_name}"
         new_image.update_attributes(:upload_file_name => new_file_name)
-        %x{cd #{run_folder};
+        %x{cd #{@run.run_folder};
           mv #{file_name} #{new_file_name}
         }
-        ConversionWorker.perform_async(new_image.id, run_folder)
+        ConversionWorker.perform_async(new_image.id, @run.run_folder)
       end
     end
   end

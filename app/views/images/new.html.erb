@@ -2,7 +2,8 @@
 	$(document).ready(function() {
 		$(".upload").upload({
 			maxSize: 1073741824,
-			beforeSend: onBeforeSend
+			beforeSend: onBeforeSend,
+			postKey: 'image[file]'
 		}).on("start.upload", onStart)
 		  .on("complete.upload", onComplete)
 		  .on("filestart.upload", onFileStart)
@@ -28,10 +29,9 @@
 	}
 	function onBeforeSend(formData, file) {
 		console.log("Before Send");
-		formData.append("test_field", "test_value");
 		var file_name_lower = file.name.toLowerCase();
 		   if (file_name_lower.indexOf(".svs") < 0 && file_name_lower.indexOf(".ndpi") < 0 && file_name_lower.indexOf(".jpg") < 0 && file_name_lower.indexOf(".jpeg") < 0 && file_name_lower.indexOf(".tif") < 0 && file_name_lower.indexOf(".png") < 0) {
-       		alert("Your file type is not supported. Please upload an SVS or NDPI file ");
+       		alert("Your file type is not supported. NDPI, SVS, JPG, TIF, PNG are supported at this time");
        		 return false;
     	}
 		return formData;
@@ -52,7 +52,6 @@
 			.find(".progress").text("Waiting");
 	}
 	function onComplete(e) {
-		console.log("Complete");
 		// All done!
 	}
 	function onFileStart(e, file) {

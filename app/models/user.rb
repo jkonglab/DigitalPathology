@@ -9,4 +9,12 @@ class User < ActiveRecord::Base
   has_many :annotations
   has_many :runs
   has_many :results, through: :runs
+  
+  def self.current
+    Thread.current[:user]
+  end
+  
+  def self.current=(user)
+    Thread.current[:user] = user
+  end
 end

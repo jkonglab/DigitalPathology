@@ -1,11 +1,11 @@
-function main_output = main(image_folder_path, output_file_path, extra_parameters_array, algorithm_name, tile_x, tile_y, tile_width, tile_height)
+function main_output = main(image_folder_path, output_file_name, extra_parameters_array, algorithm_name, tile_x, tile_y, tile_width, tile_height)
    addpath('.')
    addpath(['./' algorithm_name]) 
    dzi_size = 2000;
    dzi_x_index = floor(tile_x / dzi_size);
    dzi_y_index = floor(tile_y / dzi_size);
-   x_offset =  mod(tile_x, dzi_size)
-   y_offset =  mod(tile_y, dzi_size)
+   x_offset =  mod(tile_x, dzi_size);
+   y_offset =  mod(tile_y, dzi_size);
    
    items = dir(image_folder_path);
    subfolders = {items([items.isdir]).name};
@@ -15,8 +15,14 @@ function main_output = main(image_folder_path, output_file_path, extra_parameter
    image_file = strcat(image_folder_path, '/', num2str(maximum), '/', num2str(dzi_x_index), '_', num2str(dzi_y_index), '.jpeg')
 
    if tile_width ~= 0 && tile_height ~= 0
-      entire_image = imread(image_file);
-      tiled_roi = entire_image(y_offset+1:y_offset + tile_height, x_offset+1:x_offset + tile_width, :);
+      Rows = [y_offset+1, y_offset + tile_height];
+      Cols = [tile_x+1, tile_x + tile_width];
+      if contains(image_path, '.ndpi') || contains(image_path, '.svs')
+        tiled_roi = imread(image_path,'Index',1,'PixelRegion',{Rows,Cols});
+      else
+        entire_image = imread(image_path);
+        tiled_roi = entire_image(tile_y+1:tile_y + tile_height, tile_x+1:tile_x + tile_width, :);
+      end
    else
       tiled_roi = [];
    end
@@ -25,7 +31,7 @@ function main_output = main(image_folder_path, output_file_path, extra_parameter
    main_function_handler = str2func(strcat(algorithm_name, '_main_function'));
    postprocessing_function_handler = str2func(strcat(algorithm_name, '_postprocess_function'));
    
-   main_input = preprocessing_function_handler(tiled_roi, output_file_path, extra_parameters_array{:});
+   main_input = preprocessing_function_handler(tiled_roi, output_file_name, extra_parameters_array{:});
    main_output = main_function_handler(main_input, extra_parameters_array{:});
-   postprocessing_function_handler(main_output, output_file_path);
+   postprocessing_function_handler(main_output, output_file_name);
 end

@@ -11,6 +11,18 @@ class Run < ActiveRecord::Base
 		self.results.delete_all
 	end
 
+	def check_if_done
+		if (self.total_tiles == 0 || (self.tiles_processed >= self.total_tile))
+			self.update_attributes!(:processing=>false, :complete=>true)
+		end
+	end
+
+	def run_folder
+    	run_data_path = File.join(Rails.root.to_s, 'algorithms', 'run_data')
+    	run_folder = 'run_' + self.id.to_s + '_' + self.run_at.to_s
+    	File.join(run_data_path, run_folder)
+  	end
+
 	def status_words
 		if self.complete
 			return 'Complete'

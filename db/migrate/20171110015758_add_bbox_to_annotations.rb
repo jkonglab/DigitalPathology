@@ -1,4 +1,4 @@
-class AddBboxToAnnotations < ActiveRecord::Migration
+class AddBboxToAnnotations < ActiveRecord::Migration[4.2]
   def change
   	add_column :annotations, :width, :integer
   	add_column :annotations, :height, :integer

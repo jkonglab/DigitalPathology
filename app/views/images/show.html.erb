@@ -4,7 +4,7 @@
 			<%= render partial: "drawer_home", locals: { image: @image } %>
 		</div>
 		<div class="drawer-tab drawer-annotations">
-			<%= render partial: "drawer_annotations", locals: { annotation: @annotation, image: @slice, annotations: @annotations } %>
+			<%= render partial: "drawer_annotations", locals: { annotation: @annotation, image: @image_shown, annotations: @annotations } %>
 		</div>
 		<div class="drawer-tab drawer-data">
 			<%= render partial: "drawer_data", locals: { image_json: @image_json, image: @image } %>
@@ -72,7 +72,7 @@
 		preserveViewport: true,
 	    id:            "openseadragon-container",
 	    prefixUrl:     "/openseadragon/images/",
-	    tileSources:   "/<%=Rails.application.config.data_directory%>/<%=@slice.file_name_prefix%>/<%=@slice.file_name_prefix%>.dzi"
+	    tileSources:   "/<%=@image_shown.dzi_url%>"
 	});
 
 	viewer.initializeAnnotations();

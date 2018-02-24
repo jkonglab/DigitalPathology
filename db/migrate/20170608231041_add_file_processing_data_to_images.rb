@@ -1,7 +1,6 @@
-class AddFileProcessingDataToImages < ActiveRecord::Migration
+class AddFileProcessingDataToImages < ActiveRecord::Migration[4.2]
   def change
   	add_column :images, :processing, :boolean, :default=> false
-  	add_column :images, :original_file_name, :string
-  	change_column :images, :path, :string, :null => true
+  	add_column :images, :complete, :boolean, :default=> false
   end
 end

@@ -35,7 +35,7 @@
     <div class="bmd-layout-content">
 		<div class="row">
 			<div class="col-12">
-				<div id="<%=@image.upload_file_name.parameterize%>" class="openseadragon">
+				<div id="<%=@image.file_file_name.parameterize%>" class="openseadragon">
 				</div>
 			</div>
 		</div>
@@ -48,9 +48,10 @@
 	var results_svg = [];
 	var annotation = '<%=raw(@annotation.data.to_json) %>';
 	var viewer = OpenSeadragon({
-	    id:            "<%=@image.upload_file_name.parameterize%>",
+		preserveViewport: true,
+	    id:            "<%=@image.file_file_name.parameterize%>",
 	    prefixUrl:     "/openseadragon/images/",
-	    tileSources:   "/<%=Rails.application.config.data_directory%>/<%=@image.file_name_prefix%>/<%=@image.file_name_prefix%>.dzi",
+	    tileSources:   "/<%=@image.dzi_url%>"
 	});
 	var exclude_indices = [];
 

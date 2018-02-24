@@ -1,10 +1,11 @@
 class ImagesController < ApplicationController
   include ApplicationHelper
-
-  before_action :authenticate_user!, :only => [:create, :new]
+  before_action :set_current_user
+  before_action :authenticate_user!, :except => [:index, :show]
   before_action :set_image_validated, :only => [:show, :add_single_clinical_data, :add_upload_clinical_data, :get_slice, :import_annotations]
   before_action :set_images_validated, :only =>[:confirm_delete, :delete, :make_public, :make_private, :confirm_share, :share]
   respond_to :json, only: [:get_slice]
+
 
   autocomplete :user, :email
     
@@ -20,16 +21,14 @@ class ImagesController < ApplicationController
   end
 
   def create
-    uploaded_io = params[:file]
-    original_filename = uploaded_io.original_filename #myfile.svs
-    image = Image.create_new_image(original_filename, current_user.id)
-
-    File.open(Rails.root.join('public', Rails.application.config.data_directory, image.upload_file_name), 'wb') do |file|
-        file.write(uploaded_io.read)
-    end
-
-    ConversionWorker.perform_async(image.id)
-    redirect_to my_images_images_path, notice: 'Image created, please wait for it to be processed.'
+    @image = Image.create(image_params)
+    @image.title = @image.file_file_name.gsub('_', ' ')
+    @image.image_type = Image::IMAGE_TYPE_TWOD
+    UserImageOwnership.create!(
+      :user_id=> current_user.id,:image_id=> @image.id)
+    @image.save
+    ConversionWorker.perform_async(@image.id)
+    redirect_to my_images_images_path, notice: 'Image created, please wait for it to be processed.' and return
   end
 
   def show
@@ -39,7 +38,7 @@ class ImagesController < ApplicationController
     @annotations = @image.visibility == Image::VISIBILITY_PRIVATE ? @image.annotations.where(:user_id=>current_user.id).order('id desc') : @image.annotations
     @clinical_data = @image.clinical_data || {}
     @slices = Image.where(:parent_id => @image.id).order('slice_order asc')
-    @slice = @image.threed? && @image.parent_id.blank? ? @slices.first : @image
+    @image_shown = @image.threed? && @image.parent_id.blank? ? @slices.first : @image
   end
 
   def get_slice
@@ -177,6 +176,9 @@ class ImagesController < ApplicationController
   end
 
   private
+  def image_params
+    params.require(:image).permit(:file)
+  end
 
   def set_image_validated
     @image = Image.find(params[:id])
