@@ -58,6 +58,7 @@
 	_.each(results_data, function(element, index){
 		if(element[0][0] == "circle"){
 			element[0][1]["index"] = index;
+			element[0][1]["r"] = 0.02;
 			element[0][1]["data-id"] = element[1];
 			element[0][1]["fill"] = "lime"
 			element[0][1]["fill-opacity"] = 0.1;

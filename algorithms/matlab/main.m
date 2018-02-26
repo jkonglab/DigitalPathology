@@ -4,15 +4,15 @@ function main_output = main(image_folder_path, output_file_path, extra_parameter
    dzi_size = 2000;
    dzi_x_index = floor(tile_x / dzi_size);
    dzi_y_index = floor(tile_y / dzi_size);
-   x_offset =  mod(tile_x, dzi_size)
-   y_offset =  mod(tile_y, dzi_size)
+   x_offset =  mod(tile_x, dzi_size);
+   y_offset =  mod(tile_y, dzi_size);
    
    items = dir(image_folder_path);
    subfolders = {items([items.isdir]).name};
    folder_numbers = cell2mat(cellfun(@str2num, subfolders(:,1:end), 'un', 0));
    maximum = max(folder_numbers);
    
-   image_file = strcat(image_folder_path, '/', num2str(maximum), '/', num2str(dzi_x_index), '_', num2str(dzi_y_index), '.jpeg')
+   image_file = strcat(image_folder_path, '/', num2str(maximum), '/', num2str(dzi_x_index), '_', num2str(dzi_y_index), '.jpeg');
 
    if tile_width ~= 0 && tile_height ~= 0
       entire_image = imread(image_file);

@@ -11,10 +11,13 @@ class AnalysisWorker
     @tile_width = @run.tile_size
     @tile_height = @run.tile_size
     output_file = File.join(@run.run_folder, "/output_#{tile_x.to_s}_#{tile_y.to_s}.json")
-    parameters = convert_parameters_cell_array_string(@run.parameters)
 
     if @algorithm.language == Algorithm::LANGUAGE_LOOKUP["matlab"]
+      parameters = convert_parameters_cell_array_string(@run.parameters)
       %x{cd #{algorithm_path}; matlab -nodisplay -r "main('#{@image.tile_folder_path}','#{output_file}',#{parameters},'#{@algorithm.name}',#{@tile_x},#{@tile_y},#{@tile_width},#{@tile_height}); exit;"}
+    elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["python"]
+      parameters = @run.parameters
+      %x{cd #{algorithm_path}; source env/bin/activate; python -m main #{@image.tile_folder_path} #{output_file} #{parameters} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height}}
     end
 
     timer = 0
@@ -56,7 +59,13 @@ class AnalysisWorker
     retry
     end
 
-    @run.check_if_done
+    begin
+      @run.reload.check_if_done
+    rescue ActiveRecord::StaleObjectError
+      @run.reload.check_if_done
+    retry
+    end
+
   end
 
   def algorithm_path
@@ -71,9 +80,11 @@ class AnalysisWorker
         
         new_image = Image.create!(
           :title => "Run #{@run.id.to_s}: #{image_title}", 
-          :user_id=>@run.user_id, 
           :image_type => Image::IMAGE_TYPE_TWOD,
           :generated_by_run_id => @run.id)
+
+        UserImageOwnership.create!(
+          :user_id=> @run.user_id, :image_id=> new_image.id)
 
         new_file_name = "#{new_image.id}_#{file_name}"
         new_image.update_attributes(:upload_file_name => new_file_name)
