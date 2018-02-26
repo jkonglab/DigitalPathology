@@ -12,28 +12,7 @@
 		<%= submit_tag "Confirm Delete", :style=>"float:right", :class=> 'btn btn-success btn-raised btn-danger'%>
 		<br/><br/>
 		<div class="image-table">
-			<table class="table table-hover">
-			  <thead>
-			  	<tr>
-			  		<th></th>
-				  	<th>ID</th>
-				  	<th>Image Name</th>
-				  	<th>Date Uploaded</th>
-				  	<th>Status</th>
-			  	</tr>
-			  </thead>
-			  	<tbody>
-				  	<% @images.each do |image| %>
-				  		<tr class="image-link">
-				  			<td><%= check_box_tag "image_ids[]", image.id, :default=> true%></td>
-				  			<td><%=image.id%></td>
-				  			<td><a href="<% if !image.path.blank?%><%=image_path(image)%><% end %>"><%=image.title%></a></td>
-				  			<td><%=image.created_at%></td>
-				  			<td><% if image.processing %>Processing<% elsif !image.path.blank?%>Available<%else%>Awaiting Processing<% end%></td>
-				  		</tr>
-				  	<% end %>
-			  	</tbody>
-			</table>
+			<%= render :partial => 'images/confirm_table.html.erb', :locals => { :images=>@images}%>
 		</div>
 	<% end %>
 

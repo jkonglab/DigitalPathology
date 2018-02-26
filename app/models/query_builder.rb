@@ -2,7 +2,7 @@ class QueryBuilder
   attr_reader :query_params, :params
 
   def initialize(params)
-    @params = params.stringify_keys!
+    @params = params.stringify_keys
     @query_params = params
   end
 

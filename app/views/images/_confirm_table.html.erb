@@ -1,0 +1,29 @@
+<table class="table table-hover">
+	<thead>
+		<tr>
+			<th></th>
+		  	<th>ID</th>
+		  	<th>Image Name</th>
+		  	<th>Date Uploaded</th>
+		  	<th>Status</th>
+		</tr>
+	</thead>
+
+	<tbody>
+	  	<% images.each do |image| %>
+	  		<tr class="image-link">
+	  			<td><%= check_box_tag "image_ids[]", image.id, :default => true, class: 'image-check-box'%></td>
+	  			<td class="d-none d-md-table-cell"><%=image.id%></td>
+	  			<td>
+	  				<% if image.complete %>
+	  					<a href="<%=image_path(image)%>"><%=image.title%></a>
+	  				<% else%>
+	  					<%=image.title%>
+	  				<% end %>
+	  			</td>
+	  			<td><%=image.created_at%></td>
+	  			<td class="d-none d-md-table-cell"><% if image.processing %>Processing<% elsif image.complete %>Available<%else%>Awaiting Processing<% end%></td>
+	  		</tr>
+	  	<% end %>
+	</tbody>
+</table>
