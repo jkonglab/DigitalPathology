@@ -17,8 +17,8 @@ def main(argv):
 
 	# Get the roi region to be analyzed
 	dzi_size = 2000
-	dzi_x_index = math.floor(tile_x / dzi_size)
-	dzi_y_index = math.floor(tile_y / dzi_size)
+	dzi_x_index = int(math.floor(tile_x / dzi_size))
+	dzi_y_index = int(math.floor(tile_y / dzi_size))
 	x_offset = tile_x%dzi_size
 	y_offset = tile_y%dzi_size
 	image_file = get_dzi_file(tile_folder_path, dzi_x_index, dzi_y_index)
