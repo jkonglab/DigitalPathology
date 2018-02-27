@@ -43,7 +43,8 @@ class ImagesController < ApplicationController
 
   def get_slice
     @slice = Image.where(:parent_id => @image.id).order('slice_order asc')[params[:slice].to_i]
-    respond_with @slice
+    slice_dzi = @slice.dzi_url
+    respond_with slice_dzi
   end
 
   def my_images
