@@ -50,7 +50,7 @@ class TilingWorker
   end
 
   def algorithm_path
-    return File.join(Rails.root.to_s, 'algorithms', Algorithm::LANGUAGE_LOOKUP_INVERSE[@algorithm.language])
+    return File.join(Rails.root.to_s, 'algorithms', 'matlab')
   end
 
   def convert_and_save_annotation_points
