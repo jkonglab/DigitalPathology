@@ -3,6 +3,7 @@ class AnnotationsController < ApplicationController
 
   def create
     image = Image.find(params[:image_id])
+    @annotation = image.annotations.new
 
     if image.threed? && image.parent_id.blank?
       image = Image.where(:parent_id => image.id).order('slice_order asc')[0]
@@ -13,7 +14,6 @@ class AnnotationsController < ApplicationController
     height = (params[:height].to_f / 100) * image.height
     x_point = (params[:x].to_f / 100) * image.width
     y_point = (params[:y].to_f / 100) * image.height
-    @annotation = image.annotations.new
     @annotation.update_attributes({
       :user_id=>current_user.id,
       :data=> data, 

@@ -154,8 +154,10 @@
 			var saved_annotations = viewer.annotations.get();
 			var is_drawing_mode = $('.drawer-annotations').hasClass('active');
 
-			$.get( "<%=@image.id%>/get_slice?slice="+slice_num.toString(), function( data ) {
-				viewer.open('/'+data);
+			$.ajax({
+  				url: "<%=@image.id%>/get_slice?slice="+slice_num.toString()
+  			}).done(function(data){
+  				viewer.open('/'+data.dzi_url);
 				viewer.viewport.fitBounds(current_bounds);
 				stopDrawing();
 				viewer.shutdownAnnotations();

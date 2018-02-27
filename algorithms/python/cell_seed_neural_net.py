@@ -59,13 +59,13 @@ def main(input, parameters):
 	seg = heatmap > 0.5
 	detections = np.where(np.multiply(seg, heatmap == filters.maximum_filter(heatmap, 3)))
 
-	fig, ax = plt.subplots()
-	ax.imshow(eval_img, interpolation='nearest', cmap=plt.cm.gray)
-	plt.plot(detections[0], detections[1], 'b.', markersize=4, mew=3)
+	# fig, ax = plt.subplots()
+	# ax.imshow(eval_img, interpolation='nearest', cmap=plt.cm.gray)
+	# plt.plot(detections[0], detections[1], 'b.', markersize=4, mew=3)
 
-	ax.axis('image')
-	ax.set_xticks([])
-	ax.set_yticks([])
-	plt.savefig(fname='demo.tif')
+	# ax.axis('image')
+	# ax.set_xticks([])
+	# ax.set_yticks([])
+	# plt.savefig(fname='demo.tif')
 
 	return detections
