@@ -119,7 +119,10 @@ class ImagesController < ApplicationController
       :image_type => Image::IMAGE_TYPE_THREED, 
       :visibility => first_image.visibility,
       :processing => 0,
-      :path => first_image.path,
+      :file_file_name => first_image.file_file_name,
+      :file_content_type => first_image.file_content_type,
+      :file_file_size => first_image.file_file_size,
+      :file_updated_at => first_image.file_updated_at,
       :clinical_data => first_image.clinical_data,
       :generated_by_run_id => first_image.generated_by_run_id
     )

@@ -12,24 +12,31 @@
 <br/><br/>
 <div class="image-table">
 	<table class="table table-hover">
-	  <thead>
-	  	<tr>
-		  	<th class="d-none d-md-table-cell"><%= sort_link @q, :id, "ID"%></th>
-		  	<th><%= sort_link @q, :title, "Image Name"%></th>
-		  	<th><%= sort_link @q, :uploaded_at, "Uploaded"%></th>
-		  	<th>Status</th>
-	  	</tr>
-	  </thead>
-	  <tbody>
-	  	<% @images.each do |image| %>
-	  		<tr class="image-link" <% if !image.path.blank?%>data-link="<%=image_path(image)%>"<% end %>>
-	  			<td class="d-none d-md-table-cell"><%=image.id%></td>
-	  			<td><%=image.title%></td>
-	  			<td><%=image.created_at%></td>
-	  			<td><% if image.processing %>Processing<% elsif !image.path.blank?%>Available<%else%>Awaiting Processing<% end%></td>
-	  		</tr>
-	  	<% end %>
-	  </tbody>
+		<thead>
+			<tr>
+		  		<th class="d-none d-md-table-cell"><%= sort_link @q, :id, "ID"%></th>
+		  		<th><%= sort_link @q, :title, "Image Name"%></th>
+		  		<th><%= sort_link @q, :uploaded_at, "Uploaded"%></th>
+		  		<th class="d-none d-md-table-cell">Status</th>
+			</tr>
+		</thead>
+		<tbody>
+			<% @images.each do |image| %>
+				<tr class="image-link">
+					<td class="d-none d-md-table-cell"><%=image.id%></td>
+					<td>
+						<% if image.complete %>
+							<a href="<%=image_path(image)%>"><%=image.title%></a>
+						<% else%>
+							<%=image.title%>
+						<% end %>
+					</td>
+					<td><%=image.created_at%></td>
+					<td class="d-none d-md-table-cell"><% if image.processing %>Processing<% elsif image.complete %>Available<%else%>Awaiting Processing<% end%>
+					</td>
+				</tr>
+			<% end %>
+		</tbody>
 	</table>
 </div>
 </div>
