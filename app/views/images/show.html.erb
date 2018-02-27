@@ -155,7 +155,7 @@
 			var is_drawing_mode = $('.drawer-annotations').hasClass('active');
 
 			$.get( "<%=@image.id%>/get_slice?slice="+slice_num.toString(), function( data ) {
-				viewer.open(data);
+				viewer.open('/'+data);
 				viewer.viewport.fitBounds(current_bounds);
 				stopDrawing();
 				viewer.shutdownAnnotations();
