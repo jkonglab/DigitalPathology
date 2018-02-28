@@ -1,7 +1,6 @@
 class RunsController < ApplicationController
   respond_to :html, :json
   before_action :authenticate_user!, :only => [:create, :index, :show]
-
   def index
     @runs = current_user.runs.order('id desc')
   end
@@ -25,7 +24,12 @@ class RunsController < ApplicationController
     end
 
     algorithm = Algorithm.find(@run.algorithm_id)
-    annotation = Annotation.find(@run.annotation_id)
+    if @run.annotation_id.blank?
+      @run.update_attributes!(:annotation_id => 0)
+      annotation = image.annotations.new(:label=> 'Whole Slide')
+    else
+      annotation = Annotation.find(@run.annotation_id)
+    end
     algorithm_parameters = algorithm.parameters.sort_by { |k| k["order"] }
     run_parameters = []
 

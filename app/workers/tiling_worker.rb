@@ -7,12 +7,11 @@ class TilingWorker
     @run = Run.find(run_id)
     @run_time = Time.now.to_i
     @image = run.image
-    @annotation = run.annotation
     @algorithm = run.algorithm
     num_tiles_counter = 0
     tile_size = @run.tile_size || 200
 
-    if @image && @image.complete && @annotation && !@run.processing
+    if @image && @image.complete && !@run.processing
         @run.update_attributes!(:run_at=>@run_time, :processing=>true, :tiles_processed=>0)
         
         %x{mkdir #{@run.run_folder}}
@@ -20,7 +19,13 @@ class TilingWorker
         if @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"]
             AnalysisWorker.perform_async(run_id, 0, 0, 0, 0)
         else
-            x, y = convert_and_save_annotation_points
+            if run.annotation_id != 0
+              @annotation = run.annotation
+              x, y = convert_and_save_annotation_points
+            else
+              x = [0, 0, 100, 100]
+              y = [0, 100, 100, 0]
+            end
             
             %x{cd #{algorithm_path};
                 matlab -nodisplay -r "tiling('#{@image.file.path}','#{@run.run_folder}', #{tile_size}); exit;"

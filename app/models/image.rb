@@ -56,7 +56,7 @@ class Image < ActiveRecord::Base
     h = super(options)
     h[:dzi_url] = self.dzi_url
     h
-end
+  end
 
 	def self.ransackable_attributes(auth_object = nil)
   		super - ['id', 'created_at', 'format', 'slug', 'path', 'overlap', 'tile_size', 'updated_at', 'file_name_prefix', "user_id"]

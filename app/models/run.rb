@@ -32,4 +32,13 @@ class Run < ActiveRecord::Base
 			return 'In Queue'
 		end
 	end
+
+
+  	def annotation()
+    	h = super
+    	if self.annotation_id == 0
+    		h = self.image.annotations.new(:label=> 'Whole Slide')
+    	end
+    	h
+  	end
 end
