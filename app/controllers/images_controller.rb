@@ -2,7 +2,7 @@ class ImagesController < ApplicationController
   include ApplicationHelper
   before_action :set_current_user
   before_action :authenticate_user!, :except => [:index, :show]
-  before_action :set_image_validated, :only => [:show, :add_single_clinical_data, :add_upload_clinical_data, :get_slice, :import_annotations]
+  before_action :set_image_validated, :only => [:download_annotations, :show, :add_single_clinical_data, :add_upload_clinical_data, :get_slice, :import_annotations]
   before_action :set_images_validated, :only =>[:confirm_delete, :delete, :make_public, :make_private, :confirm_share, :share]
   respond_to :json, only: [:get_slice]
 
@@ -177,6 +177,31 @@ class ImagesController < ApplicationController
     rescue JSON::ParserError
       redirect_to :back, alert: 'Error parsing JSON file.  Please validate the file using a linter and make sure keys are double quoted!'
     end
+  end
+
+  def download_annotations
+    @annotations = @image.visibility == Image::VISIBILITY_PRIVATE ? @image.annotations.where(:user_id=>current_user.id).order('id desc') : @image.annotations
+    output = []
+
+    @annotations.each do |annotation|
+      result_hash = {}
+      result_hash["label"] = annotation.label
+      result_hash["tile_coordinate"] = [annotation.x_point, annotation.y_point]
+      result_hash["width"] = annotation.width
+      result_hash["height"] = annotation.height
+      points = []
+      annotation_points = annotation.data[0][1]["d"].split("M")[1].split("Z")[0].split(" L")
+      annotation_points.each do |point|
+        point_array = point.split(' ')
+        points << [((point_array[0].to_f*annotation.width)/100).to_i, ((point_array[1].to_f*annotation.height)/100).to_i]
+      end
+
+      result_hash["absolute_coordinates"] = points
+
+      output << result_hash
+    end
+
+    send_data output.to_json, :type => 'application/json; header=present', :disposition => "attachment; filename=#{@image.title}_annotations.json"
   end
 
   private
