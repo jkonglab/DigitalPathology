@@ -25,6 +25,13 @@ class TilingWorker
             else
               x = [0, 0, 100, 100]
               y = [0, 100, 100, 0]
+              CSV.open(File.join(@run.run_folder, "/x_coordinates.csv"), "w") do |csv|
+                csv << x
+              end
+
+              CSV.open(File.join(@run.run_folder, "/y_coordinates.csv"), "w") do |csv|
+                csv << y
+              end
             end
             
             %x{cd #{algorithm_path};
