@@ -106,8 +106,10 @@
 			svgs.push(element[0]);
 		});
 
-		var annotation_data = JSON.parse(annotation)[0];
-		svgs.push(annotation_data);
+		if(annotation && annotation != 'null'){
+			var annotation_data = JSON.parse(annotation)[0];
+			svgs.push(annotation_data);
+		}
 		return svgs;
 	}
 
