@@ -23,7 +23,7 @@ function main_output = main(image_folder_path, output_file_path, extra_parameter
           end_height = image_size(1);
       end
       if end_width > image_size(2)
-          end_height = image_size(2);
+          end_width = image_size(2);
       end
       tiled_roi = entire_image(y_offset+1:end_height, x_offset+1:end_width, :);
    else
