@@ -175,7 +175,7 @@ class ImagesController < ApplicationController
         contour_svg = convert_to_svg_contour(contour, @image)
         annotation.user_id = current_user.id
         annotation.update_attributes({
-          :data=>contour_svg,
+          :data=>[contour_svg],
           :label=>annotation_hash["name"]
           })
         annotation.save!
