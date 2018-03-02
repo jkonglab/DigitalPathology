@@ -199,8 +199,9 @@ class ImagesController < ApplicationController
       points = []
       annotation_points = annotation.data[0][1]["d"].split("M")[1].split("Z")[0].split(" L")
       annotation_points.each do |point|
+        puts point
         point_array = point.split(' ')
-        points << [((point_array[0].to_f*annotation.width)/100).to_i, ((point_array[1].to_f*annotation.height)/100).to_i]
+        points << [(((point_array[0].to_f)*@image.width)/100).to_i, (((point_array[1].to_f)*@image.height)/100).to_i]
       end
 
       result_hash["absolute_coordinates"] = points
@@ -208,7 +209,7 @@ class ImagesController < ApplicationController
       output << result_hash
     end
 
-    send_data output.to_json, :type => 'application/json; header=present', :disposition => "attachment; filename=#{@image.title}_annotations.json"
+    send_data output.to_json, :type => 'application/json; header=present', :disposition => "attachment; filename=#{@image.title.split('.')[0]}_annotations.json"
   end
 
   private
