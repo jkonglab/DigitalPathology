@@ -34,6 +34,7 @@ Rails.application.routes.draw do
 
     member do 
       get 'download_results' => 'runs#download_results'
+      get 'get_results' => 'runs#get_results'
     end
   end
   resources :algorithms do

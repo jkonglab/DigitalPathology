@@ -27,3 +27,4 @@ env/bin/activate
 .env
 imageviewer.conf
 /public/dp-data/*
+*.m~

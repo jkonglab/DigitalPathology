@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180222210600) do
+ActiveRecord::Schema.define(version: 20180302042926) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -21,6 +21,8 @@ ActiveRecord::Schema.define(version: 20180222210600) do
     t.integer "language"
     t.integer "output_type"
     t.string "title"
+    t.boolean "multioutput", default: false
+    t.json "multioutput_options"
   end
 
   create_table "annotations", id: :serial, force: :cascade do |t|
@@ -75,6 +77,8 @@ ActiveRecord::Schema.define(version: 20180222210600) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean "exclude"
+    t.string "output_key"
+    t.integer "output_type"
   end
 
   create_table "runs", id: :serial, force: :cascade do |t|

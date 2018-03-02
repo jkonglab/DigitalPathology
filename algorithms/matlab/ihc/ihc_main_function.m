@@ -1,4 +1,4 @@
-function Pos_Contour_T = ihc_main_function(input, stain_setting, upper_threshold, lower_threshold, stain_red, stain_green, stain_blue)
+function result = ihc_main_function(input, stain_setting, upper_threshold, lower_threshold, stain_red, stain_green, stain_blue)
 
 close all; clc;
 % 
@@ -41,8 +41,10 @@ else
     0.286 0.731 0.711];     %Blue
 end
 
-T1 = upper_threshold;  %threshold for strong vs. medium pixel
-T2 = lower_threshold;   %threshold for weak vs. medium pixel
+T1 = upper_threshold;
+T2 = lower_threshold;
+
+
 ARC_LIMIT = 15; %threshold for contour length for smoothing process
 
 if T1<T2
@@ -74,6 +76,9 @@ Pos_Contour = getContour( DAB>=T1, ARC_LIMIT );
 Med_Contour = getContour( ((DAB<T1) & (DAB>=T2)), ARC_LIMIT );
 Low_Contour = getContour( DAB<T2, ARC_LIMIT );
 Pos_Contour_T = {};
+Med_Contour_T = {};
+Low_Contour_T = {};
+
 
 imshow(I,[]); hold on;
 for i = 1:length(Pos_Contour)
@@ -84,4 +89,24 @@ for i = 1:length(Pos_Contour)
     b_t(:,2) = b(:,1);
     Pos_Contour_T{i,1} = b_t;
 end
+
+for i = 1:length(Med_Contour)
+    b = Med_Contour{i};
+    b_t = b;
+    plot(b(:,2), b(:,1), 'g', 'LineWidth', 2);
+    b_t(:,1) = b(:,2);
+    b_t(:,2) = b(:,1);
+    Med_Contour_T{i,1} = b_t;
+end
+
+for i = 1:length(Low_Contour)
+    b = Low_Contour{i};
+    b_t = b;
+    plot(b(:,2), b(:,1), 'g', 'LineWidth', 2);
+    b_t(:,1) = b(:,2);
+    b_t(:,2) = b(:,1);
+    Low_Contour_T{i,1} = b_t;
+end
+
+result = {Pos_Contour_T, Med_Contour_T, Low_Contour_T, Pos_Pix_Num, Med_Pix_Num, Low_Pix_Num, Pos_Pix_Num_Perc, Med_Pix_Num_Perc, Low_Pix_Num_Perc};
 end

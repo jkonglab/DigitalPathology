@@ -32,23 +32,67 @@ class AnalysisWorker
     if @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"]
       handle_3d_volume_output_generation
     else
-      outputs = JSON.parse(File.read(output_file))
-      outputs.each do |output|
-        if @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["contour"]
-          svg_data = convert_to_svg_contour(output)
-        elsif @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["points"]
-          svg_data = convert_to_svg_points(output)
-        else
-          svg_data = ""
+      raw_outputs = JSON.parse(File.read(output_file))
+
+      if !@algorithm.multioutput
+        raw_outputs.each do |output|
+          if @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["contour"]
+            svg_data = convert_to_svg_contour(output)
+          elsif @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["points"]
+            svg_data = convert_to_svg_points(output)
+          else
+            svg_data = ""
+          end
+
+          new_result = @run.results.new(
+            :tile_x => @tile_x,
+            :tile_y => @tile_y,
+            :raw_data => output,
+            :svg_data => svg_data,
+            :run_at => @run.run_at)
+
+          new_result.save
         end
+      else
+        @algorithm.multioutput_options.each_with_index do |option, index|
+          output = raw_outputs[index]
+          output_type = option["output_type"]
+          output_key = option["output_key"]
 
-        new_result = @run.results.new(:tile_x => @tile_x,
-          :tile_y => @tile_y,
-          :raw_data => output,
-          :svg_data => svg_data,
-          :run_at => @run.run_at)
-
-        new_result.save
+          if output_type == Algorithm::OUTPUT_TYPE_LOOKUP["contour"]
+            output.each do |value|
+              svg_data = convert_to_svg_contour(value)
+              new_result = @run.results.create!(
+                :tile_x => @tile_x,
+                :tile_y => @tile_y,
+                :raw_data => value,
+                :svg_data => svg_data,
+                :run_at => @run.run_at,
+                :output_key => output_key,
+                :output_type => output_type)
+            end
+          elsif output_type == Algorithm::OUTPUT_TYPE_LOOKUP["points"]
+            output.each do |value|
+              svg_data = convert_to_svg_points(value)
+              new_result = @run.results.create!(
+                :tile_x => @tile_x,
+                :tile_y => @tile_y,
+                :raw_data => value,
+                :svg_data => svg_data,
+                :run_at => @run.run_at,
+                :output_key => output_key,
+                :output_type => output_type)
+            end
+          else
+            new_result = @run.results.create!(
+            :tile_x => @tile_x,
+            :tile_y => @tile_y,
+            :raw_data => output,
+            :run_at => @run.run_at,
+            :output_key => output_key,
+            :output_type => output_type)
+          end
+        end          
       end
     end
 

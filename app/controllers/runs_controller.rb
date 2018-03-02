@@ -1,6 +1,6 @@
 class RunsController < ApplicationController
   respond_to :html, :json
-  before_action :authenticate_user!, :only => [:create, :index, :show]
+  before_action :authenticate_user!, :only => [:create, :index, :show, :get_results]
   def index
     @runs = current_user.runs.order('id desc')
   end
@@ -12,8 +12,32 @@ class RunsController < ApplicationController
     @slices = Image.where('generated_by_run_id IN (?) AND (image_type = ? OR parent_id IS NOT NULL)', @run.id, Image::IMAGE_TYPE_TWOD).order('id desc')
     @threed_volume = Image.where('generated_by_run_id IN (?) AND image_type = ? AND parent_id IS NULL', @run.id, Image::IMAGE_TYPE_THREED).first
     @annotation = @run.annotation
-    @results = @run.results.order('id asc');
+    
+    if !@algorithm.multioutput
+      @results = @run.results.order('id asc');
+      @results_data = @results.pluck(:svg_data, :id, :exclude)
+    else
+      @results = @run.results.where(:output_key=>@algorithm.multioutput_options[0]["output_key"]).order('id asc')
+      @results_data = @results.pluck(:svg_data, :id, :exclude)
+      @numerical_result_hash = {}
+      @algorithm.multioutput_options.each do |option|
+        key = option["output_key"]
+        if option["output_type"] == Algorithm::OUTPUT_TYPE_LOOKUP["scalar"]
+          @numerical_result_hash[key.to_sym] = @run.results.where(:output_key=>key).pluck(:raw_data).sum
+        elsif option["output_type"] == Algorithm::OUTPUT_TYPE_LOOKUP["percentage"]
+          results = @run.results.where(:output_key=>key).pluck(:raw_data)
+          @numerical_result_hash[key.to_sym] = (results.sum / results.length)
+        end
+      end
+    end
+  end
+
+  def get_results
+    key = params["key"]
+    @run = Run.find(params[:id])
+    @results = @run.results.where(:output_key=>key).order('id asc')
     @results_data = @results.pluck(:svg_data, :id, :exclude)
+    respond_with @results_data.to_json
   end
 
   def create
@@ -68,28 +92,31 @@ class RunsController < ApplicationController
 
   def download_results
     @run = Run.find(params[:id])
-    @results = @run.results.where('exclude IS NOT true').order('id asc')
+    @results = @run.results.where('exclude IS NOT true').order('output_key asc, id asc')
     @algorithm = @run.algorithm
     output = []
 
     @results.each do |result|
       result_hash = {}
+      result_hash["output_key"] = result.output_key
       result_hash["tile_coordinate"] = [result.tile_x, result.tile_y]
       result_hash["local_coordinates"] = result.raw_data
       result_hash["tile_size"] = result.run.tile_size
+      result_hash["raw_data"] = result.raw_data
       absolute_data = result.raw_data.deep_dup
+      output_type = result.output_type || @algorithm.output_type
 
-      if @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["contour"]
+      if output_type == Algorithm::OUTPUT_TYPE_LOOKUP["contour"]
         absolute_data.map{ |data_item|
           data_item[0] += result.tile_x
           data_item[1] += result.tile_y
         }
-      elsif @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["points"]
+        result_hash["absolute_coordinates"] = absolute_data
+      elsif output_type == Algorithm::OUTPUT_TYPE_LOOKUP["points"]
         absolute_data[0] += result.tile_x
         absolute_data[1] += result.tile_y
+        result_hash["absolute_coordinates"] = absolute_data
       end
-
-      result_hash["absolute_coordinates"] = absolute_data
 
       output << result_hash
     end

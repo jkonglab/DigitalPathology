@@ -24,7 +24,8 @@ class Algorithm < ActiveRecord::Base
 		"3d_volume" => 0,
 		"contour" => 1,
 		"scalar" => 2,
-		"points" => 3
+		"points" => 3,
+		"percentage" => 4
 	}
 
 	def title_with_type
