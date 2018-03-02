@@ -18,7 +18,7 @@ class Image < ActiveRecord::Base
   IMAGE_TYPE_THREED = 1
   IMAGE_TYPE_FOURD = 2
 
-  enum visibility: { hidden: 0, public: 1 }
+  enum visibility: { hidden: 0, visible: 1 }
   enum image_type: [:twod, :threed, :fourd]
   before_destroy :destroy_children
 
