@@ -82,7 +82,7 @@
 		guiExtras = gui.addFolder('View Options');
 		guiExtras.open();
 
-		guiExtras.add( guiConfig, 'Zoom', 0.5, 10 ).step(.5).onFinishChange( function() {
+		guiExtras.add( guiConfig, 'Zoom', 0.5, 5 ).step(.1).onFinishChange( function() {
 			ZoomView ( guiConfig.Zoom );
 		} );
 		guiExtras.add( guiConfig, 'Opacity', 0, 1.0 ).step(.1).onFinishChange( function() {
@@ -323,12 +323,12 @@
 
 	var gui, guiView, guiFiles, guiViews, guiScans, guiCamera, guiExtras, guiHelp;
 	var guiConfig = {
-		Zoom: 1.0,
+		Zoom: 0.5,
 		Rotate: 1.0,
 		Vertical: 1.0,
 		Horizontal: 1.0,
 		Opacity: 0.8,
-		Spacing: 5,
+		Spacing: 2,
 				
 		home_view: function() {
 			controls.target.set(0, 0, 0);
@@ -379,7 +379,7 @@
 		count: 26,
 		dir: 'INSERT DIR HERE',
 		angle: 1.5708,
-		startY: 10,
+		startY: 20,
 		startZ: 0,
 		deltaZ: 0,
 		meshY: -50
