@@ -99,6 +99,7 @@ class RunsController < ApplicationController
 
   def annotation_form
     @image = Image.find(params[:image_id])
+    @annotations = @image.private? ? @image.annotations.where(:user_id=>current_user.id).order('id desc') : @image.annotations
     @run = current_user.runs.new
     render partial: 'annotation_form'
   end
