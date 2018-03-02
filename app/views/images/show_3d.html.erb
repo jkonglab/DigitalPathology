@@ -1,0 +1,392 @@
+<div class="container">
+	<%= link_to @image do %>
+	<div style="margin-top:30px;" class="btn-raised btn btn-primary">
+	 		<i style="vertical-align:bottom;" class="material-icons" role="presentation">arrow_back</i>Back to 2D
+	</div>
+	<% end %>
+</div>
+
+<script src=https://rawgit.com/mrdoob/three.js/r83/build/three.min.js ></script>
+<script src=https://rawgit.com/mrdoob/three.js/r83/examples/js/controls/OrbitControls.js ></script>
+<script src=https://rawgit.com/mrdoob/three.js/r83/examples/js/libs/stats.min.js ></script>
+<script src=https://rawgit.com/mrdoob/three.js/r83/examples/js/Detector.js ></script>
+<script src=https://rawgit.com/mrdoob/three.js/r83/examples/js/libs/dat.gui.min.js ></script>
+
+<script> 
+
+	function instructions(){
+		this.Rotate = 'Left Mouse Click';
+		this.Pan = 'Right Mouse Click';
+		this.Zoom = 'Scroll Mouse';
+	}
+
+	function buildGui() {
+		if (gui) {
+		  gui.destroy();
+		  gui = null;
+		}
+
+		gui = new dat.GUI( );
+		var text = new instructions();
+		gui.add(text, 'Rotate');
+		gui.add(text, 'Pan');
+		gui.add(text, 'Zoom');
+		folderGlobal = gui.addFolder( 'Clipping' ),
+		propsGlobalX = {
+			get 'Enable Clipping'() { return renderer.clippingPlanes !== Empty; },
+			set 'Enable Clipping'( v  ) {
+					renderer.clippingPlanes = v ? globalPlanes : Empty; },
+			get 'X-Plane'() { return xPlane.constant; },
+			set 'X-Plane'( v ) { xPlane.constant = v; },
+		};
+		propsGlobalY = {
+			
+			get 'Y-Plane'() { return yPlane.constant; },
+			set 'Y-Plane'( v ) { yPlane.constant = v; },
+		};
+		propsGlobalZ = {
+
+			get 'Z-Plane'() { return zPlane.constant; },
+			set 'Z-Plane'( v ) { zPlane.constant = v; },
+		};
+		propsGlobalD = {
+	
+			get 'D-Plane'() { return dPlane.constant; },
+			set 'D-Plane'( v ) { dPlane.constant = v; },
+		};
+
+		folderGlobal.add( propsGlobalX, 'Enable Clipping' );
+		folderGlobal.add( propsGlobalX, 'X-Plane', -200, 200);
+		folderGlobal.add( propsGlobalY, 'Y-Plane', -200, 200 );
+		folderGlobal.add( propsGlobalZ, 'Z-Plane', -200, 200 );
+		folderGlobal.add( propsGlobalD, 'D-Plane', -200, 200 );
+
+		startTime = Date.now();
+
+		//guiView = gui.addFolder('Zoom / Rotate / Pan');
+		// guiView.add( guiConfig, 'Rotate', -180, 180 ).step(1).onFinishChange( function(){
+		// 	RotateView( guiConfig.Rotate );
+		// } );
+		// guiView.add( guiConfig, 'Vertical', -100, 300 ).step(1).onFinishChange( function() {
+		// 	panView ( 0, guiConfig.Vertical);
+		// } );
+		// guiView.add( guiConfig, 'Horizontal', -100, 300 ).step(1).onFinishChange( function() {
+		// 	panView ( guiConfig.Horizontal, 0);
+		// } );
+
+		guiViews = gui.addFolder('Views');
+		guiViews.add( guiConfig, 'home_view' );
+		guiViews.add( guiConfig, 'top_view' );
+		guiViews.add( guiConfig, 'side_view' );
+
+		guiExtras = gui.addFolder('View Options');
+		guiExtras.open();
+
+		guiExtras.add( guiConfig, 'Zoom', 0.5, 10 ).step(.5).onFinishChange( function() {
+			ZoomView ( guiConfig.Zoom );
+		} );
+		guiExtras.add( guiConfig, 'Opacity', 0, 1.0 ).step(.1).onFinishChange( function() {
+			changeOpacity( guiConfig.Opacity );
+		} );
+		guiExtras.add( guiConfig, 'Spacing', 0, 10 ).step(1).onFinishChange( function() {
+			changeSpacing( guiConfig.Spacing );
+		} );
+		guiExtras.add( guiConfig, 'ShowPlane', ).onChange( togglePlane );
+		guiExtras.add( guiConfig, 'ShowBoundary' ).onChange( toggleBoundary );
+		guiExtras.add( guiConfig, 'ShowAxes' ).onChange( toggleAxis );
+		guiExtras.add( guiConfig, 'ShowMarker', true ).onChange( toggleMarker );
+		
+		guiExtras.add( guiConfig, 'markerX', -100, 100 ).onChange( function() {
+			if (box) { box.position.x = guiConfig.markerX; }
+		} );
+		guiExtras.add( guiConfig, 'markerY', -100, 100 ).onChange( function() {
+			if (box) { box.position.y = guiConfig.markerY; }
+		} );
+		guiExtras.add( guiConfig, 'markerZ', -100, 100 ).onChange( function() {
+			if (box) { box.position.z = guiConfig.markerZ; }
+		} );
+
+		guiExtras.add( guiConfig, 'markerScaleX', 0, 5 ).onChange( function() {
+			if (box) { box.scale.x = guiConfig.markerScaleX; }
+		} );
+		guiExtras.add( guiConfig, 'markerScaleY', 0, 5 ).onChange( function() {
+			if (box) { box.scale.y = guiConfig.markerScaleY; }
+		} );
+		guiExtras.add( guiConfig, 'markerScaleZ', 0, 5 ).onChange( function() {
+			if (box) { box.scale.z = guiConfig.markerScaleZ; }
+		} );	
+	}
+
+	function changeOpacity(opacity){
+		var all_slides = scene.children[1].children;
+		for ( var i = 0; i <= all_slides.length - 1 ; i++ ) {
+			all_slides[i].material.opacity = opacity;
+		}
+		guiConfig.Opacity = opacity;
+	}
+
+	function changeSpacing(spacing){
+		guiConfig.Spacing = spacing;
+		visualisationApp.buildVisualization();
+	}
+
+	function ZoomView( y ) {
+		camera.zoom = y;
+		camera.updateProjectionMatrix();
+	}
+
+	function RotateView( y ) {
+		var elm = controls.domElement, wiw = 0.5 * window.innerWidth, wih = 0.5 * window.innerHeight;
+		mouseEvent(elm, "mousedown", 0, wiw, wih);
+		mouseEvent(elm, "mousemove", 0, wiw - y, wih);
+		mouseEvent(elm, "mouseup");
+	}
+
+	function panView( x, y ) {
+		var elm = controls.domElement,  wiw = 0.5 * window.innerWidth, wih = 0.5 * window.innerHeight;
+		mouseEvent( elm, "mousedown", 2, wiw, wih );
+		mouseEvent( elm, "mousemove", 2, wiw + x, wih - y );
+		mouseEvent( elm, "mouseup", 2);
+		camera.up.set(0, 1, 0);
+		camera.position.set(200, 100, 250);
+	}
+	
+	function togglePlane() {
+		if ( guiConfig.planeVisible === false) {
+			if ( plane ) { plane.visible = false;	}
+		} else if ( plane ) {
+			plane.visible = true;	
+		} else {
+			geometry = new THREE.CubeGeometry( 500, 0.1, 500, 10, 10, 10);
+			material = new THREE.MeshNormalMaterial( { wireframe: true } );
+			plane = new THREE.Mesh( geometry, material );
+			plane.position.set(0, slides.meshY, 0);
+			scene.add( plane );
+		}	
+	}
+	function toggleAxis() {
+		if ( guiConfig.axisVisible === false) {
+			if ( axis ) { axis.visible = false;	}		
+		} else if ( axis ) {
+			axis.visible = true;	
+		} else {
+			axis = new THREE.AxisHelper( 100 );
+			scene.add( axis );			
+		}
+	}
+	
+	function toggleBoundary() {
+		if ( guiConfig.boundaryVisible === false) {
+			if ( boundary ) { boundary.visible = false;	}
+		} else if (boundary) { 
+			boundary.visible = true;
+		} else {
+			geometry = new THREE.CubeGeometry( 200, 200, 200, 1, 1, 1);
+			material = new THREE.MeshNormalMaterial( { wireframe: true } );
+			boundary = new THREE.Mesh( geometry, material );
+			boundary.rotation.x = slides.angle;
+			boundary.position.set(0, slides.startY + 0.5 * (slides.count * guiConfig.Spacing), slides.startZ + 0.5 * slides.count * slides.deltaZ);
+			scene.add( boundary );
+		}	
+	}
+	
+	function toggleMarker() {
+		if ( guiConfig.markerVisible === false) {
+			if ( box ) { box.visible = false;	}
+		} else if (box) { 
+			box.visible = true;
+		} else {
+			geometry = new THREE.CubeGeometry( 50, 50, 50);
+			material = new THREE.MeshNormalMaterial( { wireframe: true } );
+			box = new THREE.Mesh( geometry, material );
+			scene.add( box );
+		}	
+	}
+	
+	function toggleSplash() {
+		if ( splash.style.display === 'block' ) {
+			splash.style.display = 'none';
+		} else {
+			splash.style.display = 'block';
+		}		
+	};	
+	
+	function mouseEvent(element, type, button, cx, cy ) {
+		var evt,
+		e = {
+			bubbles: true, cancelable: (type !== "mousemove"), view: window, detail: 0,
+			screenX: 0, screenY: 0, clientX: cx, clientY: cy,
+			ctrlKey: false, altKey: false, shiftKey: false, metaKey: false,
+			button: button, relatedTarget: undefined
+		};
+		button = button || 0;
+		cx = cx || 0;
+		cy = cy || 0;
+		evt = document.createEvent("MouseEvents");
+		evt.initMouseEvent(type, e.bubbles, e.cancelable, e.view, e.detail,
+		e.screenX, e.screenY, e.clientX, e.clientY,
+		e.ctrlKey, e.altKey, e.shiftKey, e.metaKey,
+		e.button, document.body.parentNode);
+		element.dispatchEvent(evt);
+		return evt;
+	}	
+
+	function init() {
+
+		renderer = new THREE.WebGLRenderer( {alpha: 1, antialias: true, clearColor: 0xffffff } );
+		renderer.setSize( window.innerWidth, window.innerHeight );
+		$('.container').append( renderer.domElement );
+
+		scene = new THREE.Scene();
+
+		camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 10, 10000 );
+		camera.position.set( 200, 100, 250 );
+		scene.add( camera );
+
+		controls = new THREE.OrbitControls( camera, renderer.domElement );
+		controls.maxDistance = 800;
+
+
+	 	xPlane = new THREE.Plane( new THREE.Vector3( - 1, 0, 0 ), 200 );
+	 	yPlane = new THREE.Plane( new THREE.Vector3( 0, -1, 0 ), 200 );
+	 	zPlane = new THREE.Plane( new THREE.Vector3( 0, 0, -1 ), 200 );
+	 	dPlane = new THREE.Plane( new THREE.Vector3( -1, -1, 0 ), 200 );
+	  
+	 	globalPlanes = [ xPlane, yPlane, zPlane, dPlane ],
+		Empty = Object.freeze( [] );
+		renderer.clippingPlanes = Empty; // GUI sets it to globalPlanes
+		raycaster = new THREE.Raycaster();
+		document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+
+		guiConfig.scansFinish = slides.count;
+		visualisationApp.buildVisualization();
+		buildGui();
+    }
+
+    function animate() {
+		requestAnimationFrame( animate );
+		render();
+	}
+
+    function render() {
+		controls.update( clock.getDelta() );
+        renderer.render( scene, camera );	
+    }
+
+	function onDocumentMouseMove( event ) {
+
+		var mouse = { x: -1, y: -1 };
+		mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+		mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+		raycaster.setFromCamera( mouse, camera );
+		var intersects = raycaster.intersectObjects( scene.children );
+
+		if ( intersects.length > 0 ) {
+			if ( guiConfig.highlighting && intersected !== intersects[ 0 ].object ) {
+				if ( intersected ) { intersected.material.opacity = guiConfig.Opacity; }
+				intersected = intersects[ 0 ].object;
+				slidesGroup.current = slidesGroup.children.indexOf(intersected);
+			}
+		} else {
+			if (intersected) { intersected.material.opacity = guiConfig.Opacity; }
+			intersected = null;
+		}
+		mouseMove = true;
+	}
+
+	var visualisationApp = visualisationApp || {};
+
+	visualisationApp.buildVisualization = function() {
+		if ( slidesGroup ) { scene.remove( slidesGroup ); }
+		geometry = new THREE.PlaneGeometry( 200, 200, 1, 1);
+		slidesGroup = new THREE.Group();
+		slidesGroup.current = 0;
+		var image_array = <%= raw(@slices.collect{|slice| slice.whole_image_path}.to_json) %>;
+
+		for ( var i = 0; i <= image_array.length - 1; i++ ) {
+			//map = new THREE.TextureLoader().load("https://s3.amazonaws.com/pathology-imageviewer/reg_slide_" + i + ".tif");
+		
+			map = new THREE.TextureLoader().load('/'+image_array[i]);
+
+
+			map.minFilter = map.magFilter = THREE.NearestFilter;
+			material = new THREE.MeshBasicMaterial( { color: 0xffffff, map: map, opacity: guiConfig.Opacity, side: THREE.DoubleSide, transparent: true, wireframe: false, clipShadows: true} );
+			mesh = new THREE.Mesh( geometry, material);
+			mesh.rotation.x = slides.angle;
+			mesh.position.set(0, slides.startY + (i * guiConfig.Spacing) - (guiConfig.Spacing*image_array.length), slides.startZ + i * slides.deltaZ);
+			slidesGroup.add( mesh );
+
+		}
+		scene.add( slidesGroup );
+	};
+
+	var gui, guiView, guiFiles, guiViews, guiScans, guiCamera, guiExtras, guiHelp;
+	var guiConfig = {
+		Zoom: 1.0,
+		Rotate: 1.0,
+		Vertical: 1.0,
+		Horizontal: 1.0,
+		Opacity: 0.8,
+		Spacing: 5,
+				
+		home_view: function() {
+			controls.target.set(0, 0, 0);
+			camera.up.set(0, 1, 0);
+			camera.position.set(200, 100, 250);
+		},
+		top_view: function() {
+			controls.target.set(0,0,0);
+			camera.up.set(0,1,0);
+			camera.position.set(0, 200, 0);
+		},
+		side_view: function() {
+			camera.up.set(0,1,0);
+			controls.target.set(0,0,0);
+			camera.position.set(200, 5, 0);
+		},
+		highlighting: true,
+		cameraCutoffNear: 1,
+		cameraCutoffFar: 500,
+		ShowPlane: false,
+		ShowBoundary: false,
+		ShowAxes: false,
+		ShowMarker: false,
+		markerX: 0,
+		markerY: 0,
+		markerZ: 0,
+		markerScaleX: 0,
+		markerScaleY: 0,
+		markerScaleZ: 0,
+	};
+
+	//3d visualisation
+
+	var scene, camera, controls, light, stats, renderer;
+	var geometry, map, material, mesh;
+
+	var clock = new THREE.Clock();
+	var projector;
+	var intersected;
+	var mouseMove;
+	var raycaster;
+	var slidesGroup, plane, boundary, axis, box;
+
+
+	//slides array for an actual series of images to test
+
+	var slides =  {
+		count: 26,
+		dir: 'INSERT DIR HERE',
+		angle: 1.5708,
+		startY: 10,
+		startZ: 0,
+		deltaZ: 0,
+		meshY: -50
+	};
+		
+	init();
+	animate();
+
+
+</script>

@@ -46,6 +46,11 @@ class Image < ActiveRecord::Base
     return File.join(file_folder_path, file_base + '_files')
   end
 
+  def whole_image_path
+    file_base = File.basename(self.file_file_name, File.extname(self.file_file_name))
+    return File.join(self.file_folder_url, file_base + '_files', '11', '0_0.jpeg')
+  end
+
   def destroy_children
     self.annotations.destroy_all 
     self.user_image_ownerships.destroy_all   

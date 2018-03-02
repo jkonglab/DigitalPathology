@@ -2,7 +2,7 @@ class ImagesController < ApplicationController
   include ApplicationHelper
   before_action :set_current_user
   before_action :authenticate_user!, :except => [:index, :show]
-  before_action :set_image_validated, :only => [:download_annotations, :show, :add_single_clinical_data, :add_upload_clinical_data, :get_slice, :import_annotations]
+  before_action :set_image_validated, :only => [:show_3d, :download_annotations, :show, :add_single_clinical_data, :add_upload_clinical_data, :get_slice, :import_annotations]
   before_action :set_images_validated, :only =>[:confirm_delete, :delete, :make_public, :make_private, :confirm_share, :share]
   respond_to :json, only: [:get_slice]
 
@@ -39,6 +39,14 @@ class ImagesController < ApplicationController
     @clinical_data = @image.clinical_data || {}
     @slices = Image.where(:parent_id => @image.id).order('slice_order asc')
     @image_shown = @image.threed? && @image.parent_id.blank? ? @slices.first : @image
+  end
+
+  def show_3d
+    if @image.threed? && @image.parent_id.blank?
+      @slices = Image.where(:parent_id => @image.id).order('slice_order asc')
+    else
+      redirect_to @image, notice: 'Image is not a 3D volume and cannot be viewed in 3D space'
+    end
   end
 
   def get_slice

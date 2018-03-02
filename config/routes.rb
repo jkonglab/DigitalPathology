@@ -21,6 +21,7 @@ Rails.application.routes.draw do
       post 'single_data' => 'images#add_single_clinical_data'
       post 'upload_data' => 'images#add_upload_clinical_data'
       get 'get_slice' => 'images#get_slice'
+      get 'show_3d' => 'images#show_3d'
       post 'import_annotations' => 'images#import_annotations'
       get 'download_annotations' => 'images#download_annotations'
     end
