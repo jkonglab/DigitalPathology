@@ -35,7 +35,7 @@ class ImagesController < ApplicationController
     @run = @image.runs.new
     @algorithm = @image.threed? && @image.parent_id.blank? ? Algorithm.all : Algorithm.where('output_type NOT IN (?)', Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"])
     @annotation = Annotation.new
-    @annotations = @image.private? ? @image.annotations.where(:user_id=>current_user.id).order('id desc') : @image.annotations
+    @annotations = @image.hidden? ? @image.annotations.where(:user_id=>current_user.id).order('id desc') : @image.annotations
     @clinical_data = @image.clinical_data || {}
     @slices = Image.where(:parent_id => @image.id).order('slice_order asc')
     @image_shown = @image.threed? && @image.parent_id.blank? ? @slices.first : @image
@@ -187,7 +187,7 @@ class ImagesController < ApplicationController
   end
 
   def download_annotations
-    @annotations = @image.private? ? @image.annotations.where(:user_id=>current_user.id).order('id desc') : @image.annotations
+    @annotations = @image.hidden? ? @image.annotations.where(:user_id=>current_user.id).order('id desc') : @image.annotations
     output = []
 
     @annotations.each do |annotation|
@@ -218,7 +218,7 @@ class ImagesController < ApplicationController
 
   def set_image_validated
     @image = Image.find(params[:id])
-    if @image.private? && !(@image.users.pluck(:id).include?(current_user.id))
+    if @image.hidden? && !(@image.users.pluck(:id).include?(current_user.id))
       redirect_to images_path, alert: 'You do not have permission to access or edit this image'
     end
   end
