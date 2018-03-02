@@ -16,7 +16,16 @@ function main_output = main(image_folder_path, output_file_path, extra_parameter
 
    if tile_width ~= 0 && tile_height ~= 0
       entire_image = imread(image_file);
-      tiled_roi = entire_image(y_offset+1:y_offset + tile_height, x_offset+1:x_offset + tile_width, :);
+      image_size = size(entire_image);
+      end_height = y_offset + tile_height;
+      end_width = x_offset + tile_width;
+      if end_height > image_size(1)
+          end_height = image_size(1);
+      end
+      if end_width > image_size(2)
+          end_height = image_size(2);
+      end
+      tiled_roi = entire_image(y_offset+1:end_height, x_offset+1:end_width, :);
    else
       tiled_roi = [];
    end

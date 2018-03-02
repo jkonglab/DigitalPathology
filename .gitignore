@@ -29,3 +29,4 @@ imageviewer.conf
 /public/dp-data/*
 *.m~
 *.m~
+.DS_Store
