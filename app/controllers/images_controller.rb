@@ -193,7 +193,7 @@ class ImagesController < ApplicationController
 
     @annotations.each do |annotation|
       result_hash = {}
-      result_hash["label"] = annotation.label
+      result_hash["name"] = annotation.label
       result_hash["tile_coordinate"] = [annotation.x_point, annotation.y_point]
       result_hash["width"] = annotation.width
       result_hash["height"] = annotation.height
@@ -228,7 +228,7 @@ class ImagesController < ApplicationController
     image_ids = params['image_ids']
     @images = current_user.images.where('images.id IN (?)', image_ids)
     if @images.length < 1
-      redirect_to images_path, alert: 'You do not have permission to edit any of these images'
+      redirect_to my_images_images_path, alert: 'No images selected or you may lack permission to edit these images'
     end      
   end
 
