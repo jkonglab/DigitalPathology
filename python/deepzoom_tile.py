@@ -241,8 +241,8 @@ if __name__ == '__main__':
                 action='store_true',
                 help='generate directory tree with HTML viewer')
     parser.add_option('-s', '--size', metavar='PIXELS', dest='tile_size',
-                type='int', default=500,
-                help='tile size [1000]')
+                type='int', default=2000,
+                help='tile size [2000]')
 
     (opts, args) = parser.parse_args()
     try:
