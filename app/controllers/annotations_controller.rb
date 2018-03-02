@@ -32,7 +32,7 @@ class AnnotationsController < ApplicationController
       @annotation.first.delete
     end
     respond_to do |format|
-      format.html { redirect_to :back, notice: "Annotation Deleted" }
+      format.html { redirect_to @image, notice: "Annotation Deleted" }
     end
   end
 

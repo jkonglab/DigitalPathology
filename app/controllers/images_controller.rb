@@ -147,7 +147,7 @@ class ImagesController < ApplicationController
     data = @image.clinical_data || {}
     data[key] = value
     @image.update_attributes!(:clinical_data=>data)
-    redirect_to :back
+    redirect_to @image
   end
 
   def add_upload_clinical_data
@@ -180,9 +180,9 @@ class ImagesController < ApplicationController
           })
         annotation.save!
       end
-      redirect_to :back, notice: "{#json.length} annotations added successfully."
+      redirect_to @image, notice: "{#json.length} annotations added successfully."
     rescue JSON::ParserError
-      redirect_to :back, alert: 'Error parsing JSON file.  Please validate the file using a linter and make sure keys are double quoted!'
+      redirect_to @image, alert: 'Error parsing JSON file.  Please validate the file using a linter and make sure keys are double quoted!'
     end
   end
 
