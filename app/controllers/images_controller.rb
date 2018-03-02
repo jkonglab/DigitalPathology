@@ -3,7 +3,7 @@ class ImagesController < ApplicationController
   before_action :set_current_user
   before_action :authenticate_user!, :except => [:index, :show]
   before_action :set_image_validated, :only => [:show_3d, :download_annotations, :show, :add_single_clinical_data, :add_upload_clinical_data, :get_slice, :import_annotations]
-  before_action :set_images_validated, :only =>[:confirm_delete, :delete, :make_public, :make_private, :confirm_share, :share]
+  before_action :set_images_validated, :only =>[:confirm_convert_3d, :confirm_delete, :delete, :make_public, :make_private, :confirm_share, :share]
   respond_to :json, only: [:get_slice]
 
 
@@ -102,8 +102,7 @@ class ImagesController < ApplicationController
   end
 
   def confirm_convert_3d
-    image_ids = params['image_ids']
-    @images = current_user.images.where('image_type != ? AND images.id IN (?)', Image::IMAGE_TYPE_THREED, image_ids).sort_by{|image| image.title}
+    @images = current_user.images.where('image_type != ? AND images.id IN (?)', Image::IMAGE_TYPE_THREED, params['image_ids']).sort_by{|image| image.title}
     if @images.length < 1
       return redirect_to my_images_images_path, alert: 'Volume could not be created because all selected images are already attached to a 3D volume.'
     end
@@ -226,10 +225,14 @@ class ImagesController < ApplicationController
 
   def set_images_validated
     image_ids = params['image_ids']
-    @images = current_user.images.where('images.id IN (?)', image_ids)
-    if @images.length < 1
-      redirect_to my_images_images_path, alert: 'No images selected or you may lack permission to edit these images'
-    end      
+    if !image_ids
+      redirect_to my_images_images_path, alert: 'No images selected'
+    else
+      @images = current_user.images.where('images.id IN (?)', image_ids)
+      if @images.length < 1
+        redirect_to my_images_images_path, alert: 'No images selected or you may lack permission to edit these images'
+      end
+    end     
   end
 
 
