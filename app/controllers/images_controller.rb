@@ -159,9 +159,9 @@ class ImagesController < ApplicationController
         data[key] = value
       end
       @image.update_attributes!(:clinical_data=>data)
-      redirect_to :back
+      redirect_to @image
     rescue JSON::ParserError
-      redirect_to :back, alert: 'Error parsing JSON file.  Please validate the file using a linter and make sure keys are double quoted!'
+      redirect_to @image, alert: 'Error parsing JSON file.  Please validate the file using a linter and make sure keys are double quoted!'
     end
   end
 
