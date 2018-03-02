@@ -26,7 +26,7 @@ class RunsController < ApplicationController
           @numerical_result_hash[key.to_sym] = @run.results.where(:output_key=>key).pluck(:raw_data).sum
         elsif option["output_type"] == Algorithm::OUTPUT_TYPE_LOOKUP["percentage"]
           results = @run.results.where(:output_key=>key).pluck(:raw_data)
-          @numerical_result_hash[key.to_sym] = (results.sum / results.length)
+          @numerical_result_hash[key.to_sym] = results.length > 0 ? (results.sum / results.length) : 0
         end
       end
     end
