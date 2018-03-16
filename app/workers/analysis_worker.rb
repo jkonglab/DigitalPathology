@@ -12,10 +12,9 @@ class AnalysisWorker
     @tile_height = @run.tile_size
     output_file = File.join(@run.run_folder, "/output_#{tile_x.to_s}_#{tile_y.to_s}.json")
 
-    logger.debug "main('#{@image.tile_folder_path}','#{output_file}',#{parameters},'#{@algorithm.name}',#{@tile_x},#{@tile_y},#{@tile_width},#{@tile_height}); exit;"
-
     if @algorithm.language == Algorithm::LANGUAGE_LOOKUP["matlab"]
       parameters = convert_parameters_cell_array_string(@run.parameters)
+      logger.warn "main('#{@image.tile_folder_path}','#{output_file}',#{parameters},'#{@algorithm.name}',#{@tile_x},#{@tile_y},#{@tile_width},#{@tile_height}); exit;"
       %x{cd #{algorithm_path}; matlab -nodisplay -r "main('#{@image.tile_folder_path}','#{output_file}',#{parameters},'#{@algorithm.name}',#{@tile_x},#{@tile_y},#{@tile_width},#{@tile_height}); exit;"}
     elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["python"]
       parameters = @run.parameters
