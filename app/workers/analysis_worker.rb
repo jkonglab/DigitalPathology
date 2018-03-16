@@ -125,8 +125,9 @@ class AnalysisWorker
         new_image.file = file
         file.close
         new_image.save!
-        new_image.title = new_image.file_file_name.gsub('_', ' ')
+        new_image.title = "Run #{@run.id}: #{new_image.file_file_name.gsub('_', ' ')}"
         new_image.image_type = Image::IMAGE_TYPE_TWOD
+        new_image.generated_by_run_id = @run.id
         new_image.save!
         UserImageOwnership.create!(
           :user_id=> @run.user_id,:image_id=> new_image.id)
