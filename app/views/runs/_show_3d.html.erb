@@ -27,12 +27,12 @@
 	 	<% if !@threed_volume %>
   	  		<%= form_tag confirm_3d_images_path do %>
 	  	  		<%= submit_tag "Convert to 3D Volume", :style=> 'float:right', :class=> 'btn btn-success btn-raised'%>
-				<%= render :partial => 'images/confirm_table.html.erb', :locals => { :images=>@images}%>
+				<%= render :partial => 'images/confirm_table.html.erb', :locals => { :images=>@slices}%>
 			<% end %>
 		<% else %>
 			<a href="<%=image_url(@threed_volume.id)%>">
   	  		<button style="float:right" class="btn btn-success btn-raised">View 3D Volume</button></a>
-  	  		<%= render :partial => 'images/confirm_table.html.erb', :locals => { :images=>@images}%>
+  	  		<%= render :partial => 'images/confirm_table.html.erb', :locals => { :images=>@slices}%>
   	  	<% end %>
 	</div>
 </div>
