@@ -119,23 +119,16 @@ class AnalysisWorker
   def handle_3d_volume_output_generation
     Dir.entries(@run.run_folder + '/').each do |file_name|
       if file_name.include?('.tif')
-        image_suffix =  file_name.split('.')[-1]
-        image_title = file_name.split('.' + image_suffix)[0]
-        
-        new_image = Image.create!(
-          :title => "Run #{@run.id.to_s}: #{image_title}", 
-          :image_type => Image::IMAGE_TYPE_TWOD,
-          :generated_by_run_id => @run.id)
-
+        new_image = Image.new
+        new_image.file = File.open(file_name)
+        file.close
+        new_image.save!
+        new_image.title = new_image.file_file_name.gsub('_', ' ')
+        new_image.image_type = Image::IMAGE_TYPE_TWOD
+        new_image.save!
         UserImageOwnership.create!(
-          :user_id=> @run.user_id, :image_id=> new_image.id)
-
-        new_file_name = "#{new_image.id}_#{file_name}"
-        new_image.update_attributes(:upload_file_name => new_file_name)
-        %x{cd #{@run.run_folder};
-          mv #{file_name} #{new_file_name}
-        }
-        ConversionWorker.perform_async(new_image.id, @run.run_folder)
+          :user_id=> @run.user_id,:image_id=> new_image.id)
+        ConversionWorker.perform_async(new_image.id)
       end
     end
   end
