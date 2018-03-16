@@ -10,6 +10,7 @@
 	</thead>
 
 	<tbody>
+		<% if images %>
 	  	<% images.each do |image| %>
 	  		<tr class="image-link">
 	  			<td><%= check_box_tag "image_ids[]", image.id, :default => true, class: 'image-check-box'%></td>
@@ -24,6 +25,7 @@
 	  			<td><%=image.created_at%></td>
 	  			<td class="d-none d-md-table-cell"><% if image.processing %>Processing<% elsif image.complete %>Available<%else%>Awaiting Processing<% end%></td>
 	  		</tr>
+	  	<% end %>
 	  	<% end %>
 	</tbody>
 </table>
