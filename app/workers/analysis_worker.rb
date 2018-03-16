@@ -121,7 +121,7 @@ class AnalysisWorker
     Dir.entries(@run.run_folder + '/').each do |file_name|
       if file_name.include?('.tif')
         new_image = Image.new
-        file = File.open(File.join(@run.run_folder, file_name)
+        file = File.open(File.join(@run.run_folder, file_name))
         new_image.file = file
         file.close
         new_image.save!
