@@ -61,7 +61,7 @@ type = 1;
 reference = openSlide_c([svsdir inputNDPIs{refIdx}], int64(x), int64(y), int64(width), int64(height), highResLevel, type);
 %imshow(reference,[]);
 %imwrite(reference, sprintf('%sreg_slide_%02d.jpg',outputdir, refIdx), 'Mode', 'lossy', 'Quality', 25);
-%imwrite(reference, sprintf('%sreg_slide_%02d.tif',outputdir, refIdx));
+imwrite(reference, sprintf('%sreg_slide_%02d.tif',outputdir, refIdx));
 
 x_highResLevel = round(x/(2^highResLevel));
 y_highResLevel = round(y/(2^highResLevel));
