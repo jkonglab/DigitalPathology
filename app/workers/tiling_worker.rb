@@ -17,7 +17,7 @@ class TilingWorker
         %x{mkdir #{@run.run_folder}}
 
         if @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"]
-            AnalysisWorker.perform_async(run_id, 0, 0, 0, 0)
+            AnalysisWorker.perform_async(run_id, 0, 0)
         else
             if run.annotation_id != 0
               @annotation = run.annotation

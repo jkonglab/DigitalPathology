@@ -6,7 +6,7 @@
 	<% if @image.threed? %>
 		<div class="form-group twod-algorithm-slice-select" style="display:none;">
 			<%= f.label :image_id, "Select a image slice for analysis (applicable for 2D algorithms)" %>
-			<%= f.collection_select :image_id, @slices, :id, :slice_order, {}, { class: 'form-control', required: true } %>
+			<%= f.collection_select :image_id, @slices, :id, :slice_order, {}, { class: 'form-control' } %>
 		</div>
 	<% else %>
 		<%= f.hidden_field :image_id, :value=> @image.id %>
