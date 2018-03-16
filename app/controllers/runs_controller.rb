@@ -49,6 +49,10 @@ class RunsController < ApplicationController
       @run.image_id = Image.find(image.parent_id).id
     end
 
+    if algorithm.name == 'high_low_registration'
+      @run.tile_size = 0
+    end
+
     algorithm = Algorithm.find(@run.algorithm_id)
     if @run.annotation_id.blank?
       @run.update_attributes!(:annotation_id => 0)
