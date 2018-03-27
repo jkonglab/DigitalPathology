@@ -12,7 +12,7 @@ class Run < ActiveRecord::Base
 	end
 
 	def check_if_done
-		if (self.total_tiles == 0 || (self.tiles_processed >= self.total_tiles))
+		if (self.total_tiles == 0 || (self.total_tiles && self.tiles_processed >= self.total_tiles))
 			self.update_attributes!(:processing=>false, :complete=>true)
 		end
 	end
