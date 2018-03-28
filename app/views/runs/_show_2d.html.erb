@@ -60,6 +60,8 @@
 
 <script>
  	var results_data = JSON.parse('<%= raw(@results_data.to_json) %>');
+ 	var key;
+ 	var timeout;
 	var annotation = '<%=raw(@annotation.data.to_json) %>';
 	var viewer = OpenSeadragon({
 		preserveViewport: true,
@@ -70,21 +72,25 @@
 	var exclude_indices = [];
 	viewer.initializeAnnotations();
 	waitForAnnotationInitialize();
+	viewer.addHandler('animation-finish', function(e){retrieveAndSetResults(e);});
 
 	function waitForAnnotationInitialize(){
-    if(viewer.areAnnotationsActive()){
-        viewer.annotations.set(generateSVGs(results_data, annotation));
+	    if(viewer.areAnnotationsActive()){
+	    	clearTimeout(timeout);
+	        viewer.annotations.set(generateSVGs(results_data, annotation));
 
-        $('.openseadragon-container').click(function(e){
-	    	if($(e.target).is('circle')){
-	    		var index = $(e.target).attr('index');
-	    		excludeResult(index);
-	    	}
-	    });
-    }
-    else{
-        setTimeout(waitForAnnotationInitialize, 250);
-    }
+	        $('.openseadragon-container').click(function(e){
+		    	if($(e.target).is('circle')){
+		    		var index = $(e.target).attr('index');
+		    		excludeResult(index);
+		    	}
+		    });
+	    }
+	    else{
+	        timeout = setTimeout(waitForAnnotationInitialize, 250);
+	    }
+
+	}
 
     function generateSVGs(results_data, annotation){
 		var svgs = [];
@@ -140,10 +146,18 @@
 		}
     }
 
-    function retrieveAndSetResults(key){
+    function retrieveAndSetResults(event){
+    	var bounds = viewer.viewport.viewportToImageRectangle(viewer.viewport.getBounds());
 		$.ajax({
 			method: "GET",
-			url: "/runs/<%=@run.id%>/get_results.json?key=" + key
+			url: "/runs/<%=@run.id%>/get_results.json?",
+			data: { 
+    			key: key, 
+    			x: bounds.x,
+    			y: bounds.y, 
+    			width: bounds.width,
+    			height: bounds.height
+  			}
 		})
 		.done(function(results_data){
 			viewer.annotations.clean();
@@ -152,9 +166,9 @@
     }
 
 	$('.retrieve-results').off('click').click(function(){
-		retrieveAndSetResults($(this).attr('key'));
+		key = $(this).attr('key');
+		retrieveAndSetResults(null);
 	});
-}
 
 
 </script>

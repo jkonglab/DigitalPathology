@@ -14,7 +14,7 @@ class AnalysisWorker
 
     if @algorithm.language == Algorithm::LANGUAGE_LOOKUP["matlab"]
       parameters = convert_parameters_cell_array_string(@run.parameters)
-      logger.warn "main('#{@image.tile_folder_path}','#{output_file}',#{parameters},'#{@algorithm.name}',#{@tile_x},#{@tile_y},#{@tile_width},#{@tile_height}); exit;"
+      logger.info "main('#{@image.tile_folder_path}','#{output_file}',#{parameters},'#{@algorithm.name}',#{@tile_x},#{@tile_y},#{@tile_width},#{@tile_height}); exit;"
       %x{cd #{algorithm_path}; matlab -nodisplay -r "main('#{@image.tile_folder_path}','#{output_file}',#{parameters},'#{@algorithm.name}',#{@tile_x},#{@tile_y},#{@tile_width},#{@tile_height}); exit;"}
     elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["python"]
       parameters = @run.parameters
@@ -129,9 +129,8 @@ class AnalysisWorker
         new_image.image_type = Image::IMAGE_TYPE_TWOD
         new_image.generated_by_run_id = @run.id
         new_image.save!
-        UserImageOwnership.create!(
-          :user_id=> @run.user_id,:image_id=> new_image.id)
-        ConversionWorker.perform_async(new_image.id)
+        UserImageOwnership.create!(:user_id=> @run.user_id,:image_id=> new_image.id)
+        Sidekiq::Client.push('queue' => 'user_conversion_queue_' + @run.user_id.to_s, 'class' =>  ConversionWorker, 'args' => [new_image.id])
       end
     end
   end

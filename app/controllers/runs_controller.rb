@@ -13,12 +13,16 @@ class RunsController < ApplicationController
     @threed_volume = Image.where('generated_by_run_id IN (?) AND image_type = ? AND parent_id IS NULL', @run.id, Image::IMAGE_TYPE_THREED).first
     @annotation = @run.annotation
     
-    if !@algorithm.multioutput
-      @results = @run.results.order('id asc');
+    @results = @algorithm.multioutput ? @run.results.where(:output_key=>@algorithm.multioutput_options[0]["output_key"]).order('id asc') : @run.results.order('id asc')
+
+    if @results.count < 50
       @results_data = @results.pluck(:svg_data, :id, :exclude)
     else
-      @results = @run.results.where(:output_key=>@algorithm.multioutput_options[0]["output_key"]).order('id asc')
-      @results_data = @results.pluck(:svg_data, :id, :exclude)
+      @results = []
+      @results_data = []
+    end
+
+    if @algorithm.multioutput
       @numerical_result_hash = {}
       @algorithm.multioutput_options.each do |option|
         key = option["output_key"]
@@ -30,13 +34,25 @@ class RunsController < ApplicationController
         end
       end
     end
+
   end
 
   def get_results
-    key = params["key"]
     @run = Run.find(params[:id])
-    @results = @run.results.where(:output_key=>key).order('id asc')
-    @results_data = @results.pluck(:svg_data, :id, :exclude)
+
+    @results = @run.results.where('tile_x >= ? AND tile_x <= ? AND tile_y >= ? AND tile_y <= ?', params['x'].to_f - @run.tile_size, (params['x'].to_f + params["width"].to_f), params['y'].to_f - @run.tile_size, (params['y'].to_f + params["height"].to_f))
+
+    if params["key"]
+      @results = @results.where(:output_key=>params["key"]).order('id asc')
+    end
+
+
+    if @results.count < 50
+      @results_data = @results.pluck(:svg_data, :id, :exclude)
+    else
+      @results = []
+      @results_data = []
+    end
     respond_with @results_data.to_json
   end
 
@@ -90,7 +106,7 @@ class RunsController < ApplicationController
   	@run.parameters = run_parameters
 
   	if @run.save
-  		TilingWorker.perform_async(@run.id)
+      Sidekiq::Client.push('queue' => 'user_tiling_queue_' + @run.user_id.to_s, 'class' =>  TilingWorker, 'args' => [@run.id])
       redirect_to @run, notice: 'New analysis created, please wait for it to finish running.'
   	end
   end

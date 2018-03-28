@@ -27,7 +27,7 @@ class ImagesController < ApplicationController
     UserImageOwnership.create!(
       :user_id=> current_user.id,:image_id=> @image.id)
     @image.save
-    ConversionWorker.perform_async(@image.id)
+    Sidekiq::Client.push('queue' => 'user_conversion_queue_' + current_user.id.to_s, 'class' =>  ConversionWorker, 'args' => [@image.id])
     redirect_to my_images_images_path, notice: 'Image created, please wait for it to be processed.' and return
   end
 

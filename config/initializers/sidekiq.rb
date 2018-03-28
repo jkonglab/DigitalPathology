@@ -7,3 +7,7 @@ if Rails.env.production?
   		config.redis = { url: 'redis://192.168.1.7:6379' }
 	end
 end
+
+# Sidekiq.options.merge!({
+#   fetch: DynamicFetch
+# })

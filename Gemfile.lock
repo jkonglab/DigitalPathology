@@ -186,6 +186,8 @@ GEM
       connection_pool (~> 2.2, >= 2.2.0)
       rack-protection (>= 1.5.0)
       redis (>= 3.3.5, < 5)
+    sidekiq-limit_fetch (3.4.0)
+      sidekiq (>= 4)
     spring (2.0.2)
       activesupport (>= 4.2)
     sprockets (3.7.1)
@@ -243,6 +245,7 @@ DEPENDENCIES
   sass-rails
   sdoc (~> 0.4.0)
   sidekiq
+  sidekiq-limit_fetch
   spring
   therubyracer
   turbolinks

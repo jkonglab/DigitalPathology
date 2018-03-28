@@ -17,21 +17,14 @@ class TilingWorker
         %x{mkdir #{@run.run_folder}}
 
         if @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"]
-            AnalysisWorker.perform_async(run_id, 0, 0)
+            # Queuing tile_x, tile_y = (0,0) means that there is no ROI used in this analysis algorithm
+            Sidekiq::Client.push('queue' => 'user_analysis_queue_' + @run.user_id.to_s, 'class' =>  AnalysisWorker, 'args' => [run_id, 0, 0])
         else
             if run.annotation_id != 0
               @annotation = run.annotation
               x, y = convert_and_save_annotation_points
             else
-              x = [0, 0, 100, 100]
-              y = [0, 100, 100, 0]
-              CSV.open(File.join(@run.run_folder, "/x_coordinates.csv"), "w") do |csv|
-                csv << x
-              end
-
-              CSV.open(File.join(@run.run_folder, "/y_coordinates.csv"), "w") do |csv|
-                csv << y
-              end
+              x, y = convert_and_save_whole_slide_annotation
             end
             
             %x{cd #{algorithm_path};
@@ -53,7 +46,7 @@ class TilingWorker
                 num_tiles_counter += 1
                 tile_x = tile.split(',')[0].to_i
                 tile_y = tile.split(',')[1].to_i
-                AnalysisWorker.perform_async(run_id, tile_x, tile_y)
+                Sidekiq::Client.push('queue' => 'user_analysis_queue_' + @run.user_id.to_s, 'class' =>  AnalysisWorker, 'args' => [run_id, tile_x, tile_y])
             end
         end
         @run.update_attributes!(:total_tiles=>num_tiles_counter)
@@ -84,6 +77,19 @@ class TilingWorker
     end
 
     return x_coordinates, y_coordinates
+  end
+
+  def convert_and_save_whole_slide_annotation
+    x = [0, 0, 100, 100]
+    y = [0, 100, 100, 0]
+    CSV.open(File.join(@run.run_folder, "/x_coordinates.csv"), "w") do |csv|
+      csv << x
+    end
+    CSV.open(File.join(@run.run_folder, "/y_coordinates.csv"), "w") do |csv|
+      csv << y
+    end
+
+    return x, y
   end
 
 end
