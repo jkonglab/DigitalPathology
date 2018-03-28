@@ -30,3 +30,4 @@ imageviewer.conf
 *.m~
 *.m~
 .DS_Store
+*.gem
