@@ -176,6 +176,8 @@
 
 			if(results_data[0] == 0){
 				$('.too-many-results-alert').addClass('show');
+				viewer.annotations.set(generateSVGs([], annotation));
+
 			}else{
 				$('.too-many-results-alert').removeClass('show');
 				viewer.annotations.set(generateSVGs(results_data, annotation));
