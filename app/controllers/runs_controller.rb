@@ -42,13 +42,14 @@ class RunsController < ApplicationController
 
   def get_results
     @run = Run.find(params[:id])
-
+    @algorithm = @run.algorithm
     @results = @run.results.where('tile_x >= ? AND tile_x <= ? AND tile_y >= ? AND tile_y <= ?', params['x'].to_f - @run.tile_size, (params['x'].to_f + params["width"].to_f), params['y'].to_f - @run.tile_size, (params['y'].to_f + params["height"].to_f))
 
     if params["key"]
       @results = @results.where(:output_key=>params["key"]).order('id asc')
+    elsif @algorithm.multioutput 
+      @results = @results.where(:output_key=>@algorithm.multioutput_options[0]["output_key"]).order('id asc')
     end
-
 
     if @results.count < 10000
       @results_data = @results.pluck(:svg_data, :id, :exclude)
