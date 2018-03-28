@@ -49,6 +49,13 @@
     </div>
 
     <div class="bmd-layout-content">
+    	<div style="position: absolute;z-index: 1; right: 0px;" class="too-many-results-alert alert alert-warning alert-dismissible fade" role="alert">
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+	  		<strong>Too many results (>1000) to show</strong> <br/>Please zoom in to a smaller section of the image to view results.
+    	</div>
+
 		<div class="row">
 			<div class="col-12">
 				<div id="<%=@image.file_file_name.parameterize%>" class="openseadragon">
@@ -77,7 +84,7 @@
 	function waitForAnnotationInitialize(){
 	    if(viewer.areAnnotationsActive()){
 	    	clearTimeout(timeout);
-	        viewer.annotations.set(generateSVGs(results_data, annotation));
+	        retrieveAndSetResults(null);
 
 	        $('.openseadragon-container').click(function(e){
 		    	if($(e.target).is('circle')){
@@ -160,6 +167,11 @@
   			}
 		})
 		.done(function(results_data){
+			if(results_data.length == 0){
+				$('.too-many-results-alert').addClass('show');
+			}else{
+				$('.too-many-results-alert').removeClass('show');
+			}
 			viewer.annotations.clean();
 			viewer.annotations.set(generateSVGs(results_data, annotation));
 		})

@@ -15,7 +15,7 @@ class RunsController < ApplicationController
     
     @results = @algorithm.multioutput ? @run.results.where(:output_key=>@algorithm.multioutput_options[0]["output_key"]).order('id asc') : @run.results.order('id asc')
 
-    if @results.count < 50
+    if @results.count < 1000
       @results_data = @results.pluck(:svg_data, :id, :exclude)
     else
       @results = []
@@ -47,7 +47,7 @@ class RunsController < ApplicationController
     end
 
 
-    if @results.count < 50
+    if @results.count < 1000
       @results_data = @results.pluck(:svg_data, :id, :exclude)
     else
       @results = []
