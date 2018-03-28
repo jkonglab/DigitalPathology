@@ -3,4 +3,4 @@
 :pidfile: ./tmp/sidekiq.pid
 :dynamic: true
 production:
-  :concurrency: 50
+  :concurrency: 25
