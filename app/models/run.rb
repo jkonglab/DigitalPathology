@@ -5,10 +5,14 @@ class Run < ActiveRecord::Base
 	belongs_to :user
 	has_many :results
 
-	before_destroy :destroy_children
+	before_destroy :destroy_children_and_jobs
 
-	def destroy_children
+	def destroy_children_and_jobs
 		self.results.delete_all
+		queue = Sidekiq::Queue.new("user_analysis_queue_" + self.user_id.to_s)
+		queue.each do |job|
+		  job.delete if job.args[0] == self.id && job.klass == 'AnalysisWorker'
+		end
 	end
 
 	def check_if_done

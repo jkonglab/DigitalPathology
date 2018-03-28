@@ -1,6 +1,9 @@
 class RunsController < ApplicationController
   respond_to :html, :json
   before_action :authenticate_user!, :only => [:create, :index, :show, :get_results]
+  before_action :set_runs_validated, :only =>[:confirm_delete, :delete]
+  before_action :set_run_validated, :only => [:show, :get_results, :download_results]
+
   def index
     @runs = current_user.runs.order('id desc')
   end
@@ -15,11 +18,11 @@ class RunsController < ApplicationController
     
     @results = @algorithm.multioutput ? @run.results.where(:output_key=>@algorithm.multioutput_options[0]["output_key"]).order('id asc') : @run.results.order('id asc')
 
-    if @results.count < 1000
+    if @results.count < 10000
       @results_data = @results.pluck(:svg_data, :id, :exclude)
     else
-      @results = []
-      @results_data = []
+      @results = [0]
+      @results_data = [0]
     end
 
     if @algorithm.multioutput
@@ -47,11 +50,11 @@ class RunsController < ApplicationController
     end
 
 
-    if @results.count < 1000
+    if @results.count < 10000
       @results_data = @results.pluck(:svg_data, :id, :exclude)
     else
-      @results = []
-      @results_data = []
+      @results = [0]
+      @results_data = [0]
     end
     respond_with @results_data.to_json
   end
@@ -111,6 +114,20 @@ class RunsController < ApplicationController
   	end
   end
 
+  def confirm_delete
+    if @runs.length == 1
+      run = @runs[0]
+      run.destroy
+      return redirect_to runs_path, notice: "Run #{run.id} deleted"
+    end
+  end
+
+  def delete
+    length = @runs.length
+    @runs.destroy_all
+    return redirect_to runs_path, notice: "#{length} runs deleted"
+  end
+
   def download_results
     @run = Run.find(params[:id])
     @results = @run.results.where('exclude IS NOT true').order('output_key asc, id asc')
@@ -157,4 +174,23 @@ class RunsController < ApplicationController
     def run_params
     	params.require(:run).permit(:image_id, :algorithm_id, :parameters, :annotation_id, :tile_size)
   	end
+
+    def set_run_validated
+      @run = Run.find(params[:id])
+      if current_user.id != @run.user_id
+        redirect_to runs_path, alert: 'You do not have permission to access or edit this image'
+      end
+    end
+
+    def set_runs_validated
+      run_ids = params['run_ids']
+      if !run_ids
+        redirect_to runs_path, alert: 'No runs selected'
+      else
+        @runs = current_user.runs.where('runs.id IN (?)', run_ids)
+        if @runs.length < 1
+          redirect_to runs_path, alert: 'No runs selected or you may lack permission to access these runs'
+        end
+      end     
+    end
 end

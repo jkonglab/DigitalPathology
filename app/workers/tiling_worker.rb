@@ -2,6 +2,8 @@ class TilingWorker
   include Sidekiq::Worker
   require 'csv'
   attr_accessor :run, :image, :annotation, :algorithm
+  sidekiq_options :retry => 3
+
 
   def perform(run_id)
     @run = Run.find(run_id)

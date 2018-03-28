@@ -53,7 +53,7 @@
 			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
 				<span aria-hidden="true">&times;</span>
 			</button>
-	  		<strong>Too many results (>1000) to show</strong> <br/>Please zoom in to a smaller section of the image to view results.
+	  		<strong>Too many results (>10,000) to show</strong> <br/>Please zoom in to a smaller section of the image to view results.
     	</div>
 
 		<div class="row">
@@ -74,7 +74,8 @@
 		preserveViewport: true,
 	    id:            "<%=@image.file_file_name.parameterize%>",
 	    prefixUrl:     "/openseadragon/images/",
-	    tileSources:   "/<%=@image.dzi_url%>"
+	    tileSources:   "/<%=@image.dzi_url%>",
+	    maxZoomPixelRatio: 5.0
 	});
 	var exclude_indices = [];
 	viewer.initializeAnnotations();
@@ -102,6 +103,7 @@
     function generateSVGs(results_data, annotation){
 		var svgs = [];
 		_.each(results_data, function(element, index){
+			try {
 			if(element[0][0] == "circle"){
 				element[0][1]["index"] = index;
 				element[0][1]["r"] = 0.02;
@@ -117,6 +119,9 @@
 				}
 			}
 			svgs.push(element[0]);
+			}
+			catch(error){
+			}
 		});
 
 		if(annotation && annotation != 'null'){
@@ -167,13 +172,14 @@
   			}
 		})
 		.done(function(results_data){
-			if(results_data.length == 0){
+			viewer.annotations.clean();
+
+			if(results_data[0] == 0){
 				$('.too-many-results-alert').addClass('show');
 			}else{
 				$('.too-many-results-alert').removeClass('show');
+				viewer.annotations.set(generateSVGs(results_data, annotation));
 			}
-			viewer.annotations.clean();
-			viewer.annotations.set(generateSVGs(results_data, annotation));
 		})
     }
 

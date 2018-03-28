@@ -1,5 +1,7 @@
 class ConversionWorker
   include Sidekiq::Worker
+  sidekiq_options :retry => 3
+
 
   def perform(image_id, file_path=nil, force_flag=false)
     image = Image.find(image_id)

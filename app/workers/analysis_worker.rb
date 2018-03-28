@@ -1,6 +1,7 @@
 class AnalysisWorker
   include Sidekiq::Worker
   attr_accessor :run, :tile_x, :tile_y
+  sidekiq_options :retry => 3
 
   def perform(run_id, tile_x, tile_y)
     @run = Run.find(run_id)

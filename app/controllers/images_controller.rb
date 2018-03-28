@@ -220,7 +220,7 @@ class ImagesController < ApplicationController
   def set_image_validated
     @image = Image.find(params[:id])
     if @image.hidden? && !(@image.users.pluck(:id).include?(current_user.id))
-      redirect_to images_path, alert: 'You do not have permission to access or edit this image'
+      redirect_to my_images_images_path, alert: 'You do not have permission to access or edit this image'
     end
   end
 

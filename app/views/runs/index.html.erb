@@ -17,8 +17,11 @@
 	  	</tr>
 	  </thead>
 	  <tbody>
+	  	<%= form_tag confirm_3d_images_path do %>
+		<%= submit_tag "Delete", :style=>"float:right; margin-left:10px;", :class=>"btn-raised btn btn-danger", :formaction=> confirm_delete_runs_path %>
 	  	<% @runs.each do |run| %>
 	  		<tr class="image-link <% if run.complete %>table-success<%elsif run.processing%>table-info<%else%>table-warning<%end%>" data-link="<%=run_path(run)%>">
+	  			<td><%= check_box_tag "run_ids[]", run.id, false%></td>
 	  			<td class="d-none d-md-table-cell"><%=run.id%></td>
 	  			<td class="image-name"><%=run.image.title%></td>
 	  			<td class="d-md-none"><b><%=run.algorithm.name%></b> on <b><%=run.annotation.label%></b><br/><br/>
@@ -28,6 +31,7 @@
 	  			<td class="d-none d-md-table-cell"><%=Time.at(run.run_at).in_time_zone.to_formatted_s(:db) if run.run_at %></td>
 	  			<td><% if run.complete %>Complete<%elsif run.processing %>Processing (<%=run.tiles_processed%>/<%=run.total_tiles%>)<%else%>In Queue<% end%></td>
 	  		</tr>
+	  	<% end %>
 	  	<% end %>
 	  </tbody>
 	</table>

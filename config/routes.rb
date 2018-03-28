@@ -30,6 +30,8 @@ Rails.application.routes.draw do
   resources :runs do
     collection do
       get 'annotation_form' => 'runs#annotation_form'
+      post 'confirm_delete' => 'runs#confirm_delete'
+      post 'delete' => 'runs#delete'
     end
 
     member do 

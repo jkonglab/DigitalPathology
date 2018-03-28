@@ -1,0 +1,47 @@
+<div class="container">
+	<br/><br/>
+	<h1>Confirm Deletion</h1>
+	<h4>Please the runs that you would like to delete.</h4>
+		<ul>
+			<li>Please note that deletion is permanent and deleted runs and results cannot be retrieved.</li>
+			<li>Uncheck a row to exclude the run from deletion</li>
+		</ul>
+	</h4>
+	<br/><br/>
+	<%= form_tag delete_runs_path do %>
+		<%= submit_tag "Confirm Delete", :style=>"float:right", :class=> 'btn btn-success btn-raised btn-danger'%>
+		<br/><br/>
+		<div class="image-table">
+			<table class="table table-hover">
+				<thead>
+					<tr>
+						<th></th>
+					  	<th>ID</th>
+					  	<th>Image Name</th>
+					  	<th>Date Uploaded</th>
+					  	<th>Status</th>
+					</tr>
+				</thead>
+
+				<tbody>
+					<% if @runs %>
+				  	<% @runs.each do |run| %>
+						<tr class="image-link <% if run.complete %>table-success<%elsif run.processing%>table-info<%else%>table-warning<%end%>" data-link="<%=run_path(run)%>">
+				  			<td><%= check_box_tag "run_ids[]", run.id, :default=>true%></td>
+				  			<td class="d-none d-md-table-cell"><%=run.id%></td>
+				  			<td class="image-name"><%=run.image.title%></td>
+				  			<td class="d-md-none"><b><%=run.algorithm.name%></b> on <b><%=run.annotation.label%></b><br/><br/>
+				  			<small><%=Time.at(run.run_at).in_time_zone.to_formatted_s(:db) if run.run_at %></small></td>
+				  			<td class="d-none d-md-table-cell"><%=run.algorithm.name%></td>
+				  			<td class="d-none d-md-table-cell"><%=run.annotation.label%></td>
+				  			<td class="d-none d-md-table-cell"><%=Time.at(run.run_at).in_time_zone.to_formatted_s(:db) if run.run_at %></td>
+				  			<td><% if run.complete %>Complete<%elsif run.processing %>Processing (<%=run.tiles_processed%>/<%=run.total_tiles%>)<%else%>In Queue<% end%></td>
+				  		</tr>
+				  	<% end %>
+				  	<% end %>
+				</tbody>
+			</table>
+		</div>
+	<% end %>
+
+</div>

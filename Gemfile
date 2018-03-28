@@ -38,7 +38,7 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 
 gem 'devise'
 gem 'sidekiq'
-gem 'sidekiq-limit_fetch'
+gem 'sidekiq-limit_fetch', 	:path=>'.'
 gem 'redis'
 gem 'ransack'
 gem 'rails-jquery-autocomplete'
