@@ -43,13 +43,25 @@ x2 = bpt(q);
 delta_X=abs(x1(2)-x2(2));
 delta_Y=abs(x1(1)-x2(1));
 
-if delta_X>delta_Y
+
+if  delta_Y>delta_X 
+
 xs = linspace(x1(1),x2(1), 2*ceil(abs(x1(1)-x2(1))))';
+
 ys = interp1([x1(1) x2(1)], [x1(2) x2(2)],xs); 
-else 
+
+elseif delta_Y<=delta_X
+
 ys = linspace(x1(2),x2(2), 2*ceil(abs(x1(2)-x2(2))))';
+
 xs = interp1([x1(2) x2(2)], [x1(1) x2(1)],ys); 
-end 
+
+else
+
+    return
+
+end
+
 curve = [curve; [xs, ys]];
 result=eval_conn(p,q,b,list_ind,curve);
 if ~result

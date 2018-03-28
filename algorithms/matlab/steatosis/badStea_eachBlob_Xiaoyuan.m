@@ -60,9 +60,9 @@ for i = 1:length(B)
 %      fprintf("***************************\n\n")
     b = B{i};
     ar=area(b);
-    if ar>1e4
-        continue
-    end
+%     if ar>1e4
+%         continue
+%     end
     %plot clumped nuclei boundaries 
     boundary=B{i};
 %     plot(boundary(:,2),boundary(:,1),'g','linewidth',3);
