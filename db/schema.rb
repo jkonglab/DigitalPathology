@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180302042926) do
+ActiveRecord::Schema.define(version: 20180329013140) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -79,6 +79,12 @@ ActiveRecord::Schema.define(version: 20180302042926) do
     t.boolean "exclude"
     t.string "output_key"
     t.integer "output_type"
+    t.index ["exclude"], name: "index_results_on_exclude"
+    t.index ["output_key"], name: "index_results_on_output_key"
+    t.index ["output_type"], name: "index_results_on_output_type"
+    t.index ["run_id"], name: "index_results_on_run_id"
+    t.index ["tile_x"], name: "index_results_on_tile_x"
+    t.index ["tile_y"], name: "index_results_on_tile_y"
   end
 
   create_table "runs", id: :serial, force: :cascade do |t|
