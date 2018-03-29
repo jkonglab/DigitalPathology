@@ -69,6 +69,7 @@
  	var results_data = JSON.parse('<%= raw(@results_data.to_json) %>');
  	var key;
  	var timeout;
+ 	var currentRequest = null;  
 	var annotation = '<%=raw(@annotation.data.to_json) %>';
 	var viewer = OpenSeadragon({
 		preserveViewport: true,
@@ -160,7 +161,7 @@
 
     function retrieveAndSetResults(event){
     	var bounds = viewer.viewport.viewportToImageRectangle(viewer.viewport.getBounds());
-		$.ajax({
+		currentRequest = $.ajax({
 			method: "GET",
 			url: "/runs/<%=@run.id%>/get_results.json?",
 			data: { 
@@ -169,20 +170,25 @@
     			y: bounds.y, 
     			width: bounds.width,
     			height: bounds.height
-  			}
-		})
-		.done(function(results_data){
-			viewer.annotations.clean();
+  			},
+  			beforeSend : function()    {           
+        		if(currentRequest != null) {
+            		currentRequest.abort();
+        		}
+    		},
+    		success: function(results_data) {
+				viewer.annotations.clean();
 
-			if(results_data[0] == 0){
-				$('.too-many-results-alert').addClass('show');
-				viewer.annotations.set(generateSVGs([], annotation));
+				if(results_data[0] == 0){
+					$('.too-many-results-alert').addClass('show');
+					viewer.annotations.set(generateSVGs([], annotation));
 
-			}else{
-				$('.too-many-results-alert').removeClass('show');
-				viewer.annotations.set(generateSVGs(results_data, annotation));
-			}
-		})
+				}else{
+					$('.too-many-results-alert').removeClass('show');
+					viewer.annotations.set(generateSVGs(results_data, annotation));
+				}
+    		}
+		});
     }
 
 	$('.retrieve-results').off('click').click(function(){
