@@ -19,6 +19,8 @@ class AnalysisWorker
       %x{cd #{algorithm_path}; matlab -nodisplay -r "main('#{@image.tile_folder_path}','#{output_file}',#{parameters},'#{@algorithm.name}',#{@tile_x},#{@tile_y},#{@tile_width},#{@tile_height}); exit;"}
     elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["python"]
       parameters = @run.parameters
+      logger.info "python3 -m main #{@image.tile_folder_path} #{output_file} #{parameters} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height}"
+
       %x{cd #{algorithm_path}; source env/bin/activate; python3 -m main #{@image.tile_folder_path} #{output_file} #{parameters} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height}}
     end
 

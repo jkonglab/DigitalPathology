@@ -48,16 +48,19 @@ def main(input, parameters):
 	output = np.zeros((eval_img.shape[0], eval_img.shape[1], 2))
 
 	margin = box_size // 2
+
 	for x in range(margin, eval_img.shape[0]-margin):
 		print('x: ' + str(x))
+
 		for y in range(margin, eval_img.shape[1]-margin):
-			patch = eval_img[y-margin:y+margin+1, x-margin:x+margin+1]
+			patch = eval_img[x-margin:x+margin+1, y-margin:y+margin+1]
 			patch = patch.reshape(1, 1, box_size, box_size)
 			output[x, y, :] = eval_fn(patch)
 
 	heatmap = filters.gaussian_filter(output[:, :, 1], 1)
 	seg = heatmap > 0.5
 	detections = np.where(np.multiply(seg, heatmap == filters.maximum_filter(heatmap, 3)))
+	detections = np.flip(detections, 0)
 
 	# fig, ax = plt.subplots()
 	# ax.imshow(eval_img, interpolation='nearest', cmap=plt.cm.gray)
