@@ -91,7 +91,7 @@
 	        retrieveAndSetResults(null);
 
 	        $('.openseadragon-container').click(function(e){
-		    	if($(e.target).is('circle')){
+		    	if($(e.target).is('circle') || $(e.target).is('path')){
 		    		var index = $(e.target).attr('index');
 		    		excludeResult(index);
 		    	}
@@ -107,7 +107,7 @@
 		var svgs = [];
 		_.each(results_data, function(element, index){
 			try {
-			if(element[0][0] == "circle"){
+			if(element[0][0] == "circle" || element[0][0] == "path"){
 				element[0][1]["index"] = index;
 				element[0][1]["r"] = 0.02;
 				element[0][1]["data-id"] = element[1];
