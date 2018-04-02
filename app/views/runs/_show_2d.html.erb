@@ -13,7 +13,7 @@
 			<p>Image Title:<br/><%=@image.title%>
 			<% if !@image.parent_id.blank? %>(Slice #: <%=@image.slice_order%>)<% end %></p>
 			<p>Algorithm Ran:<br/><%=@algorithm.title%> (ID: <%=@algorithm.id%>)</p>
-			<p>Tile Size:<br/><%=@run.tile_size%> px</p>
+			<% if @run.tile_size && @run.tile_size > 0 %><p>Tile Size:<br/><%=@run.tile_size%> px</p><% end %>
 			<% if @run.run_at %>
 				<p>Started:<br/><%=Time.at(@run.run_at).in_time_zone.to_formatted_s(:db) %></p>
 			<% end %>
