@@ -63,14 +63,17 @@ class RunsController < ApplicationController
   def create
   	@run = current_user.runs.new(run_params)
     image = Image.find(@run.image_id)
+    
     if image.threed? && image.parent_id.blank?
       @run.image_id = Image.where(:parent_id => image.id).order('slice_order asc')[0].id
     end
-    
+
     algorithm = Algorithm.find(@run.algorithm_id)
+   
     if algorithm.name == 'high_low_registration'
       @run.tile_size = 0
     end
+
     if @run.annotation_id.blank?
       @run.update_attributes!(:annotation_id => 0)
       annotation = image.annotations.new(:label=> 'Whole Slide')
