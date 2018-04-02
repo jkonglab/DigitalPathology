@@ -65,10 +65,8 @@ class RunsController < ApplicationController
     image = Image.find(@run.image_id)
     if image.threed? && image.parent_id.blank?
       @run.image_id = Image.where(:parent_id => image.id).order('slice_order asc')[0].id
-    elsif image.threed? 
-      @run.image_id = Image.find(image.parent_id).id
     end
-
+    
     algorithm = Algorithm.find(@run.algorithm_id)
     if algorithm.name == 'high_low_registration'
       @run.tile_size = 0

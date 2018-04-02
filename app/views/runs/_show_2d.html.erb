@@ -5,13 +5,15 @@
 		  <span>Back to All Analyses</span></a>
 		</span>
 		
-		<div style="padding:10px">
+		<div class="run-description" style="padding:10px">
 			<header>
   				<span style="white-space:pre-wrap;" class="navbar-brand">Analysis #<%=@run.id%></span>
 			</header>
 			<p>Status:<br/><%=@run.status_words%></p>
-			<p>Image Title:<br/><%=@image.title%></p>
+			<p>Image Title:<br/><%=@image.title%>
+			<% if !@image.parent_id.blank? %>(Slice #: <%=@image.slice_order%>)<% end %></p>
 			<p>Algorithm Ran:<br/><%=@algorithm.title%> (ID: <%=@algorithm.id%>)</p>
+			<p>Tile Size:<br/><%=@run.tile_size%> px</p>
 			<% if @run.run_at %>
 				<p>Started:<br/><%=Time.at(@run.run_at).in_time_zone.to_formatted_s(:db) %></p>
 			<% end %>
