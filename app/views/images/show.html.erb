@@ -26,6 +26,11 @@
 			<% end %>
 		</div>
 	</div>
+
+	<div style="position: fixed; bottom: 0; width: 150; right: 0; z-index: 100; color:white; background: rgba(0,0,0,.5); padding: 5px; text-align: center;" class="position-box">
+		x: <span id="position-text-x"></span><br/>
+		y: <span id="position-text-y"></span>
+	</div>
 </div>
 
 <div id="general-modal" class="modal fade" role="dialog">
@@ -78,6 +83,22 @@
 
 	viewer.initializeAnnotations();
 	bindAnnotationRows();
+	var mouse_tracker = new OpenSeadragon.MouseTracker({
+		element: viewer.element,
+		moveHandler: trackPointer
+	});
+
+	function trackPointer(event){
+		var imagePoint = viewer.viewport.viewerElementToImageCoordinates(event.position);
+		if(imagePoint.x >=0 && imagePoint.x <= <%=@image.width%> && imagePoint.y >=0 && imagePoint.y <= <%=@image.height%>){
+			$('#position-text-x').html(String(imagePoint.x.toFixed(2)));
+			$('#position-text-y').html(String(imagePoint.y.toFixed(2)));
+		}else{
+			$('#position-text-x').html("");
+			$('#position-text-y').html("");
+		}
+	}
+
 
 	$('.drawer-link').click(function(){
 		var clicked_tab = $(this).attr('data-tab');

@@ -90,8 +90,10 @@ class RunsController < ApplicationController
         parameter_value = annotation[algorithm_parameter["annotation_key"]]
       else
         parameter_value = params["parameters"][algorithm_parameter["key"]]
-        if algorithm_parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["numeric"]
+        if algorithm_parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["integer"]
           parameter_value = parameter_value.to_i
+        elsif algorithm_parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["float"]
+          parameter_value = parameter_value.to_f
         elsif algorithm_parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["boolean"]
           parameter_value = parameter_value == "1"
         elsif algorithm_parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["array"]

@@ -2,12 +2,13 @@ class Algorithm < ActiveRecord::Base
 	has_many :runs
 
 	PARAMETER_TYPE_LOOKUP={
-		"numeric" => 1,
+		"integer" => 1,
 		"boolean" => 2,
 		"string" => 3,
 		"color" => 4,
 		"select" => 5,
-		"array" => 6
+		"array" => 6,
+		"float" => 7
 	}
 
 	LANGUAGE_LOOKUP={

@@ -1,4 +1,4 @@
-function output = steatosis_main_function(input)
+function output = steatosis_main_function(input, iblur_opt, bwareaopen_opt, ind_opt, sigma_opt, qual_opt, qualthresh_opt)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % This function aims to detect steatosis in the original image, classify
 % them into good steatosis and bad steatosis. For those bad steatosis,
@@ -48,12 +48,12 @@ for i = 1:row
 end
 
 Iblur = imgaussfilt(f1, 5);
-BW = im2bw(Iblur , 0.75);%best 0.80
+BW = im2bw(Iblur, iblur_opt);%best 0.80
 
 % convert to grayscale
 f2 = rgb2gray(f1);
 %Remove small objects from binary image.
-BW2 = bwareaopen(BW,150, 8);%best 200
+BW2 = bwareaopen(BW, bwareaopen_opt, 8);%best 200
 
 % Use the circularity parameters
 BW = BW2;
@@ -62,7 +62,7 @@ measurements = regionprops(labeledImage, 'Area', 'Perimeter');
 
 allAreas = [measurements.Area];
 
-ind = find(allAreas<50000);    %50000
+ind = find(allAreas<ind_opt);    %50000
 BW1 = ismember(labeledImage,ind);
 
 labeledImage = bwlabel(BW1,8);
@@ -119,7 +119,7 @@ for i = 1:row
 end
 
 
-bad_stea=badStea_eachBlob_Xiaoyuan(bad_stea);
+bad_stea=badStea_eachBlob_Xiaoyuan(bad_stea, sigma_opt, qualthresh_opt, qual_opt);
 bad_stea_edge = edge(bad_stea,'Canny');
 bad_stea_edge = imdilate(bad_stea_edge,strel('disk',1));
 

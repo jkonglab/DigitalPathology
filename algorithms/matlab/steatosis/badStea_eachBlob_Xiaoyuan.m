@@ -1,4 +1,4 @@
-function I=badStea_eachBlob_Xiaoyuan(I)
+function I=badStea_eachBlob_Xiaoyuan(I, sigma_opt, qual_opt, qualthresh_opt)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Given a binary mask that contains bad steatosis cases, seperate the clustered
 % steatosis into individual ones, return the segmentation results
@@ -19,13 +19,15 @@ global Max_Distance;
 Max_Distance=50;
 global Val_Nonclose;
 Val_Nonclose=120;%150
-SIGMA = 3;%6
 global avg_area;
 avg_area=60;%10
-global QUALTHRESH;
-QUALTHRESH= 1.3;%2.0
 global QUAL;
-QUAL= 1.0;%1.90
+QUAL = qual_opt;
+global QUALTHRESH;
+QUALTHRESH = qualthresh_opt;
+global SIGMA;
+SIGMA = sigma_opt;
+
 global ARC;
 ARC = 10;
 UNUSED=1;

@@ -3,7 +3,7 @@
  		<% if !parameter["hard_coded"] && !parameter["annotation_derived"] %>
  		<div class="form-group">
  			<%= parameter_fields.label parameter["key"].to_sym, parameter["title"] %>
- 			<% if parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["numeric"] %>
+ 			<% if [Algorithm::PARAMETER_TYPE_LOOKUP["integer"], Algorithm::PARAMETER_TYPE_LOOKUP["float"]].include? parameter["type"] %>
 				<%= parameter_fields.number_field parameter["key"].to_sym, { value: parameter["default_value"], 
 					class: 'form-control', :required => parameter["required"]} %>
 			<% elsif parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["boolean"] %>
