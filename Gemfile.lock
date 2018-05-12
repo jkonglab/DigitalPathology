@@ -75,6 +75,7 @@ GEM
       railties (>= 4.1.0, < 5.2)
       responders
       warden (~> 1.2.3)
+    dicom (0.9.8)
     dotenv (2.2.1)
     dotenv-rails (2.2.1)
       dotenv (= 2.2.1)
@@ -234,6 +235,7 @@ DEPENDENCIES
   bootstrap-slider-rails
   coffee-rails
   devise
+  dicom
   dotenv-rails
   jbuilder
   jquery-rails

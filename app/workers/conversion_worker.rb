@@ -1,5 +1,6 @@
 class ConversionWorker
   include Sidekiq::Worker
+  require 'dicom'
   sidekiq_options :retry => 3
 
 
@@ -8,6 +9,11 @@ class ConversionWorker
 
     if !image.processing || force_flag
         image.update_attributes!(:processing=>true)
+
+        dcm = DICOM::DObject.read(image.file.path)
+        if dcm.read?
+            convert_dicom_to_jpg(image)
+        end
 
         python_file_path = File.join(Rails.root.to_s, 'python')
         file_path = file_path || image.file_folder_path
@@ -29,6 +35,17 @@ class ConversionWorker
             :width => width)
     end
 
+  end
+
+  def convert_dicom_to_jpg(image)
+    matlab_path = File.join(Rails.root.to_s, 'algorithms', 'matlab')
+    %x{cd #{matlab_path}; matlab -nodisplay -r "dicom2jpg('#{image.file.path}', 2); exit;"}
+    if File.extname(image.file_file_name) == '.dcm'
+        file_base = File.basename(image.file_file_name, File.extname(image.file_file_name))
+    else
+        file_base = image.file_file_name
+    end
+    image.update_attributes!(:file_file_name=>file_base + '.jpg', :file_content_type=>'image/jpg')
   end
 
 

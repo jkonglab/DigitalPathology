@@ -7,10 +7,11 @@ class Image < ActiveRecord::Base
   has_attached_file :file, {
     path: ":rails_root/public/:url",
     url: "#{Rails.application.config.data_directory}/:id_partition/:hash/:filename",
-    hash_data: ":class/:attachment/:id"
+    hash_data: ":class/:attachment/:id",
+    validate_media_type: false
   }
 
-  validates_attachment_content_type :file, :content_type => ["image/jpg", "image/jpeg", "image/png", "image/tiff"]
+  validates_attachment_content_type :file, :content_type => ["image/jpg", "image/jpeg", "image/png", "image/tiff", "application/octet-stream", "image/dicom"]
 
   VISIBILITY_PRIVATE = 0
   VISIBILITY_PUBLIC = 1
