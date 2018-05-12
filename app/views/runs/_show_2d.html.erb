@@ -106,18 +106,19 @@
 	waitForAnnotationInitialize();
 	viewer.addHandler('animation-finish', function(e){retrieveAndSetResults(e);});
 
+	function clickEvent(e){
+		if($(e.originalEvent.target).is('circle') || $(e.originalEvent.target).is('path')){
+			var index = $(e.originalEvent.target).attr('index');
+			e.preventDefaultAction = true;
+			excludeResult(index);
+		}
+	}
 
 	function waitForAnnotationInitialize(){
 	    if(viewer.areAnnotationsActive()){
 	    	clearTimeout(timeout);
 	        retrieveAndSetResults(null);
-
-	        $('.openseadragon-container').click(function(e){
-		    	if($(e.target).is('circle') || $(e.target).is('path')){
-		    		var index = $(e.target).attr('index');
-		    		excludeResult(index);
-		    	}
-		    });
+	        viewer.addHandler('canvas-click', clickEvent);
 	    }
 	    else{
 	        timeout = setTimeout(waitForAnnotationInitialize, 250);
