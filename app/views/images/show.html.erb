@@ -88,9 +88,12 @@
 		moveHandler: trackPointer
 	});
 
+	var image_width = <%=@image_shown.width %>;
+	var image_height = <%=@image_shown.height %>;
+
 	function trackPointer(event){
 		var imagePoint = viewer.viewport.viewerElementToImageCoordinates(event.position);
-		if(imagePoint.x >=0 && imagePoint.x <= <%=@image.width%> && imagePoint.y >=0 && imagePoint.y <= <%=@image.height%>){
+		if(imagePoint.x >=0 && imagePoint.x <= image_width && imagePoint.y >=0 && imagePoint.y <= image_height){
 			$('#position-text-x').html(String(imagePoint.x.toFixed(2)));
 			$('#position-text-y').html(String(imagePoint.y.toFixed(2)));
 		}else{
@@ -180,6 +183,8 @@
   				url: "<%=@image.id%>/get_slice?slice="+slice_num.toString()
   			}).done(function(data){
   				viewer.open('/'+data.dzi_url);
+  				image_width = data.width;
+  				image_height = data.height;
 				viewer.viewport.fitBounds(current_bounds);
 				stopDrawing();
 				viewer.shutdownAnnotations();
