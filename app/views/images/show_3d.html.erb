@@ -304,12 +304,8 @@
 		slidesGroup.current = 0;
 		var image_array = <%= raw(@slices.collect{|slice| slice.whole_image_path}.to_json) %>;
 
-		for ( var i = 0; i <= image_array.length - 1; i++ ) {
-			//map = new THREE.TextureLoader().load("https://s3.amazonaws.com/pathology-imageviewer/reg_slide_" + i + ".tif");
-		
+		for ( var i = 0; i <= image_array.length - 1; i++ ) {		
 			map = new THREE.TextureLoader().load('/'+image_array[i]);
-
-
 			map.minFilter = map.magFilter = THREE.NearestFilter;
 			material = new THREE.MeshBasicMaterial( { color: 0xffffff, map: map, opacity: guiConfig.Opacity, side: THREE.DoubleSide, transparent: true, wireframe: false, clipShadows: true} );
 			mesh = new THREE.Mesh( geometry, material);

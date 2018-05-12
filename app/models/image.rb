@@ -49,7 +49,7 @@ class Image < ActiveRecord::Base
 
   def whole_image_path
     file_base = File.basename(self.file_file_name, File.extname(self.file_file_name))
-    folder_base = self.height < 500 ? '8' : '11'
+    folder_base = self.height < 600 ? '8' : '11'
     return File.join(self.file_folder_url, file_base + '_files', folder_base, '0_0.jpeg')
   end
 
