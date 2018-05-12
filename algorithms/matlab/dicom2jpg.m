@@ -6,7 +6,7 @@ function output = dicom2jpg(image, input)
     new_name = image;
     
     if ext == '.dcm'
-        new_name = strcat(filepath,name);
+        new_name = strcat(filepath,'/',name);
     end
     
     if(input==1)

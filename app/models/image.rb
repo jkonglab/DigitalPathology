@@ -11,7 +11,7 @@ class Image < ActiveRecord::Base
     validate_media_type: false
   }
 
-  validates_attachment_content_type :file, :content_type => ["image/jpg", "image/jpeg", "image/png", "image/tiff", "application/octet-stream", "image/dicom"]
+  validates_attachment_content_type :file, :content_type => ["image/jpg", "image/jpeg", "image/png", "image/tiff", "application/octet-stream", "application/dicom"]
 
   VISIBILITY_PRIVATE = 0
   VISIBILITY_PUBLIC = 1
