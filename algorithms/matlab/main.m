@@ -39,6 +39,6 @@ function main_output = main(image_folder_path, output_file_path, extra_parameter
       postprocessing_function_handler(main_output, output_file_path);
    catch exception
       disp( getReport( exception, 'extended') )
-      quit force
+      %quit force
    end
 end

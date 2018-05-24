@@ -12,7 +12,7 @@ function output = steatosis_main_function(input, iblur_opt, bwareaopen_opt, ind_
 global path;
 global s_goodSteat_image_write;
 
-path='./199/199_1';
+path='./';
 s='.png';
 filename=strcat(path,s);
 s_ALLSteat_image='_ALLSteat_image_me.png';
@@ -152,9 +152,14 @@ for i = 1:row
             end
         end
 end
+
+%imshow(IM2)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %imwrite(IM2, s_ALLSteat_image_write);
 
-output = getContour(transpose(gd_stea), 15);
+good_stea_out = getContour(transpose(gd_stea), 15);
+bad_stea_out = getContour(transpose(bad_stea), 15);
+
+output = [good_stea_out; bad_stea_out];
 
 
