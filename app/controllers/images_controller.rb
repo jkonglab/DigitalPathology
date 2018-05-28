@@ -33,7 +33,7 @@ class ImagesController < ApplicationController
 
   def show
     @run = @image.runs.new
-    @algorithm = @image.threed? && @image.parent_id.blank? ? Algorithm.all : Algorithm.where('output_type NOT IN (?)', Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"])
+    @algorithm = @image.threed? && @image.parent_id.blank? ? Algorithm.all : Algorithm.where('input_type NOT IN (?)', Algorithm::INPUT_TYPE_LOOKUP["3D"])
     @annotation = Annotation.new
     @annotations = @image.hidden? ? @image.annotations.where(:user_id=>current_user.id).order('id desc') : @image.annotations
     @clinical_data = @image.clinical_data || {}

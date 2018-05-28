@@ -13,12 +13,14 @@ class Algorithm < ActiveRecord::Base
 
 	LANGUAGE_LOOKUP={
 		"matlab" => 1,
-		"python" => 2
+		"python" => 2,
+		"julia" => 3
 	}
 
 	LANGUAGE_LOOKUP_INVERSE={
 		1 => "matlab",
-		2 => "python"
+		2 => "python",
+		3 => "julia"
 	}
 
 	OUTPUT_TYPE_LOOKUP={
@@ -29,8 +31,13 @@ class Algorithm < ActiveRecord::Base
 		"percentage" => 4
 	}
 
+	INPUT_TYPE_LOOKUP={
+		"2D" => 0,
+		"3D" => 1
+	}
+
 	def title_with_type
-		if self.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"] 
+		if self.input_type == Algorithm::INPUT_TYPE_LOOKUP["3D"] 
 			"3D Algorithm: #{self.title}" 
 		else 
 			"2D Algorithm: #{self.title}"

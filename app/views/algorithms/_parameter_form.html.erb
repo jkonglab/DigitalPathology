@@ -15,6 +15,8 @@
 				<%= parameter_fields.select(parameter["key"].to_sym, options_for_select(parameter["options"], 1), {}, { class: 'form-control', :required => parameter["required"]} )%>
 			<% elsif parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["array"] %>
 				<%= parameter_fields.text_field parameter["key"].to_sym, { value: parameter["default_value"], required: parameter["required"], placeholder: parameter["placeholder"]} %>
+			<% elsif parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["string"] %>
+				<%= parameter_fields.text_field parameter["key"].to_sym, { value: parameter["default_value"], required: parameter["required"], placeholder: parameter["placeholder"]} %>
 			<% end %>
 		</div>
 		<% end %>

@@ -37,7 +37,6 @@ class RunsController < ApplicationController
         end
       end
     end
-
   end
 
   def get_results
@@ -69,7 +68,8 @@ class RunsController < ApplicationController
     end
 
     algorithm = Algorithm.find(@run.algorithm_id)
-   
+
+    ## REFACTOR
     if algorithm.name == 'high_low_registration'
       @run.tile_size = 0
     end
@@ -80,9 +80,9 @@ class RunsController < ApplicationController
     else
       annotation = Annotation.find(@run.annotation_id)
     end
+
     algorithm_parameters = algorithm.parameters.sort_by { |k| k["order"] }
     run_parameters = []
-
     algorithm_parameters.each do |algorithm_parameter|
       if algorithm_parameter["hard_coded"]
         parameter_value = algorithm_parameter["default_value"]

@@ -8,7 +8,8 @@ class Image < ActiveRecord::Base
     path: ":rails_root/public/:url",
     url: "#{Rails.application.config.data_directory}/:id_partition/:hash/:filename",
     hash_data: ":class/:attachment/:id",
-    validate_media_type: false
+    validate_media_type: false,
+    preserve_files: false
   }
 
   validates_attachment_content_type :file, :content_type => ["image/jpg", "image/jpeg", "image/png", "image/tiff", "application/octet-stream", "application/dicom"]
@@ -54,6 +55,8 @@ class Image < ActiveRecord::Base
   end
 
   def destroy_children
+    self.file = nil
+    self.save
     self.annotations.destroy_all 
     self.user_image_ownerships.destroy_all   
     self.runs.destroy_all

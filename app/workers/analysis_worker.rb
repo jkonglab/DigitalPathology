@@ -20,8 +20,17 @@ class AnalysisWorker
     elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["python"]
       parameters = @run.parameters
       logger.info "python3 -m main #{@image.tile_folder_path} #{output_file} #{parameters} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height}"
-
       %x{cd #{algorithm_path}; source env/bin/activate; python3 -m main #{@image.tile_folder_path} #{output_file} #{parameters} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height}}
+    elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["julia"]
+      ## NEEDS MAJOR REFACTORING!
+      ## PRETTY MUCH BUILT ONLY TO RUN COLOR DECONV
+      parameters = ""
+      output_file = File.join(@run.run_folder, "/output.tif")
+      @run.parameters.each do |parameter|
+        parameters = parameters + parameter.to_json + ' '
+      end
+      logger.info "julia julia-adapter.jl #{@image.file.path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}"
+      %x{cd #{algorithm_path}; julia julia-adapter.jl #{@image.file.path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}}
     end
 
     timer = 0
@@ -123,17 +132,27 @@ class AnalysisWorker
   def handle_3d_volume_output_generation
     Dir.entries(@run.run_folder + '/').each do |file_name|
       if file_name.include?('.tif')
-        new_image = Image.new
-        file = File.open(File.join(@run.run_folder, file_name))
-        new_image.file = file
-        file.close
-        new_image.save!
-        new_image.title = "Run #{@run.id}: #{new_image.file_file_name.gsub('_', ' ')}"
-        new_image.image_type = Image::IMAGE_TYPE_TWOD
-        new_image.generated_by_run_id = @run.id
-        new_image.save!
-        UserImageOwnership.create!(:user_id=> @run.user_id,:image_id=> new_image.id)
-        Sidekiq::Client.push('queue' => 'user_conversion_queue_' + @run.user_id.to_s, 'class' =>  ConversionWorker, 'args' => [new_image.id])
+        i = 0
+        while(true)
+          begin
+            layer = Vips::Image.tiffload File.join(@run.run_folder, file_name), :page => i
+            layer.write_to_file(File.join(@run.run_folder, i.to_s + '_' + file_name))
+            new_image = Image.new
+            file = File.open(File.join(@run.run_folder, i.to_s + '_' + file_name))
+            new_image.file = file
+            file.close
+            new_image.save!
+            new_image.title = "Run #{@run.id}: #{new_image.file_file_name.gsub('_', ' ')}"
+            new_image.image_type = Image::IMAGE_TYPE_TWOD
+            new_image.generated_by_run_id = @run.id
+            new_image.save!
+            UserImageOwnership.create!(:user_id=> @run.user_id,:image_id=> new_image.id)
+            Sidekiq::Client.push('queue' => 'user_conversion_queue_' + @run.user_id.to_s, 'class' =>  ConversionWorker, 'args' => [new_image.id])
+            i = i + 1
+          rescue Vips::Error
+            break
+          end
+        end
       end
     end
   end

@@ -65,7 +65,7 @@ if SMOOTH
 end
 
 
-B = bwboundaries(bwMask,4,'noholes');
+% B = bwboundaries(bwMask,4,'noholes');
 
 [B,L] = bwboundaries(transpose(bwMask),'noholes');
 % imshow(label2rgb(L, @jet, [.5 .5 .5]))
