@@ -80,7 +80,7 @@ class ImagesController < ApplicationController
   end
 
   def share
-    user = User.where(:email => params[:user][:email])
+    user = User.where("lower(email) = ?", params[:user][:email].downcase).first
     length = @images.length
     if user.count > 0
       @images.each do |image|
