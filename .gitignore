@@ -17,6 +17,7 @@
 !/log/.keep
 /tmp
 /python/env
+/python3/env
 npm-debug.log
 /algorithms/run_data/*
 /public/data/*
