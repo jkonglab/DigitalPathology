@@ -38,8 +38,6 @@ import colorsys
 import matplotlib
 from skimage import measure
 
-from prediction import random_colors
-
 def filer(min_score, max_score,r,image):
     #pred_DIR = os.path.join(DATASET_DIR, "prediction_results/") 
     #directory = os.path.dirname(pred_DIR)
@@ -81,6 +79,20 @@ def compute_features(mask_array):
     label_img = label(image)
     regions = regionprops(label_img)
 
+
+def random_colors(N, bright=True):
+    import colorsys
+    import random
+    """
+    Generate random colors.
+    To get visually distinct colors, generate them in HSV space then
+    convert to RGB.
+    """
+    brightness = 1.0 if bright else 0.7
+    hsv = [(i / N, 1, brightness) for i in range(N)]
+    colors = list(map(lambda c: colorsys.hsv_to_rgb(*c), hsv))
+    random.shuffle(colors)
+    return colors
 
 
    
