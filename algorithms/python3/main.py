@@ -1,3 +1,5 @@
+#python3 -m main /labs/konglab/imageviewer/public/dp-data/000/001/014/6eba5487f0649903a25e5367e3180a4142a62eea/2018-07-06_14.57.56_files /labs/konglab/imageviewer/algorithms/test.json {} steatosis_neural_net 100600 38600 200 200
+
 import os
 import sys
 import math
