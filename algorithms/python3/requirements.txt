@@ -6,10 +6,9 @@ kiwisolver==1.0.1
 matplotlib==2.2.3
 mrcnn==0.2
 networkx==2.1
-numpy==1.15.0
+numpy
 Pillow==5.2.0
 pycairo==1.17.0
-pygobject==3.28.2
 pyparsing==2.2.0
 python-dateutil==2.7.3
 pytz==2018.5
@@ -19,3 +18,4 @@ scipy==1.1.0
 six==1.11.0
 toolz==0.9.0
 virtualenv==15.1.0
+imgaug
