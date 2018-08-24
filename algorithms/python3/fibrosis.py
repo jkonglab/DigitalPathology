@@ -11,7 +11,7 @@ import sys
 import json
 
 def preprocess(raw_input, output_file_path, parameters):
-	return raw_input
+	return raw_input.T
 
 def postprocess(main_output, output_file_path):
 	import numpy as np
