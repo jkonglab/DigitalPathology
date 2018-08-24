@@ -17,7 +17,10 @@ def postprocess(main_output, output_file_path):
 	import numpy as np
 	import json
 
-	output = json.dumps(np.asarray(main_output).T.tolist())
+	for i in range(main_output.shape[0]):
+    	main_output[i] = np.squeeze(main_output[i]).tolist()
+
+	output = json.dumps(main_output.tolist())
 
 	with open(output_file_path, 'w') as outfile:
   		outfile.write(output)
