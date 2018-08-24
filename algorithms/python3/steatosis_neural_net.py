@@ -11,25 +11,25 @@ import sys
 import json
 
 def preprocess(raw_input, output_file_path, parameters):
-	return raw_input
+    return raw_input
 
 def postprocess(main_output, output_file_path):
-	import numpy as np
-	import json
+    import numpy as np
+    import json
 
-	for i in range(main_output.shape[0]):
-    	main_output[i] = np.squeeze(main_output[i]).tolist()
+    for i in range(main_output.shape[0]):
+        main_output[i] = np.squeeze(main_output[i]).tolist()
 
-	output = json.dumps(main_output.tolist())
+    output = json.dumps(main_output.tolist())
 
-	with open(output_file_path, 'w') as outfile:
-  		outfile.write(output)
-	return True
+    with open(output_file_path, 'w') as outfile:
+        outfile.write(output)
+    return True
 
 def main(input, parameters):
-	sys.path.insert(0, './steatosis_neural_net')
-	algorithm_module = __import__('prediction')
-	function_handler = getattr(algorithm_module, 'Predict')
-	results = function_handler(input)
-	return results
+    sys.path.insert(0, './steatosis_neural_net')
+    algorithm_module = __import__('prediction')
+    function_handler = getattr(algorithm_module, 'Predict')
+    results = function_handler(input)
+    return results
 
