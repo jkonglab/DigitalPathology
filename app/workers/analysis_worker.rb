@@ -21,6 +21,11 @@ class AnalysisWorker
       parameters = @run.parameters
       logger.info "python3 -m main #{@image.tile_folder_path} #{output_file} #{parameters} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height}"
       %x{cd #{algorithm_path}; source env/bin/activate; python3 -m main #{@image.tile_folder_path} #{output_file} #{parameters} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height}}
+    elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["python3"]
+      parameters = @run.parameters
+      logger.info "python3 -m main #{@image.tile_folder_path} #{output_file} #{parameters} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height}"
+      %x{cd #{algorithm_path}; source env/bin/activate; python3 -m main #{@image.tile_folder_path} #{output_file} #{parameters} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height}}
+
     elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["julia"]
       ## NEEDS MAJOR REFACTORING!
       ## PRETTY MUCH BUILT ONLY TO RUN COLOR DECONV

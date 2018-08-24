@@ -14,7 +14,8 @@ class Algorithm < ActiveRecord::Base
 	LANGUAGE_LOOKUP={
 		"matlab" => 1,
 		"python" => 2,
-		"julia" => 3
+		"julia" => 3,
+		"python3" => 4
 	}
 
 	LANGUAGE_LOOKUP_INVERSE={
