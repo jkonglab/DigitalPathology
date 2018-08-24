@@ -21,7 +21,8 @@ class Algorithm < ActiveRecord::Base
 	LANGUAGE_LOOKUP_INVERSE={
 		1 => "matlab",
 		2 => "python",
-		3 => "julia"
+		3 => "julia",
+		4 => "python3"
 	}
 
 	OUTPUT_TYPE_LOOKUP={
