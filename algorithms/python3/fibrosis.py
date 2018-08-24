@@ -17,7 +17,7 @@ def postprocess(main_output, output_file_path):
 	import numpy as np
 	import json
 
-	output = json.dumps(np.asarray(main_output).T.tolist())
+	output = json.dumps(np.asarray(main_output).tolist())
 
 	with open(output_file_path, 'w') as outfile:
   		outfile.write(output)
