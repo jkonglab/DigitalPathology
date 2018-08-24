@@ -37,8 +37,7 @@ import cv2
 import colorsys 
 import matplotlib
 from skimage import measure
-
-from steatosis2 import random_colors
+from prediction import random_colors
 
 def filer(min_score, max_score,r,image):
     #pred_DIR = os.path.join(DATASET_DIR, "prediction_results/") 
