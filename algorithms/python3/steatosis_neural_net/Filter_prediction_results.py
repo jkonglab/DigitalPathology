@@ -38,6 +38,8 @@ import colorsys
 import matplotlib
 from skimage import measure
 
+from steatosis2_Predict import random_colors
+
 def filer(min_score, max_score,r,image):
     #pred_DIR = os.path.join(DATASET_DIR, "prediction_results/") 
     #directory = os.path.dirname(pred_DIR)
@@ -59,19 +61,21 @@ def filer(min_score, max_score,r,image):
     image = np.array(image)
     image_masked = image
     #print("image shape is {}".format(image.shape))
-    
+    contours = []
     for c_id in result['class_ids']:
         inx = inx + 1
-        score = result['scores'][inx]
+        #score = result['scores'][inx]
         pred_mask = result['masks'][:, :, inx]
-        pred_mask = np.array(pred_mask, dtype=np.uint8)
-        #pred_mask = cv2.resize(pred_mask, ( 1024 , 1024 ))
-        color = colors[inx]
-        for c in range(3):
-            image_masked[:, :, c] = np.where(pred_mask == 1,image[:, :, c] *(1 - alpha) + alpha * color[c] * 255,image[:, :, c])
-        
-    return np.array(image_masked)
-    #cv2.imwrite(pred_DIR + '{}_mask.png'.format(image_name[:-4]), image_masked)
+        pred_mask = np.array(pred_mask, dtype=np.uint8)   
+        temp,contour,hierarchy=cv2.findContours(pred_mask,1,2)
+        area=cv2.contourArea(contour[0])
+        if len(contour[0])<6:
+            continue
+        #ellipse = cv2.fitEllipse(contour[0])
+        #perimeter = cv2.arcLength(contour[0],True)
+        #print("ellipse is {}".format(ellipse))
+        contours.append(contour[0])        
+    return np.array(contours)
     print("Finished!\n")
 
 def compute_features(mask_array):
@@ -79,20 +83,6 @@ def compute_features(mask_array):
     label_img = label(image)
     regions = regionprops(label_img)
 
-
-def random_colors(N, bright=True):
-    import colorsys
-    import random
-    """
-    Generate random colors.
-    To get visually distinct colors, generate them in HSV space then
-    convert to RGB.
-    """
-    brightness = 1.0 if bright else 0.7
-    hsv = [(i / N, 1, brightness) for i in range(N)]
-    colors = list(map(lambda c: colorsys.hsv_to_rgb(*c), hsv))
-    random.shuffle(colors)
-    return colors
 
 
    
