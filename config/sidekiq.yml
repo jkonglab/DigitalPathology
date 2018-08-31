@@ -4,3 +4,5 @@
 :dynamic: true
 production:
   :concurrency: 25
+  :limits:
+    single_analysis_queue: 1

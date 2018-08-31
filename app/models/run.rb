@@ -13,6 +13,10 @@ class Run < ActiveRecord::Base
 		queue.each do |job|
 		  job.delete if job.args[0] == self.id && job.klass == 'AnalysisWorker'
 		end
+		queue = Sidekiq::Queue.new("single_analysis_queue")
+		queue.each do |job|
+		  job.delete if job.args[0] == self.id && job.klass == 'AnalysisWorker'
+		end
 	end
 
 	def check_if_done

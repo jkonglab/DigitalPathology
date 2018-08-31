@@ -48,7 +48,11 @@ class TilingWorker
                 num_tiles_counter += 1
                 tile_x = tile.split(',')[0].to_i
                 tile_y = tile.split(',')[1].to_i
-                Sidekiq::Client.push('queue' => 'user_analysis_queue_' + @run.user_id.to_s, 'class' =>  AnalysisWorker, 'args' => [run_id, tile_x, tile_y])
+                if @algorithm.name == 'steatosis_neural_net'
+                  Sidekiq::Client.push('queue' => 'single_analysis_queue', 'class' =>  AnalysisWorker, 'args' => [run_id, tile_x, tile_y])
+                else
+                  Sidekiq::Client.push('queue' => 'user_analysis_queue_' + @run.user_id.to_s, 'class' =>  AnalysisWorker, 'args' => [run_id, tile_x, tile_y])
+                end
             end
         end
         @run.update_attributes!(:total_tiles=>num_tiles_counter)
