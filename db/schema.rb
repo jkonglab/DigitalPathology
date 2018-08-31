@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180815220641) do
+ActiveRecord::Schema.define(version: 20180831064536) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,6 +25,7 @@ ActiveRecord::Schema.define(version: 20180815220641) do
     t.json "multioutput_options"
     t.integer "input_type", default: 0
     t.integer "tile_size"
+    t.boolean "single_queue_flag"
   end
 
   create_table "annotations", id: :serial, force: :cascade do |t|
