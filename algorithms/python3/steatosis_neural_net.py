@@ -18,7 +18,7 @@ def postprocess(main_output, output_file_path):
     import json
 
     for i in range(main_output.shape[0]):
-        main_output[i] = np.squeeze(main_output[i]).tolist()
+        main_output[i] = np.squeeze(main_output[i]/2).tolist()
 
     output = json.dumps(main_output.tolist())
 
