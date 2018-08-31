@@ -17,8 +17,6 @@ def postprocess(main_output, output_file_path):
 	import numpy as np
 	import json
 
-	main_output = main_output.tolist()
-
 	for i in range(len(main_output)):
 		main_output[i] = [main_output[i]]
 
