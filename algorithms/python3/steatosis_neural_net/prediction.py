@@ -69,7 +69,7 @@ def Predict(image):
     # Inference Configuration
     config = steatosis2.SteatosisInferenceConfig()       
     #DEVICE = "/gpu:0"  # /cpu:0 or /gpu:0
-    DEVICE = "/cpu:0"
+    DEVICE = "/gpu:0"
     # Inspect the model in training or inference modes
     # values: 'inference' or 'training'
     # Only inference mode is supported right now

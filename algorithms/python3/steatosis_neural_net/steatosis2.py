@@ -184,7 +184,7 @@ class SteatosisConfig(Config):
 class SteatosisInferenceConfig(SteatosisConfig):
     # Set batch size to 1 to run one image at a time
     GPU_COUNT = 1 #2
-    IMAGES_PER_GPU = 1 #6
+    IMAGES_PER_GPU = 6 #6
     # Don't resize imager for inferencing
     IMAGE_RESIZE_MODE = "pad64"
     # Non-max suppression threshold to filter RPN proposals.
