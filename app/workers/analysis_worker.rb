@@ -151,8 +151,8 @@ class AnalysisWorker
             new_image.image_type = Image::IMAGE_TYPE_TWOD
             new_image.generated_by_run_id = @run.id
             new_image.save!
-            UserImageOwnership.create!(:user_id=> @run.user_id,:image_id=> new_image.id)
-            Sidekiq::Client.push('queue' => 'user_conversion_queue_' + @run.user_id.to_s, 'class' =>  ConversionWorker, 'args' => [new_image.id])
+            UserImageOwnership.create!(:user_id=> @run.users.first.id,:image_id=> new_image.id)
+            Sidekiq::Client.push('queue' => 'user_conversion_queue_' + @run.users.first.id.to_s, 'class' =>  ConversionWorker, 'args' => [new_image.id])
             i = i + 1
           rescue Vips::Error
             break

@@ -20,7 +20,7 @@ class TilingWorker
 
         if @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"]
             # Queuing tile_x, tile_y = (0,0) means that there is no ROI used in this analysis algorithm
-            Sidekiq::Client.push('queue' => 'user_analysis_queue_' + @run.user_id.to_s, 'class' =>  AnalysisWorker, 'args' => [run_id, 0, 0])
+            Sidekiq::Client.push('queue' => 'user_analysis_queue_' + @run.users.first.id.to_s, 'class' =>  AnalysisWorker, 'args' => [run_id, 0, 0])
         else
             if run.annotation_id != 0
               @annotation = run.annotation
@@ -51,7 +51,7 @@ class TilingWorker
                 if @algorithm.single_queue_flag
                   Sidekiq::Client.push('queue' => 'single_analysis_queue', 'class' =>  AnalysisWorker, 'args' => [run_id, tile_x, tile_y])
                 else
-                  Sidekiq::Client.push('queue' => 'user_analysis_queue_' + @run.user_id.to_s, 'class' =>  AnalysisWorker, 'args' => [run_id, tile_x, tile_y])
+                  Sidekiq::Client.push('queue' => 'user_analysis_queue_' + @run.users.first.id.to_s, 'class' =>  AnalysisWorker, 'args' => [run_id, tile_x, tile_y])
                 end
             end
         end

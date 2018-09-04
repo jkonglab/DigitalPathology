@@ -112,7 +112,7 @@ class RunsController < ApplicationController
 
   	if @run.save
       UserRunOwnership.create!(:user_id=> current_user.id,:run_id=> @run.id)
-      Sidekiq::Client.push('queue' => 'user_tiling_queue_' + @run.user_id.to_s, 'class' =>  TilingWorker, 'args' => [@run.id])
+      Sidekiq::Client.push('queue' => 'user_tiling_queue_' + current_user.id.to_s, 'class' =>  TilingWorker, 'args' => [@run.id])
       redirect_to @run, notice: 'New analysis created, please wait for it to finish running.'
   	end
   end
