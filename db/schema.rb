@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180831064536) do
+ActiveRecord::Schema.define(version: 20180904223637) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -111,6 +111,11 @@ ActiveRecord::Schema.define(version: 20180831064536) do
   create_table "user_image_ownerships", id: :serial, force: :cascade do |t|
     t.integer "user_id"
     t.integer "image_id"
+  end
+
+  create_table "user_run_ownerships", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "run_id"
   end
 
   create_table "users", id: :serial, force: :cascade do |t|

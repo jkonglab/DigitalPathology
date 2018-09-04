@@ -3,9 +3,8 @@ class ImagesController < ApplicationController
   before_action :set_current_user
   before_action :authenticate_user!, :except => [:index, :show]
   before_action :set_image_validated, :only => [:show_3d, :download_annotations, :show, :add_single_clinical_data, :add_upload_clinical_data, :get_slice, :import_annotations]
-  before_action :set_images_validated, :only =>[:confirm_convert_3d, :confirm_delete, :delete, :make_public, :make_private, :confirm_share, :share]
+  before_action :set_images_validated, :only =>[:confirm_convert_3d, :confirm_delete, :delete, :make_public, :make_private]
   respond_to :json, only: [:get_slice]
-
 
   autocomplete :user, :email
     
@@ -74,22 +73,6 @@ class ImagesController < ApplicationController
     length = @images.length
     @images.destroy_all
     return redirect_to my_images_images_path, notice: "#{length} images deleted"
-  end
-
-  def confirm_share
-  end
-
-  def share
-    user = User.where("lower(email) = ?", params[:user][:email].downcase).first
-    length = @images.length
-    if user.count > 0
-      @images.each do |image|
-        UserImageOwnership.find_or_create_by!(:user_id=>user[0].id, :image_id=>image.id)
-      end
-      return redirect_to my_images_images_path, notice: "#{length} images shared with #{user[0].email}"
-    else
-      redirect_to my_images_images_path, alert: 'Could not find user to share with'
-    end
   end
 
   def make_public

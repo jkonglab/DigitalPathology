@@ -2,9 +2,9 @@ class Run < ActiveRecord::Base
 	belongs_to :image
 	belongs_to :annotation
 	belongs_to :algorithm
-	belongs_to :user
 	has_many :results
-
+	has_many :user_run_ownerships
+	has_many :users, :through => :user_run_ownerships
 	before_destroy :destroy_children_and_jobs
 
 	def destroy_children_and_jobs
@@ -40,7 +40,6 @@ class Run < ActiveRecord::Base
 			return 'In Queue'
 		end
 	end
-
 
   	def annotation()
     	h = super

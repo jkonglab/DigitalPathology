@@ -12,9 +12,7 @@ Rails.application.routes.draw do
       post 'convert_3d' => 'images#convert_3d'
       post 'confirm_3d' => 'images#confirm_convert_3d'
       post 'confirm_delete' => 'images#confirm_delete'
-      post 'confirm_share' => 'images#confirm_share'
       post 'delete' => 'images#delete'
-      post 'share' => 'images#share'
       get 'autocomplete_user_email' => 'images#autocomplete_user_email'
     end
     member do
@@ -51,6 +49,17 @@ Rails.application.routes.draw do
       put 'include' => 'results#include'
     end
   end
+
+  resources :user_image_ownerships do
+    get :autocomplete_user_email, :on => :collection
+    post 'confirm_share' => 'user_image_ownerships#confirm_share', :on => :collection
+  end
+
+  resources :user_run_ownerships do
+    get :autocomplete_user_email, :on => :collection
+    post 'confirm_share' => 'user_run_ownerships#confirm_share', :on => :collection
+  end
+
   
   get '/about' => 'pages#about'
 

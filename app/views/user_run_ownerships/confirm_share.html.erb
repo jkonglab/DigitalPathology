@@ -1,0 +1,49 @@
+<div class="container">
+  <br/><br/>
+  <h1>Confirm Share</h1>
+  <h4>Please confirm the analyses that you would like to share.</h4>
+      <ul>
+          <li>Enter a user email that you'd like to share with</li>
+          <li>Please note that sharing is (currently) a permanent action and users with shared access can edit or delete the analysis and its results.</li>
+          <li>Uncheck a row to exclude the analysis from sharing</li>
+      </ul>
+  </h4>
+  <br/><br/>
+
+  <%= form_for @ownership do |f| %>
+    <%= f.label :user_id, "User Email (to share with): " %>
+    <%= f.autocomplete_field :user_id, autocomplete_user_email_user_run_ownerships_path, :style=>'display:inline-block; width:50%', :required=>true  %>
+    <%= f.submit "Confirm Share", :style=>"float:right", :class=> 'btn btn-success btn-raised btn-success'%>
+    <br/><br/>
+    <div class="image-table">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+                <th class="d-none d-md-table-cell">ID</th>
+                <th>Image</th>
+                <th class="d-md-none">Run</th>
+                <th class="d-none d-md-table-cell">Algorithm</th>
+                <th class="d-none d-md-table-cell">ROI</th>
+                <th class="d-none d-md-table-cell">Date Run</th>
+                <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @runs.each do |run| %>
+                <tr class="image-link <% if run.complete %>table-success<%elsif run.processing%>table-info<%else%>table-warning<%end%>" data-link="<%=run_path(run)%>">
+                    <td><%= check_box_tag "run_ids[]", run.id, false%></td>
+                    <td class="d-none d-md-table-cell"><%=run.id%></td>
+                    <td class="image-name"><%=run.image.title%></td>
+                    <td class="d-md-none"><b><%=run.algorithm.name%></b> on <b><%=run.annotation.label%></b><br/><br/>
+                    <small><%=Time.at(run.run_at).in_time_zone.to_formatted_s(:db) if run.run_at %></small></td>
+                    <td class="d-none d-md-table-cell"><%=run.algorithm.name%></td>
+                    <td class="d-none d-md-table-cell"><%=run.annotation.label%></td>
+                    <td class="d-none d-md-table-cell"><%=Time.at(run.run_at).in_time_zone.to_formatted_s(:db) if run.run_at %></td>
+                    <td><% if run.complete %>Complete<%elsif run.processing %>Processing (<%=run.tiles_processed%>/<%=run.total_tiles%>)<%else%>In Queue<% end%></td>
+                </tr>
+            <% end %>   
+          </tbody>
+        </table>    
+    </div>
+  <% end %>
+</div>

@@ -60,7 +60,7 @@ class RunsController < ApplicationController
   end
 
   def create
-  	@run = current_user.runs.new(run_params)
+  	@run = Run.new(run_params)
     image = Image.find(@run.image_id)
     algorithm = Algorithm.find(@run.algorithm_id)
     
@@ -99,7 +99,7 @@ class RunsController < ApplicationController
             begin
               parameter_value = JSON.parse(parameter_value)
             rescue JSON::ParserError
-                redirect_to image, alert: 'Could not parse your inputted array in run parameters.  Please make sure your arrays are comma separated and contained within square brackets [like, this]'
+                redirect_to image, alert: 'Could not parse your inputted array in analysis parameters.  Please make sure your arrays are comma separated and contained within square brackets [like, this]'
                 return
             end
           end
@@ -111,6 +111,7 @@ class RunsController < ApplicationController
   	@run.parameters = run_parameters
 
   	if @run.save
+      UserRunOwnership.create!(:user_id=> current_user.id,:run_id=> @run.id)
       Sidekiq::Client.push('queue' => 'user_tiling_queue_' + @run.user_id.to_s, 'class' =>  TilingWorker, 'args' => [@run.id])
       redirect_to @run, notice: 'New analysis created, please wait for it to finish running.'
   	end
@@ -120,14 +121,14 @@ class RunsController < ApplicationController
     if @runs.length == 1
       run = @runs[0]
       run.destroy
-      return redirect_to runs_path, notice: "Run #{run.id} deleted"
+      return redirect_to runs_path, notice: "Analysis #{run.id} deleted"
     end
   end
 
   def delete
     length = @runs.length
     @runs.destroy_all
-    return redirect_to runs_path, notice: "#{length} runs deleted"
+    return redirect_to runs_path, notice: "#{length} analyses deleted"
   end
 
   def download_results
@@ -179,19 +180,19 @@ class RunsController < ApplicationController
 
     def set_run_validated
       @run = Run.find(params[:id])
-      if current_user.id != @run.user_id
-        redirect_to runs_path, alert: 'You do not have permission to access or edit this image'
+      if !(@run.users.pluck(:id).include?(current_user.id))
+        redirect_to runs_path, alert: 'You do not have permission to access or edit this analysis'
       end
     end
 
     def set_runs_validated
       run_ids = params['run_ids']
       if !run_ids
-        redirect_to runs_path, alert: 'No runs selected'
+        redirect_to runs_path, alert: 'No analysis selected'
       else
         @runs = current_user.runs.where('runs.id IN (?)', run_ids)
         if @runs.length < 1
-          redirect_to runs_path, alert: 'No runs selected or you may lack permission to access these runs'
+          redirect_to runs_path, alert: 'No analysis selected or you may lack permission to access these analyses'
         end
       end     
     end

@@ -1,4 +1,4 @@
-<div class="container">
+r<div class="container">
 	<br/><br/>
 	<h1>Confirm Share</h1>
 	<h4>Please confirm the images that you would like to share.</h4>
@@ -10,10 +10,11 @@
 	</h4>
 	<br/><br/>
 
-	<%= form_tag share_images_path do %>
-		<%= label :user_email, "User Email (to share with): " %>
-	    <%= autocomplete_field :user, :email, autocomplete_user_email_images_path, :class => 'form-control', :style=>'display:inline-block; width:50%', :required=>true %> 
-		<%= submit_tag "Confirm Share", :style=>"float:right", :class=> 'btn btn-success btn-raised btn-success'%>
+
+	<%= form_for @ownership do |f| %>
+		<%= f.label :user_id, "User Email (to share with): " %>
+		<%= f.autocomplete_field :user_id, autocomplete_user_email_user_image_ownerships_path, :style=>'display:inline-block; width:50%', :required=>true  %>
+		<%= f.submit "Confirm Share", :style=>"float:right", :class=> 'btn btn-success btn-raised btn-success'%>
 		<br/><br/>
 		<div class="image-table">
 			<%= render :partial => 'images/confirm_table.html.erb', :locals => { :images=>@images}%>

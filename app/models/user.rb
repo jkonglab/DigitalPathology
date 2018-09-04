@@ -7,7 +7,8 @@ class User < ActiveRecord::Base
   has_many :user_image_ownerships
   has_many :images, :through => :user_image_ownerships
   has_many :annotations
-  has_many :runs
+  has_many :user_run_ownerships
+  has_many :runs, :through => :user_run_ownerships
   has_many :results, through: :runs
   
   def self.current

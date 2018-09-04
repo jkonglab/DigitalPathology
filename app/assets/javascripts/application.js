@@ -21,7 +21,6 @@
 //= require backbone-forms/distribution/editors/list
 //= require formstone/dist/js/core
 //= require formstone/dist/js/upload
-//= require autocomplete-rails
 //= require_tree ../../../node_modules/openseadragon/build
 //= require_tree ../../../node_modules/openseadragon-annotations/dist
 //= require_tree .
