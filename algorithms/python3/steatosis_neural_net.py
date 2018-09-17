@@ -9,9 +9,11 @@ import skimage.data
 import os
 import sys
 import json
+import cv2
 
 def preprocess(raw_input, output_file_path, parameters):
-    return raw_input
+    converted = cv2.cvtColor(np.array(raw_input), cv2.COLOR_BGR2RGB)
+    return converted
 
 def postprocess(main_output, output_file_path):
     import numpy as np
