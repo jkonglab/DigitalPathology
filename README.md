@@ -69,5 +69,23 @@ In pg_hba.conf, change all occurances of "ident" to "password"
     RAILS_ENV=production rake db:create
     RAILS_ENV=production rake db:migrate
 
+# Create passenger config file
+    cd /var/www/imageviewer
+    vim Passengerfile.json
+    
+    {
+        // Run the app in a production environment. The default value is "development".
+        "environment": "production",
+        // Run Passenger on port 80, the standard HTTP port.
+        "port": 80,
+        // Tell Passenger to daemonize into the background.
+        "daemonize": true,
+        // Tell Passenger to run the app as the given user. Only has effect
+        // if Passenger was started with root privileges.
+        "user": "imageviewer"
+    }
+
+# Run passenger
+    sudo /usr/local/rvm/gems/ruby-2.5.1/wrappers/bundle exec passenger start
 
 
