@@ -34,8 +34,6 @@
 }
 
 #application-alert{
-  padding-top:70px;
-  float: left;
   width: 100%;
   margin-bottom: 0px;
   z-index:5;
@@ -146,7 +144,7 @@
     flex-direction: row;
 }
 
-.image-table{
+.image-table, .main-content{
 	background-color: #fff;
   	border: 1px solid #ddd;
   	border-radius: 4px;
@@ -178,6 +176,12 @@
     .navbar-toggler{
       display:none;
     }
+}
+
+.narrow-container{
+  max-width:500px; 
+  padding-top:50px; 
+  margin:0px auto;
 }
 
 .filelists { margin: 20px 0; }

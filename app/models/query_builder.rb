@@ -43,10 +43,10 @@ class QueryBuilder
   end
 
   def sort_order
-    if query['s'].present?
-      query['s']
+    if query_params['s'].present?
+      query_params['s']
     else
-      'images.created_at desc'
+      'created_at desc'
     end
   end
 

@@ -1,0 +1,19 @@
+<div class="container">
+  <ul class="nav nav-tabs">
+    <li class="active nav-item"><a class="active nav-link" data-toggle="tab" href="#users">Users</a></li>
+    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#images">Images</a></li>
+    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#algorithms">Algorithms</a></li>
+  </ul>
+
+  <div class="main-content tab-content" style="padding:20px;">
+    <div id="users" class="tab-pane fade show active">
+      <%= render 'users_panel' %>
+    </div>
+    <div id="images" class="tab-pane fade">
+      <%= render 'images_panel' %>
+    </div>
+    <div id="algorithms" class="tab-pane fade">
+      <%= render 'algorithms_panel' %>
+    </div>
+  </div>
+</div>

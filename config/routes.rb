@@ -63,7 +63,17 @@ Rails.application.routes.draw do
   
   get '/about' => 'pages#about'
 
+  authenticate :user, lambda { |u| u.admin? } do
+    get '/admin' => 'users#admin_panel'
+    get '/admin/new_user' => 'users#admin_create_user'
+    post '/admin/users/create' => 'users#create'
+    delete '/admin/users/delete' => 'users#delete'
+    get '/admin/users/resend' => 'users#resend_confirmation'
+  end
+
   require 'sidekiq/web'
-  mount Sidekiq::Web => '/sidekiq'
+  authenticate :user, lambda { |u| u.admin? } do
+    mount Sidekiq::Web => '/sidekiq'
+  end
 
 end

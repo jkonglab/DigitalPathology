@@ -22,12 +22,12 @@ class UserImageOwnershipsController < ApplicationController
 
   private
 
-  def set_images_validated
+ def set_images_validated
     image_ids = params['image_ids']
     if !image_ids
       redirect_to my_images_images_path, alert: 'No images selected'
     else
-      @images = current_user.images.where('images.id IN (?)', image_ids)
+      @images = !current_user.subadmin? ? current_user.images.where('images.id IN (?)', image_ids) : Image.where('images.id IN (?)', image_ids)
       if @images.length < 1
         redirect_to my_images_images_path, alert: 'No images selected or you may lack permission to edit these images'
       end

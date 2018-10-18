@@ -6,7 +6,7 @@ Rails.application.configure do
   # since you don't have to restart the web server when you make code changes.
   config.cache_classes = false
   config.log_level = :debug
-config.web_console.whiny_requests = false
+  config.web_console.whiny_requests = false
   # Do not eager load code on boot.
   config.eager_load = false
   # Show full error reports and disable caching.
@@ -39,6 +39,16 @@ config.web_console.whiny_requests = false
 
   config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
   config.data_directory = 'data'
+  config.action_mailer.delivery_method = :smtp
+  # SMTP settings for gmail
+  config.action_mailer.smtp_settings = {
+    :address              => "smtp.gmail.com",
+    :port                 => 587,
+    :user_name            => 'ays0110@gmail.com',
+    :password             => 'sfueragzzzxqznbf',
+    :authentication       => "plain",
+    :enable_starttls_auto => true
+  }
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true

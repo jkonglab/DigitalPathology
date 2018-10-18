@@ -3,8 +3,8 @@
 <% end -%>
 
 <%- if controller_name != 'sessions' %>
-	</br><br/>
-	<h4>Have an account? <%= link_to "Log in", new_session_path(resource_name), :class=> 'float-right btn btn-raised btn-primary' %></h4></br>
+</br></br></br>
+	<h4>Have an account?  <%= link_to "Log in", new_session_path(resource_name), :class=> 'float-right btn btn-raised btn-primary' %></h4></br>
 <% end -%>
 
 <%- if devise_mapping.registerable? && controller_name != 'registrations' %>

@@ -1,0 +1,45 @@
+<h3>All Users</h3>
+<%= link_to admin_new_user_path do %>
+  <button style="float:right" class="btn btn-success">+ New User</button>
+<% end %>
+
+<table style="width:100%">
+  <thead>
+    <tr>
+        <th>ID</th>
+        <th>Email</th>
+        <th>Signed Up</th>
+        <th>Confirmed</th>
+        <th>Last IP</th>
+        <th>Role</th>
+        <th></th>
+    </tr>
+    <tbody>
+      <%User.all.order('id asc').each do |user|%>
+        <tr>
+          <td><%=user.id%></td>
+          <td><%=user.email%></td>
+          <td><%=time_ago_in_words user.created_at %> ago</td>
+          <td><%=user.confirmed_at ? time_ago_in_words(user.confirmed_at) + ' ago' : "Unconfirmed" %></td>
+          <td><%=user.current_sign_in_ip%></td>
+          <td><%=User::REVERSE_PERMISSION_LOOKUP[user.admin].capitalize%></td>
+          <td>
+            <div class="dropdown">
+              <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Actions
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <%=link_to admin_users_delete_path(:user_id=>user.id), :class=> 'dropdown-item', :data => {:method=> :delete, :confirm => 'Are you sure you want to delete this user?  This is permanent.'} do %>Delete<%end%>
+                <% if !user.confirmed_at %>
+                  <%=link_to admin_users_resend_path(:user_id=>user.id), :class=> 'dropdown-item' do %>
+                    Resend Confirmation
+                  <%end%>
+                <% end %>
+              </div>
+            </div>
+          </td>
+        </tr>
+      <%end%>
+    </tbody>
+  </thead>
+</table>

@@ -1,9 +1,4 @@
-source 'http://rubygems.org'
-
-group :production do 
-  gem 'dotenv-rails', require: 'dotenv/rails-now'
-  gem 'passenger'
-end
+source "https://rubygems.org"
 
 gem 'pg'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
@@ -16,7 +11,7 @@ gem 'uglifier'
 # Use CoffeeScript for .coffee assets and views
 gem 'coffee-rails'
 # See https://github.com/sstephenson/execjs#readme for more supported runtimes
-gem 'therubyracer', platforms: :ruby
+gem 'mini_racer'
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
@@ -43,8 +38,11 @@ gem 'powder'
 group :development, :test do
   # Access an IRB console on exception pages or by using <%= console %> in views
   gem 'web-console'
-
-  # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
-  gem 'spring'
 end
+
+group :production do 
+  gem 'dotenv-rails', require: 'dotenv/rails-now'
+  gem 'passenger'
+end
+
 

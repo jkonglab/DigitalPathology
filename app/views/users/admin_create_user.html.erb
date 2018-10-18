@@ -1,8 +1,8 @@
 <div class="narrow-container">
-<h2>Sign Up</h2>
+<h2>New User</h2>
 
 
-<%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+<%= form_for(resource, as: resource_name, url: admin_users_create_path(resource_name)) do |f| %>
   <%= devise_error_messages! %>
 
   <div class="field form-group">
@@ -24,9 +24,8 @@
   </div>
 
   <div class="actions form-group float-right">
-    <%= f.submit "Sign Up", class: 'btn btn-raised btn-success'%>
+    <%= f.submit "Create", class: 'btn btn-raised btn-success'%>
   </div>
 <% end %>
 
-<%= render "devise/shared/links" %>
 </div>

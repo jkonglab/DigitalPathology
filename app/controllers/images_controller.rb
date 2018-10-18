@@ -202,7 +202,7 @@ class ImagesController < ApplicationController
 
   def set_image_validated
     @image = Image.find(params[:id])
-    if @image.hidden? && !(@image.users.pluck(:id).include?(current_user.id))
+    if @image.hidden? && !(@image.users.pluck(:id).include?(current_user.id)) && !current_user.subadmin?
       redirect_to my_images_images_path, alert: 'You do not have permission to access or edit this image'
     end
   end
@@ -212,7 +212,7 @@ class ImagesController < ApplicationController
     if !image_ids
       redirect_to my_images_images_path, alert: 'No images selected'
     else
-      @images = current_user.images.where('images.id IN (?)', image_ids)
+      @images = !current_user.subadmin? ? current_user.images.where('images.id IN (?)', image_ids) : Image.where('images.id IN (?)', image_ids)
       if @images.length < 1
         redirect_to my_images_images_path, alert: 'No images selected or you may lack permission to edit these images'
       end
