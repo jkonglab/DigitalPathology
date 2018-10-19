@@ -1,0 +1,19 @@
+<div class="container">
+	<br/><br/>
+	<h1>Confirm Move</h1>
+	<h4>Please specify a new project to move them to.</h4>
+		<ul>
+			<li>Uncheck a row to exclude the image from move</li>
+		</ul>
+	</h4>
+	<br/><br/>
+	<%= form_tag move_images_path do %>
+		<%= collection_select :image, :project_id, current_user.projects, :id, :title, {include_blank: 'Select Project'}, { class: 'form-control', style: 'width:500px;', required: true } %>
+		<%= submit_tag "Confirm Move", :style=>"float:right", :class=> 'btn btn-success btn-raised btn-danger'%>
+		<br/><br/>
+		<div class="image-table">
+			<%= render :partial => 'images/confirm_table.html.erb', :locals => { :images=>@images}%>
+		</div>
+	<% end %>
+
+</div>

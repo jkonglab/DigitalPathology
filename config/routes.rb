@@ -5,13 +5,24 @@ Rails.application.routes.draw do
 
   # You can have the root of your site routed with "root"
   root 'pages#home'
+
+  resources :projects do
+    collection do 
+      post 'make_public' => 'projects#make_public'
+      post 'make_private' => 'projects#make_private'
+    end
+  end
+
+  get 'my_projects' => 'projects#my_projects'
+
   resources :images do
     collection do
-      get 'my_images' => 'images#my_images'
       post 'make_public' => 'images#make_public'
       post 'convert_3d' => 'images#convert_3d'
       post 'confirm_3d' => 'images#confirm_convert_3d'
       post 'confirm_delete' => 'images#confirm_delete'
+      post 'confirm_move' => 'images#confirm_move'
+      post 'move' => 'images#move'
       post 'delete' => 'images#delete'
       get 'autocomplete_user_email' => 'images#autocomplete_user_email'
     end
@@ -50,9 +61,9 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :user_image_ownerships do
+  resources :user_project_ownerships do
     get :autocomplete_user_email, :on => :collection
-    post 'confirm_share' => 'user_image_ownerships#confirm_share', :on => :collection
+    post 'confirm_share' => 'user_project_ownerships#confirm_share', :on => :collection
   end
 
   resources :user_run_ownerships do

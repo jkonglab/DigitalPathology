@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181018195504) do
+ActiveRecord::Schema.define(version: 20181019143916) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -68,6 +68,17 @@ ActiveRecord::Schema.define(version: 20181018195504) do
     t.string "file_content_type"
     t.integer "file_file_size"
     t.datetime "file_updated_at"
+    t.integer "project_id"
+  end
+
+  create_table "projects", force: :cascade do |t|
+    t.string "title"
+    t.integer "visibility"
+    t.string "tissue_type"
+    t.string "modality"
+    t.string "method"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "results", id: :serial, force: :cascade do |t|
@@ -108,9 +119,9 @@ ActiveRecord::Schema.define(version: 20181018195504) do
     t.index ["user_id"], name: "index_runs_on_user_id"
   end
 
-  create_table "user_image_ownerships", id: :serial, force: :cascade do |t|
+  create_table "user_project_ownerships", force: :cascade do |t|
     t.integer "user_id"
-    t.integer "image_id"
+    t.integer "project_id"
   end
 
   create_table "user_run_ownerships", force: :cascade do |t|

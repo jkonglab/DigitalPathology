@@ -6,27 +6,22 @@ class QueryBuilder
     @query_params = params
   end
 
-
-  RESERVED_PARAMS = %w(s)
-
   def query
     return @query if @query.present?
 
-    @query = {
-      'title_cont' => query_params['title']
-    }
+    reserved_params = ['title']
+    @query = @query_params
+
+    @query.keys.each do |key|
+      if !reserved_params.include?(key) 
+        @query[key+'_eq'] = @query[key]
+      end
+    end
+
+    @query['title_cont'] = query_params['title']
 
     if query_params['processing'].present?
       @query['processing_eq'] = query_params['processing'] == 'Complete' ? 0 : 1
-    end
-
-    reserved_params = [*Image.column_names, *query.keys, *RESERVED_PARAMS]
-    meta_searchers = query_params.except(*reserved_params)
-
-    if meta_searchers.present?
-      array_matchers, value_matchers = meta_searchers.partition { |key, value| value.is_a?(Array) }
-      @query[:meta_search] = value_matchers
-      @query[:meta_array_containing] = array_matchers
     end
 
     @query

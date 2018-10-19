@@ -1,8 +1,7 @@
 class Image < ActiveRecord::Base
 	has_many :annotations
 	has_many :runs
-  has_many :user_image_ownerships
-	has_many :users, :through => :user_image_ownerships
+  belongs_to :project
   has_many :results, through: :runs
   has_attached_file :file, {
     path: ":rails_root/public/:url",
@@ -58,7 +57,6 @@ class Image < ActiveRecord::Base
     self.file = nil
     self.save
     self.annotations.destroy_all 
-    self.user_image_ownerships.destroy_all   
     self.runs.destroy_all
   end
 

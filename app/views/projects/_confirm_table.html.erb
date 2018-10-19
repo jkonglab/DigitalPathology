@@ -1,0 +1,29 @@
+<table class="table table-hover">
+  <thead>
+  	<tr>
+  		<th><input type="checkbox" id="select_all"/></th>
+	  	<th class="d-none d-md-table-cell"><%= sort_link @q, :id, "ID"%></th>
+	  	<th><%= sort_link @q, :title, "Title"%></th>
+	  	<th><%= sort_link @q, :created_at, "Created"%></th>
+	  	<th><%= sort_link @q, :tissue_type, "Tissue Type"%></th>
+	  	<th><%= sort_link @q, :modality, "Modality"%></th>
+	  	<th><%= sort_link @q, :method, "Method"%></th>
+	  	<th>Privacy</th>
+  	</tr>
+  </thead>
+  
+  <tbody>
+  	<% @projects.each do |project| %>
+  		<tr>
+  			<td><%= check_box_tag "project_ids[]", project.id, false, class: 'project-check-box'%></td>
+  			<td class="d-none d-md-table-cell"><%=project.id%></td>
+  			<td class="d-none d-md-table-cell"><a href="<%=project_path(project.id)%>"><%=project.title%></a></td>
+  			<td><%=project.created_at%></td>
+  			<td><%=project.tissue_type%></td>
+  			<td><%=project.modality%></td>
+  			<td><%=project.method%></td>
+  			<td><%=project.hidden? ? 'Private' : 'Public' %></td>
+  		</tr>
+  	<% end %>
+  </tbody>
+</table>

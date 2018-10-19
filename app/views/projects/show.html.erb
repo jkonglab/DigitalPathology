@@ -1,11 +1,11 @@
 <div class="container">
 	<br/>
 	<br/>
-	<h1>My Images</h1>
-	<h4>The list below is a repository of your uploaded images</h4>
+	<h1>Project: <%=@project.title%>	</h1>
+	<h4>The list below is a repository of your uploaded images in this project</h4>
 	<br/>
-	<%= render partial: "search_form" %>
-	<%= link_to new_image_path do %>
+	<%= render partial: "images/search_form" %>
+	<%= link_to new_image_path(:project_id=>@project.id) do %>
 		<button style="float:right" class="btn btn-success">+ Upload New Image</button>
 	<% end %>
 	<br/><br/>
@@ -22,13 +22,12 @@
 		  	</tr>
 		  </thead>
 		  <%= form_tag confirm_3d_images_path do %>
-		  	<%= submit_tag "Delete", :style=>"float:right; margin-left:10px;", :class=>"btn-raised btn btn-danger", :formaction=> confirm_delete_images_path %>
 		  	<%= submit_tag "Combine in 3D Volume", :style=> 'float:right; margin-left:10px;', :class=> 'btn btn-success btn-raised'%>
-		  	<%= submit_tag "Make Public", :style=>"float:right; margin-left:10px;", :class=>"btn-raised btn btn-primary", :formaction=> make_public_images_path %>
-		  	<%= submit_tag "Share", :style=>"float:right; margin-left:10px;", :class=>"btn-raised btn btn-primary", :formaction=>  confirm_share_user_image_ownerships_path %>
+		  	<%= submit_tag "Move", :style=> 'float:right; margin-left:10px;', :class=> 'btn btn-primary btn-raised', :formaction=> confirm_move_images_path%>
+		  	<%= submit_tag "Delete", :style=>"float:right; margin-left:10px;", :class=>"btn-raised btn btn-danger", :formaction=> confirm_delete_images_path %>
 			  <tbody>
 			  	<% @images.each do |image| %>
-			  		<tr class="image-link">
+			  		<tr>
 			  			<td><%= check_box_tag "image_ids[]", image.id, false, class: 'image-check-box'%></td>
 			  			<td class="d-none d-md-table-cell"><%=image.id%></td>
 			  			<td>

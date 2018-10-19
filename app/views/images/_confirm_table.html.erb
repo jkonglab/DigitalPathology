@@ -12,7 +12,7 @@
 	<tbody>
 		<% if images %>
 	  	<% images.each do |image| %>
-	  		<tr class="image-link">
+	  		<tr class="click-link">
 	  			<td><%= check_box_tag "image_ids[]", image.id, :default => true, class: 'image-check-box'%></td>
 	  			<td class="d-none d-md-table-cell"><%=image.id%></td>
 	  			<td>

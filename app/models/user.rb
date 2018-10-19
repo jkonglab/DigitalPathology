@@ -4,8 +4,8 @@ class User < ActiveRecord::Base
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable, :confirmable
 
-  has_many :user_image_ownerships
-  has_many :images, :through => :user_image_ownerships
+  has_many :user_project_ownerships
+  has_many :projects, :through => :user_project_ownerships
   has_many :annotations
   has_many :user_run_ownerships
   has_many :runs, :through => :user_run_ownerships
@@ -15,7 +15,7 @@ class User < ActiveRecord::Base
 
 
   def destroy_children
-    self.user_image_ownerships.destroy_all
+    self.user_project_ownerships.destroy_all
     self.user_run_ownerships.destroy_all
     self.annotations.destroy_all
   end

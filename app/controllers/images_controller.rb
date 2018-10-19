@@ -3,31 +3,28 @@ class ImagesController < ApplicationController
   before_action :set_current_user
   before_action :authenticate_user!, :except => [:index, :show]
   before_action :set_image_validated, :only => [:show_3d, :download_annotations, :show, :add_single_clinical_data, :add_upload_clinical_data, :get_slice, :import_annotations]
-  before_action :set_images_validated, :only =>[:confirm_convert_3d, :confirm_delete, :delete, :make_public, :make_private]
+  before_action :set_images_validated, :only =>[:confirm_convert_3d, :confirm_delete, :delete, :confirm_move, :move]
   respond_to :json, only: [:get_slice]
 
-  autocomplete :user, :email
-    
-  def index
-    query_params = params['q'] || {}
-    query_builder = QueryBuilder.new(query_params)
-    @q = query_builder.to_ransack(Image.where(:visibility => Image::VISIBILITY_PUBLIC, :parent_id=>nil))
-    @images= @q.result.reorder(query_builder.sort_order)
-  end  
+  autocomplete :user, :email 
   
   def new
     @images = Image.new
+    @project = Project.find(params[:project_id])
   end
 
   def create
-    @image = Image.create(image_params)
-    @image.title = @image.file_file_name.gsub('_', ' ')
-    @image.image_type = Image::IMAGE_TYPE_TWOD
-    UserImageOwnership.create!(
-      :user_id=> current_user.id,:image_id=> @image.id)
-    @image.save
-    Sidekiq::Client.push('queue' => 'user_conversion_queue_' + current_user.id.to_s, 'class' =>  ConversionWorker, 'args' => [@image.id])
-    redirect_to my_images_images_path, notice: 'Image created, please wait for it to be processed.' and return
+    if !current_user.projects.pluck(:id).include?(params['project_id'].to_i)
+      render :json =>  {error: 'You do not have permission to upload images to this project'}, :status=> 422 and return
+    else
+      @image = Image.create(image_params)
+      @image.project_id = params['project_id']
+      @image.title = @image.file_file_name.gsub('_', ' ')
+      @image.image_type = Image::IMAGE_TYPE_TWOD
+      @image.save
+      Sidekiq::Client.push('queue' => 'user_conversion_queue_' + current_user.id.to_s, 'class' =>  ConversionWorker, 'args' => [@image.id])
+      redirect_to @image.project, notice: 'Image created, please wait for it to be processed'
+    end
   end
 
   def show
@@ -53,41 +50,35 @@ class ImagesController < ApplicationController
     respond_with @slice
   end
 
-  def my_images
-    query_params = params['q'] || {}
-    query_builder = QueryBuilder.new(query_params)
-    @q = query_builder.to_ransack(current_user.images.where(:parent_id=>nil))
-    @images= @q.result.reorder(query_builder.sort_order)
-  end
-
   def confirm_delete
     if @images.length == 1
       image = @images[0]
+      project = image.project
       images = Image.where('(images.id IN (?) or parent_id IN (?))', image.id, image.id)
       images.destroy_all
-      return redirect_to my_images_images_path, notice: "Image #{image.title} deleted"
+      return redirect_to project, notice: "Image #{image.title} deleted"
     end
+  end
+
+  def confirm_move
+  end
+
+  def move
+    @images.update_all(:project_id=>params[:image][:project_id])
+    redirect_to project_path(params[:image][:project_id]), notice: "#{@images.length} image(s) moved"
   end
 
   def delete
     length = @images.length
+    project = @images.first.project
     @images.destroy_all
-    return redirect_to my_images_images_path, notice: "#{length} images deleted"
-  end
-
-  def make_public
-    @images.update_all(:visibility=>Image::VISIBILITY_PUBLIC)
-    redirect_to my_images_images_path, notice: "#{@images.count} images made public"
-  end 
-
-  def make_private
-    @images.update_all(:visibility=>Image::VISIBILITY_PRIVATE)
+    return redirect_to project, notice: "#{length} images deleted"
   end
 
   def confirm_convert_3d
     @images = current_user.images.where('image_type != ? AND images.id IN (?)', Image::IMAGE_TYPE_THREED, params['image_ids']).sort_by{|image| image.title}
     if @images.length < 1
-      return redirect_to my_images_images_path, alert: 'Volume could not be created because all selected images are already attached to a 3D volume.'
+      return redirect_to @images.first.project, alert: 'Volume could not be created because all selected images are already attached to a 3D volume.'
     end
   end
 
@@ -121,7 +112,7 @@ class ImagesController < ApplicationController
     images = Image.where('id in (?)', image_ids)
     images.update_all(:parent_id=> parent_image.id)
     images.update_all(:visibility=> parent_image.visibility)
-    redirect_to my_images_images_path, notice: 'Images converted into 3D volume'
+    redirect_to images.first.project, notice: 'Images converted into 3D volume'
   end
 
   def add_single_clinical_data
@@ -197,24 +188,26 @@ class ImagesController < ApplicationController
 
   private
   def image_params
-    params.require(:image).permit(:file)
+    params.permit(:project_id)
+    params.require(:image).permit(:file, :project_id)
   end
 
   def set_image_validated
     @image = Image.find(params[:id])
-    if @image.hidden? && !(@image.users.pluck(:id).include?(current_user.id)) && !current_user.subadmin?
-      redirect_to my_images_images_path, alert: 'You do not have permission to access or edit this image'
+    if @image.hidden? && !(@image.project.users.pluck(:id).include?(current_user.id)) && !current_user.subadmin?
+      redirect_to my_projects_path, alert: 'You do not have permission to access or edit this image'
     end
   end
 
   def set_images_validated
     image_ids = params['image_ids']
     if !image_ids
-      redirect_to my_images_images_path, alert: 'No images selected'
+      redirect_back(fallback_url: my_projects_path, alert: 'No images selected')
     else
-      @images = !current_user.subadmin? ? current_user.images.where('images.id IN (?)', image_ids) : Image.where('images.id IN (?)', image_ids)
+      project_ids = current_user.projects.pluck(:id)
+      @images = !current_user.subadmin? ? Image.where('images.id IN (?) AND images.project_id IN (?)', image_ids, project_ids) : Image.where('images.id IN (?)', image_ids)
       if @images.length < 1
-        redirect_to my_images_images_path, alert: 'No images selected or you may lack permission to edit these images'
+        redirect_back(fallback_url: my_projects_path, alert: 'No images selected or you may lack permission to edit these images')
       end
     end     
   end

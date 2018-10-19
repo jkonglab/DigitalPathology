@@ -1,0 +1,58 @@
+<div style='text-align:center'>
+	 <button class="btn btn-primary btn-raised" type="button" data-toggle="collapse" data-target="#searchForm" aria-expanded="false" aria-controls="searchForm">
+	    Search & Filter
+	 </button>
+	 </div>
+<div class="collapse" id="searchForm">
+  <div id="searchFormCard" class="card card-body">
+		<div id="searchFormCardContent">
+		</div>
+	</div>
+</div>
+
+<script>
+	var SearchForm = Backbone.Model.extend({
+		data: {
+		},
+	    schema: {
+	  		title:
+	  			{ title: 'Project Title', 
+	  				type: 'Text', 
+	  				editorClass: 'form-control',
+	  				editorAttrs: { name: 'q[title]' }
+	  			},
+	  	   tissue_type:
+	  	   	{
+	  	   		title: 'Tissue Type',
+	  	   		type: 'Select',
+	  	   		options: <%=Project::TISSUE_TYPES.to_json.html_safe%>,
+	  	   		editorClass: 'form-control',
+	  	   		editorAttrs: { name: 'q[tissue_type]'}
+	  	   	},
+	  	   	modality:
+	      	{ title: 'Modality', 
+	      		type: 'Select', 
+	      		options: <%=Project::MODALITY_TYPES.to_json.html_safe%>, 
+	      		editorClass: 'form-control',
+	      		editorAttrs: { name: 'q[modality]'}
+	  			},
+	  	   	method:
+	  	   	{
+	  	   		title: 'Method',
+	  	   		type: 'Select',
+	  	   		options: <%=Project::METHOD_TYPES.to_json.html_safe%>,
+	  	   		editorClass: 'form-control',
+	  	   		editorAttrs: { name: 'q[method]'}
+	  	   	}
+	    }
+	});
+
+	var searchform = new SearchForm();
+
+	var form = new Backbone.Form({
+	    model: searchform
+	}).render();
+
+	$('#searchFormCardContent').html(form.el);
+	$('#searchFormCardContent form').append('<button class="btn btn-raised btn-success" type="buttoon">Search</button>');
+</script>

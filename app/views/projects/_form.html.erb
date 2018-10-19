@@ -1,0 +1,39 @@
+<%= form_for(@project) do |f| %>
+  <% if @project.errors.any? %>
+    <ul>
+      <% @project.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <div class="field form-group">
+    <%= f.label :title %><br/>
+    <%= f.text_field :title, autofocus: true, class: 'form-control' %>
+  </div>
+
+  <div class="field form-group">
+    <%= f.label :tissue_type %><br />
+    <%= f.select('tissue_type', Project::TISSUE_TYPES, { :selected => 0 }, { class: 'form-control' }) %>
+  </div>
+
+  <div class="field form-group">
+    <%= f.label :modality %><br />
+    <%= f.select('modality', Project::MODALITY_TYPES, { :selected => 0 }, { class: 'form-control' }) %>
+  </div>
+
+  <div class="field form-group">
+    <%= f.label :method %><br />
+    <%= f.select('method', Project::METHOD_TYPES, { :selected => 0 }, { class: 'form-control' }) %>
+  </div>
+
+  <div class="field form-group">
+    <%= f.label :visibility %><br />
+    <%= f.select :visibility, [["Private", 'hidden'], ["Public", 'visible']] , { :selected => 0 }, { class: 'form-control' }%>
+  </div>
+
+
+  <div class="actions form-group float-right">
+    <%= f.submit "Submit", class: 'btn btn-raised btn-success'%>
+  </div>
+<% end %>

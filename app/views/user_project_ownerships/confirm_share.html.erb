@@ -1,11 +1,11 @@
 r<div class="container">
 	<br/><br/>
 	<h1>Confirm Share</h1>
-	<h4>Please confirm the images that you would like to share.</h4>
+	<h4>Please confirm the projects that you would like to share.</h4>
 		<ul>
 			<li>Enter a user email that you'd like to share with</li>
 			<li>Please note that sharing is (currently) a permanent action and users with shared access can edit or delete the image.</li>
-			<li>Uncheck a row to exclude the image from sharing</li>
+			<li>Uncheck a row to exclude the project from being shared</li>
 		</ul>
 	</h4>
 	<br/><br/>
@@ -13,11 +13,11 @@ r<div class="container">
 
 	<%= form_for @ownership do |f| %>
 		<%= f.label :user_id, "User Email (to share with): " %>
-		<%= f.autocomplete_field :user_id, autocomplete_user_email_user_image_ownerships_path, :style=>'display:inline-block; width:50%', :required=>true  %>
+		<%= f.autocomplete_field :user_id, autocomplete_user_email_user_project_ownerships_path, :style=>'display:inline-block; width:50%', :required=>true  %>
 		<%= f.submit "Confirm Share", :style=>"float:right", :class=> 'btn btn-success btn-raised btn-success'%>
 		<br/><br/>
 		<div class="image-table">
-			<%= render :partial => 'images/confirm_table.html.erb', :locals => { :images=>@images}%>
+			<%= render :partial => 'projects/confirm_table.html.erb', :locals => { :projects=>@projects}%>
 		</div>
 	<% end %>
 

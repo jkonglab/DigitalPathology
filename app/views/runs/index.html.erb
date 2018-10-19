@@ -21,7 +21,7 @@
 		<%= submit_tag "Delete", :style=>"float:right; margin-left:10px;", :class=>"btn-raised btn btn-danger", :formaction=> confirm_delete_runs_path %>
 		<%= submit_tag "Share", :style=>"float:right; margin-left:10px;", :class=>"btn-raised btn btn-primary", :formaction=>  confirm_share_user_run_ownerships_path %>
 	  	<% @runs.each do |run| %>
-	  		<tr class="image-link <% if run.complete %>table-success<%elsif run.processing%>table-info<%else%>table-warning<%end%>" data-link="<%=run_path(run)%>">
+	  		<tr class="click-link <% if run.complete %>table-success<%elsif run.processing%>table-info<%else%>table-warning<%end%>" data-link="<%=run_path(run)%>">
 	  			<td><%= check_box_tag "run_ids[]", run.id, false%></td>
 	  			<td class="d-none d-md-table-cell"><%=run.id%></td>
 	  			<td class="image-name"><%=run.image.title%></td>

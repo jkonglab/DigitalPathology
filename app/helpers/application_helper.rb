@@ -1,4 +1,13 @@
 module ApplicationHelper
+	def execute_statement(sql)
+        results = ActiveRecord::Base.connection.execute(sql)
+        if results.present?
+            return results
+        else
+            return nil
+        end
+    end
+
 	def link_to_add_fields(name, f, type)
 	  new_object = f.object.send "build_#{type}"
 	  id = "new_#{type}"
