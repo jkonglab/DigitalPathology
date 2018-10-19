@@ -19,7 +19,7 @@ class ProjectsController < ApplicationController
 	def show
 	  query_params = params['q'] || {}
 	  query_builder = QueryBuilder.new(query_params)
-	  @q = query_builder.to_ransack(@project.images.where(:project_id=>params[:id]))
+	  @q = query_builder.to_ransack(@project.images.where(:project_id=>params[:id], :parent_id => nil))
 	  @images= @q.result.reorder(query_builder.sort_order)
 	end
 
