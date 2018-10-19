@@ -17,6 +17,20 @@ class UsersController < ApplicationController
 		@algorithm = Algorithm.new
 	end
 
+	def promote
+		@user = User.find(params[:user_id])
+		@user.admin = 10
+		@user.save
+		redirect_back(fallback_location:'/admin')
+	end
+
+	def demote
+		@user = User.find(params[:user_id])
+		@user.admin = 0
+		@user.save
+		redirect_back(fallback_location:'/admin')
+	end
+
 	def create
 		@user = User.new(user_params)
 		@resource = @user

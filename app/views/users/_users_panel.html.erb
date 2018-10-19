@@ -35,6 +35,15 @@
                     Resend Confirmation
                   <%end%>
                 <% end %>
+                <% if !user.admin?%>
+                  <%=link_to admin_users_promote_path(:user_id=>user.id), :class=> 'dropdown-item', :data => {:method=> :put} do %>
+                    Promote to Admin
+                  <%end%>
+                <% else %>
+                  <%=link_to admin_users_demote_path(:user_id=>user.id), :class=> 'dropdown-item', :data => {:method=> :put} do %>
+                    Demote
+                  <%end%>
+                <% end%>
               </div>
             </div>
           </td>
