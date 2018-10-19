@@ -9,7 +9,7 @@
         <th class="d-none d-md-table-cell"><%= sort_link @q, :id, "ID"%></th>
         <th><%= sort_link @q, :title, "Image Name"%></th>
         <th><%= sort_link @q, :uploaded_at, "Uploaded"%></th>
-        <th><%= "Owners"%></th>
+        <th>Project</th>
         <th class="d-none d-md-table-cell">Status</th>
         <th>Privacy</th>
       </tr>
@@ -30,7 +30,7 @@
               <% end %>
             </td>
             <td><%=image.created_at%></td>
-            <td><%=image.users.pluck(:email)%></td>
+            <td><%=image.project.title%> (<%=image.project.id%>)</td>
             <td class="d-none d-md-table-cell"><% if image.processing %>Processing<% elsif image.complete %>Available<%else%>Awaiting Processing<% end%></td>
             <td><% if image.hidden? %>Private<%else%>Public<%end%></td>
           </tr>
