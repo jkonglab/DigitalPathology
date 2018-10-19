@@ -17,7 +17,7 @@
 
 	<div class="form-group">
 		<%= f.label :tile_size, "Tile Size (in pixels)" %>
-		<%= f.select :tile_size, [100,200,400,500,1000,2000], { :selected => 200 }, { class: 'form-control', required: true } %>
+		<%= f.select :tile_size, [100,200,400,500,1000,2000], { :selected => 200 }, { class: 'form-control', required: true, value: [] } %>
 	</div>
 	<br/><br/>
 	<h5>Algorithm Parameters</h5>

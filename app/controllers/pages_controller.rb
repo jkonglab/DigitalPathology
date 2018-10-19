@@ -6,6 +6,8 @@ class PagesController < ApplicationController
 	def about
 	end
 
+	def algorithmguide
+	end
 
 
 end

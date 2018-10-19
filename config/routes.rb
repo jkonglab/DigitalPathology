@@ -62,12 +62,16 @@ Rails.application.routes.draw do
 
   
   get '/about' => 'pages#about'
+  get '/algorithmguide' => 'pages#algorithmguide'
 
   authenticate :user, lambda { |u| u.admin? } do
     get '/admin' => 'users#admin_panel'
     get '/admin/new_user' => 'users#admin_create_user'
+    get '/admin/new_algorithm' => 'users#admin_new_algorithm'
+
     post '/admin/users/create' => 'users#create'
     delete '/admin/users/delete' => 'users#delete'
+    delete '/admin/algorithms/delete' => 'users#admin_delete_algorithm'
     get '/admin/users/resend' => 'users#resend_confirmation'
   end
 

@@ -33,10 +33,30 @@ class Algorithm < ActiveRecord::Base
 		"percentage" => 4
 	}
 
+	REVERSE_OUTPUT_TYPE_LOOKUP={
+		0 => '3d_volume',
+		1 => 'contour',
+		2 => 'scalar',
+		3 => 'points',
+		4 => 'percentage'
+	}
+
 	INPUT_TYPE_LOOKUP={
 		"2D" => 0,
 		"3D" => 1
 	}
+
+	REVERSE_INPUT_TYPE_LOOKUP={
+		0 => '2D',
+		1 => '3D'
+	}
+	
+	before_destroy :destroy_children
+
+
+	def destroy_children
+		self.runs.destroy_all
+	end
 
 	def title_with_type
 		if self.input_type == Algorithm::INPUT_TYPE_LOOKUP["3D"] 

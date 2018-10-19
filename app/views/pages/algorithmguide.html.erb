@@ -1,0 +1,79 @@
+<div class='container'><br/><br/>
+
+<h2>How to configure parameters for a new algorithm</h2>
+The parameters field of the Algorithm object holds configurations for the various types of input parameters that each algorithm function requires.  <br/><br/>
+
+In short, if you are invoking a custom algorithm function that takes in ANY number of input parameters aside from image data, you need to configure these parameters, even if they are not customized by the user.<br/><br/>
+
+The parameters JSON is configured as an <b>array of hashes</b>, where each hash is one parameter.<br/><br/>
+
+<b><i>Example of a correctly formatted parameters JSON configuration with three input parameters:</i></b><br/>
+
+<code>
+	[<br/>
+		{<br/>"order": 1<br/>
+		 "key": 'first_parameters',<br/>
+		 "title": 'A Useful Title that Explains this Parameter',<br/>
+		 "type": 1,<br/>
+		 "default_value": 100<br/>
+		},<br/>
+		{<br/>"order": 2<br/>
+		 "key": 'a_hard_coded_parameter',<br/>
+		 "title": 'A hard-coded parameter that users can't configure<br/>
+		 "type": 3,<br/>
+		 "hard_coded": true,<br/>
+		 "default_value": 'a hard-coded string',<br/>
+		},<br/>
+		{<br/>"order": 3<br/>
+		 "key": 'a_parameter_from_annotation',<br/>
+		 "title": 'A annotation derived parameter that users can't configure',<br/>
+		 "type": 1,<br/>
+		 "annotation_derived": true,<br/>
+		 "annotation_key": "x_point"<br/>
+		}<br/>
+	]
+</code>
+
+<br/><br/>
+<h3>Required Keys</h3>
+<ol>
+	<li><b>order</b>: (int) The numeric order that your parameters need to be in. This is specified by your algorithm code. If your function reads like <code>my_function(param1, param2, param3)</code>, then param1 should have order 1, param2 with order 2, etc. Incorrectly ordered parameters will result in bad results or type mismatches.</li>
+	<li><b>title</b>: (string) A user-facing title for user-configurable parameters that should inform the user what the parameter is for.  Can also contain short strings of notes, but should be self explanatory.</li>
+	<li><b>key</b>: (string) Not very important, but should be a slug version of your title. Does not necessarily need to match the parameter variable of your code, but is best practice to do so.</li>
+	<li><b>type</b>: (int) The type of variable that the data is.  Important for user configurable parameters, as it will affect the type of form field generated.  Lookup table is as follows:
+		<ul>
+			<li>1: integer</li>
+			<li>2: boolean</li>
+			<li>3: string</li>
+			<li>4: hex color</li>
+			<li>5: select <i>(see optional keys: options for more info)</i></li>
+			<li>6: array</li>
+			<li>7: float</li>
+		</ul>
+	</li>
+	<li><b>default_value</b>: (any type) Specifies the default value that will show in the form for user-configurable parameters. Should match the type that is specified by the type parameter. Does not apply to any parameters that are derived from annotation properties (see Annotation_Derived).</li>
+</ol>
+
+<h3>Optional Keys</h3>
+<ol>
+	<li><b>hard_coded</b>: If this key is present, will use the default_value as a hard-coded input parameter.  This parameter will not be visible to the user to customize. If this key is present, the "default_value" key is also required, or your algorithm will break!</li>
+	<li><b>annotation_derived</b>: If this key is present, the parameter will be derived from a field of the annotation of the analysis run and will not be visible for the user to customize.  If this key is present, the "annotation_key" key is also required, or your algorithm will break!</li>
+	<li><b>annotation_key</b>: (string) If the annotation_derived key is not present, this key is ignored/useless. This key specifies which annotation property will be used as an input.  For example, this is useful for algorithms that need to know how wide the annotation area is. There are several options for this key:
+		<ul>
+			<li>width: the width of the annotation bounding box</li>
+			<li>height: the height of the annotation bounding box</li>
+			<li>x_point: the top left hand x coordinate of the annotation bounding box, where the top left hand corner of the entire image is (0,0).</li>
+			<li>y_point: the top left hand y coordinate of the annotation bounding box, where the top left hand corner of the entire image is (0,0).</li>
+		</ul>
+	</li>
+	<li><b>options</b>: (array) An array of options for 'select' type parameters, where users need to pick from a dropdown menu of possible options. The option array should be formated as an <b>array of arrays</b>, where the label for the option is followed by the value of the option that will be passed to the actual function itself.  <br/>Example: <br/><br/>
+		<code>
+			{<br/>
+		...,<br/>
+		"options": [["Default Stain",1],["SciKit Stain",2],["Fiji HDAB",3],["Custom (Enter Below)",0]],<br/>
+		...<br/>
+		}</code>
+	</li>
+</ol>
+
+</div>

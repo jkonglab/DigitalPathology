@@ -4,19 +4,19 @@
  		<div class="form-group">
  			<%= parameter_fields.label parameter["key"].to_sym, parameter["title"] %>
  			<% if parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["integer"] %> 
-				<%= parameter_fields.number_field parameter["key"].to_sym, { value: parameter["default_value"], class: 'form-control', :required => parameter["required"]} %>
+				<%= parameter_fields.number_field parameter["key"].to_sym, { value: parameter["default_value"], class: 'form-control', :required => true} %>
 			<% elsif parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["float"] %>
-				<%= parameter_fields.number_field parameter["key"].to_sym, { step: 0.01, value: parameter["default_value"], class: 'form-control', :required => parameter["required"]} %>
+				<%= parameter_fields.number_field parameter["key"].to_sym, { step: 0.01, value: parameter["default_value"], class: 'form-control', :required => true} %>
 			<% elsif parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["boolean"] %>
-				<%= parameter_fields.check_box parameter["key"].to_sym, :required => parameter["required"]%>
+				<%= parameter_fields.check_box parameter["key"].to_sym, :required => true%>
 			<% elsif parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["color"] %>
-				<%= parameter_fields.text_field parameter["key"].to_sym, { value: parameter["default_value"], class: 'color-wheel', :required => parameter["required"]} %>
+				<%= parameter_fields.text_field parameter["key"].to_sym, { value: parameter["default_value"], class: 'color-wheel', :required => true} %>
 			<% elsif parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["select"] %>
-				<%= parameter_fields.select(parameter["key"].to_sym, options_for_select(parameter["options"], 1), {}, { class: 'form-control', :required => parameter["required"]} )%>
+				<%= parameter_fields.select(parameter["key"].to_sym, options_for_select(parameter["options"], 1), {}, { class: 'form-control', :required => true} )%>
 			<% elsif parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["array"] %>
-				<%= parameter_fields.text_field parameter["key"].to_sym, { value: parameter["default_value"], required: parameter["required"], placeholder: parameter["placeholder"]} %>
+				<%= parameter_fields.text_field parameter["key"].to_sym, { value: parameter["default_value"], required: true, placeholder: parameter["placeholder"]} %>
 			<% elsif parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["string"] %>
-				<%= parameter_fields.text_field parameter["key"].to_sym, { value: parameter["default_value"], required: parameter["required"], placeholder: parameter["placeholder"]} %>
+				<%= parameter_fields.text_field parameter["key"].to_sym, { value: parameter["default_value"], required: true, placeholder: parameter["placeholder"]} %>
 			<% end %>
 		</div>
 		<% end %>

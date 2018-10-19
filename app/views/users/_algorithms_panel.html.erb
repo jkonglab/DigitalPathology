@@ -1,0 +1,42 @@
+<h3>All Algorithms</h3>
+
+<%= link_to admin_new_algorithm_path do %>
+  <button style="float:right" class="btn btn-success">+ New Algorithm</button>
+<% end %>
+
+<table style="width:100%">
+  <thead>
+    <tr>
+        <th>Slug</th>
+        <th>Title</th>
+        <th>Language</th>
+        <th>Input</th>
+        <th>Output</th>
+        <th>Multioutput?</th>
+        <th></th>
+    </tr>
+    <tbody>
+      <% Algorithm.all.order('id asc').each do |algorithm| %>
+        <tr>
+          <td><%=algorithm.name%></td>
+          <td><%=algorithm.title%></td>
+          <td><%=Algorithm::LANGUAGE_LOOKUP_INVERSE[algorithm.language]%></td>
+          <td><%=Algorithm::REVERSE_INPUT_TYPE_LOOKUP[algorithm.input_type].gsub('_', ' ').capitalize%></td>
+          <td><%=Algorithm::REVERSE_OUTPUT_TYPE_LOOKUP[algorithm.output_type].gsub('_', ' ').capitalize%></td>
+          <td><%=algorithm.multioutput%></td>
+          <td>
+            <div class="dropdown">
+              <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Actions
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <%=link_to admin_algorithms_delete_path(:algorithm_id => algorithm.id), :class=> 'dropdown-item', :data => {:method=> :delete, :confirm => 'VERY DANGEROUS! If you delete this algorithm, you will delete ALL existing analyses and results that have used this algorithm previously.'} do %>Delete<%end%>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+      <% end %>
+    </tbody>
+  </thead>
+</table>

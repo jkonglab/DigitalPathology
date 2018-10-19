@@ -9,6 +9,12 @@ class UsersController < ApplicationController
 	end
 
 	def admin_create_user
+		@user = User.new
+		@resource = @user
+	end
+
+	def admin_new_algorithm
+		@algorithm = Algorithm.new
 	end
 
 	def create
@@ -26,6 +32,12 @@ class UsersController < ApplicationController
 		@user = User.find(params[:user_id])
 		@user.destroy
 		redirect_to '/admin', notice: 'User deleted.'
+	end
+
+	def admin_delete_algorithm
+		@algorithm = Algorithm.find(params[:algorithm_id])
+		@algorithm.destroy
+		redirect_to '/admin', notice: 'Algorithm deleted.'
 	end
 
 	def resend_confirmation
