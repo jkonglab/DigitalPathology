@@ -1,0 +1,78 @@
+
+<div class="container">
+  <br/>
+  <br/>
+  <h1>All Projects</h1>
+  <br/>
+  <%= render partial: "projects/search_form" %>
+  <%= link_to new_project_path do %>
+    <button style="float:right" class="btn btn-success">+ Create New Project</button>
+  <% end %>
+  <br/><br/>
+  <div class="image-table">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th><input type="checkbox" id="select_all"/></th>
+          <th class="d-none d-md-table-cell"><%= sort_link @q, :id, "ID"%></th>
+          <th><%= sort_link @q, :title, "Title"%></th>
+          <th><%= sort_link @q, :created_at, "Created"%></th>
+          <th><%= sort_link @q, :tissue_type, "Tissue Type"%></th>
+          <th><%= sort_link @q, :modality, "Modality"%></th>
+          <th><%= sort_link @q, :method, "Method"%></th>
+          <th>Privacy</th>
+          <th>Owner(s)</th>
+          <th></th>
+        </tr>
+      </thead>
+      <%= form_tag make_public_projects_path do %>
+        <%= submit_tag "Make Public", :style=>"float:right; margin-left:10px;", :class=>"btn-raised btn btn-danger" %>
+        <%= submit_tag "Make Private", :style=>"float:right; margin-left:10px;", :class=>"btn-raised btn btn-primary", :formaction=>  make_private_projects_path %>
+        <%= submit_tag "Share", :style=>"float:right; margin-left:10px;", :class=>"btn-raised btn btn-primary", :formaction=>  confirm_share_user_project_ownerships_path %>
+        <tbody>
+          <% @projects.each do |project| %>
+            <tr>
+              <td><%= check_box_tag "project_ids[]", project.id, false, class: 'project-check-box'%></td>
+              <td class="d-none d-md-table-cell"><%=project.id%></td>
+              <td class="d-none d-md-table-cell"><a href="<%=project_path(project.id)%>"><%=project.title%></a></td>
+              <td><%=project.created_at%></td>
+              <td><%=project.tissue_type%></td>
+              <td><%=project.modality%></td>
+              <td><%=project.method%></td>
+              <td><%=project.hidden? ? 'Private' : 'Public' %></td>
+              <td>
+                <%=project.users.pluck(:email)%>
+              </td>
+              <td>
+                <div class="dropdown">
+                  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Actions
+                  </button>
+                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <%=link_to edit_project_path(project.id), :class=> 'dropdown-item' do %>Edit<%end%>
+                    <%=link_to project, :class=> 'dropdown-item', :data => {:method=> :delete, :confirm => 'Are you sure you want to delete this project?  It must be emptied first.'} do %>Delete<%end%>
+
+                  </div>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      <% end %>
+    </table>
+  </div>
+</div>
+
+<script>
+$("#select_all").click( function() {
+  if($(this).is(':checked')){
+      $(".project-check-box").attr('checked', true);
+  }
+    else{
+      $(".project-check-box").attr('checked', false);
+    }
+});
+</script>
+
+
+

@@ -53,12 +53,12 @@ class ProjectsController < ApplicationController
 
 	def make_public
 		@projects.update_all(:visibility=> :visible)
-		redirect_to my_projects_path, notice: "#{@projects.length} project(s) made public"
+		redirect_back(fallback_location: my_projects_path, notice: "#{@projects.length} project(s) made public")
 	end
 
 	def make_private
 		@projects.update_all(:visibility=> :hidden)
-		redirect_to my_projects_path, notice: "#{@projects.length} project(s) made private"
+		redirect_back(fallback_location: my_projects_path, notice: "#{@projects.length} project(s) made private")
 	end
 
 	def destroy
@@ -88,12 +88,12 @@ class ProjectsController < ApplicationController
 		def set_projects_validated
 	  	project_ids = params['project_ids']
 	    if !project_ids
-	      redirect_back(fallback_url: my_projects_path, alert: 'No projects selected')
+	      redirect_back(fallback_location: my_projects_path, alert: 'No projects selected')
 	    else
 	      user_project_ids = current_user.projects.pluck(:id)
 	      @projects = !current_user.subadmin? ? Project.where('projects.id IN (?) AND projects.id IN (?)', project_ids, user_project_ids) : Project.where('projects.id IN (?)', project_ids)
 	      if @projects.length < 1
-	        redirect_back(fallback_url: my_projects_path, alert: 'No projects selected or you may lack permission to edit these projects')
+	        redirect_back(fallback_location: my_projects_path, alert: 'No projects selected or you may lack permission to edit these projects')
 	      end
 	    end 
   	end

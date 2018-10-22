@@ -227,8 +227,8 @@ if __name__ == '__main__':
                 type='int', default=0,
                 help='overlap of adjacent tiles [1]')
     parser.add_option('-f', '--format', metavar='{jpeg|png}', dest='format',
-                default='jpeg',
-                help='image format for tiles [jpeg]')
+                default='png',
+                help='image format for tiles [png]')
     parser.add_option('-j', '--jobs', metavar='COUNT', dest='workers',
                 type='int', default=4,
                 help='number of worker processes to start [10]')

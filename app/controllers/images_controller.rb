@@ -3,7 +3,7 @@ class ImagesController < ApplicationController
   before_action :set_current_user
   before_action :authenticate_user!, :except => [:index, :show]
   before_action :set_image_validated, :only => [:show_3d, :download_annotations, :show, :add_single_clinical_data, :add_upload_clinical_data, :get_slice, :import_annotations]
-  before_action :set_images_validated, :only =>[:confirm_convert_3d, :confirm_delete, :delete, :confirm_move, :move]
+  before_action :set_images_validated, :only =>[:convert_3d, :confirm_convert_3d, :confirm_delete, :delete, :confirm_move, :move]
   respond_to :json, only: [:get_slice]
 
   autocomplete :user, :email 
@@ -76,18 +76,15 @@ class ImagesController < ApplicationController
   end
 
   def confirm_convert_3d
-    @images = current_user.images.where('image_type != ? AND images.id IN (?)', Image::IMAGE_TYPE_THREED, params['image_ids']).sort_by{|image| image.title}
     if @images.length < 1
       return redirect_to @images.first.project, alert: 'Volume could not be created because all selected images are already attached to a 3D volume.'
     end
   end
 
   def convert_3d
-    image_ids = params['image_ids']
     i = 0
     first_image = nil
-    image_ids.each do |id|
-      image = current_user.images.where(:parent_id => nil).find(id)
+    @images.each do |image|
       if image
         first_image = first_image || image
         image.update_attributes!(:slice_order => i, :image_type => Image::IMAGE_TYPE_THREED)
@@ -95,7 +92,7 @@ class ImagesController < ApplicationController
       end
     end
 
-    parent_image = current_user.images.create!(
+    parent_image = Image.create!(
       :title => '3D Volume: ' + first_image.title, 
       :image_type => Image::IMAGE_TYPE_THREED, 
       :visibility => first_image.visibility,
@@ -106,13 +103,13 @@ class ImagesController < ApplicationController
       :file_file_size => first_image.file_file_size,
       :file_updated_at => first_image.file_updated_at,
       :clinical_data => first_image.clinical_data,
-      :generated_by_run_id => first_image.generated_by_run_id
+      :generated_by_run_id => first_image.generated_by_run_id,
+      :project_id => first_image.project_id
     )
 
-    images = Image.where('id in (?)', image_ids)
-    images.update_all(:parent_id=> parent_image.id)
-    images.update_all(:visibility=> parent_image.visibility)
-    redirect_to images.first.project, notice: 'Images converted into 3D volume'
+    @images.update_all(:parent_id=> parent_image.id)
+    @images.update_all(:visibility=> parent_image.visibility)
+    redirect_to @images.first.project, notice: 'Images converted into 3D volume'
   end
 
   def add_single_clinical_data
