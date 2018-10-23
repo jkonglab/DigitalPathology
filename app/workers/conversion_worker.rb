@@ -6,57 +6,54 @@ class ConversionWorker
 
   def perform(image_id, file_path=nil, force_flag=false)
     image = Image.find(image_id)
+    image.update_attributes!(:processing=>true)
 
-    if !image.processing || force_flag
-        image.update_attributes!(:processing=>true)
-
-        dcm = DICOM::DObject.read(image.file.path)
-        if dcm.read?
-            convert_dicom_to_jpg(image)
-        end
-
-        python_file_path = File.join(Rails.root.to_s, 'python')
-        file_path = file_path || image.file_folder_path
-        output_file = file_path + '/done'
-
-        %x{mkdir jobs/#{image.id}}
-
-        File.open("jobs/#{image.id}/#{image.id}.sh", 'a') do |file|
-            file.puts "cd #{python_file_path}"
-            file.puts "source env/bin/activate"
-            file.puts "cd #{file_path}"
-            file.puts "python3 #{python_file_path}/deepzoom_tile.py #{image.file.path}"
-            file.puts "touch #{output_file}"
-        end
-
-        %x{cd #{python_file_path}; 
-            source env/bin/activate; 
-            cd #{file_path}
-            python3 #{python_file_path}/deepzoom_tile.py #{image.file.path}
-            touch #{output_file}
-        }
-
-        timer = 0
-        until File.exist?(output_file)
-            timer +=1
-            sleep 1
-            if timer > 300
-                break
-            end
-        end
-
-        %x{rm #{output_file}}
-        %x{rm jobs/#{image.id}/#{image_id}.sh}
-        dzi_file = File.open(image.dzi_path){ |f| Nokogiri::XML(f) }
-        height = dzi_file.css('xmlns|Size').first["Height"]
-        width = dzi_file.css('xmlns|Size').first["Width"]
-
-        image.update_attributes!(
-            :processing=>false,
-            :complete=>true,
-            :height => height,
-            :width => width)
+    dcm = DICOM::DObject.read(image.file.path)
+    if dcm.read?
+        convert_dicom_to_jpg(image)
     end
+
+    python_file_path = File.join(Rails.root.to_s, 'python')
+    file_path = file_path || image.file_folder_path
+    output_file = file_path + '/done'
+
+    %x{mkdir jobs/#{image.id}}
+
+    File.open("jobs/#{image.id}/#{image.id}.sh", 'a') do |file|
+        file.puts "cd #{python_file_path}"
+        file.puts "source env/bin/activate"
+        file.puts "cd #{file_path}"
+        file.puts "python3 #{python_file_path}/deepzoom_tile.py #{image.file.path}"
+        file.puts "touch #{output_file}"
+    end
+
+    %x{cd #{python_file_path}; 
+        source env/bin/activate; 
+        cd #{file_path}
+        python3 #{python_file_path}/deepzoom_tile.py #{image.file.path}
+        touch #{output_file}
+    }
+
+    timer = 0
+    until File.exist?(output_file)
+        timer +=1
+        sleep 1
+        if timer > 300
+            break
+        end
+    end
+
+    %x{rm #{output_file}}
+    %x{rm jobs/#{image.id}/#{image_id}.sh}
+    dzi_file = File.open(image.dzi_path){ |f| Nokogiri::XML(f) }
+    height = dzi_file.css('xmlns|Size').first["Height"]
+    width = dzi_file.css('xmlns|Size').first["Width"]
+
+    image.update_attributes!(
+        :processing=>false,
+        :complete=>true,
+        :height => height,
+        :width => width)
 
   end
 

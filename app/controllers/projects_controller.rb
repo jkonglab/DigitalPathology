@@ -15,6 +15,13 @@ class ProjectsController < ApplicationController
 	  @projects= @q.result.reorder(query_builder.sort_order)
 	end
 
+	def rerun
+    all_reruns = Image.where(:complete=>false, :project_id=>@project.id)
+    all_reruns.each do |image|
+      Sidekiq::Client.push('queue' => 'user_conversion_queue_' + current_user.id.to_s, 'class' =>  ConversionWorker, 'args' => [image.id])
+    end
+    redirect_back(fallback_location: project_path(@project))
+  end
 
 	def show
 	  query_params = params['q'] || {}
@@ -45,9 +52,9 @@ class ProjectsController < ApplicationController
 		if @project.valid?
 			@project.save!
 			UserProjectOwnership.create!(:project_id=>@project.id, :user_id=>current_user.id)
-			redirect_to my_projects_path, notice: "Project created."
+			redirect_back(fallback_location: my_projects_path, notice: "Project created.")
 		else
-			redirect_to :back
+			redirect_back(fallback_location: my_projects_path)
 		end
 	end
 
@@ -69,8 +76,6 @@ class ProjectsController < ApplicationController
 			redirect_to my_projects_path, alert: 'You cannot delete a non-empty project.  Please delete the images inside before deleting the project.' and return
 		end
 	end
-
-
 
 	private
 	  def project_params

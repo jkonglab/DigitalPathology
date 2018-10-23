@@ -8,6 +8,9 @@
 	<%= link_to new_image_path(:project_id=>@project.id) do %>
 		<button style="float:right" class="btn btn-success">+ Upload New Image</button>
 	<% end %>
+	<%= link_to rerun_project_path(:project=>@project) do %>
+    	<button style="float:right" class="btn btn-success">Re-process Project Images</button>
+ 	<% end %>
 	<br/><br/>
 	<div class="image-table">
 		<table class="table table-hover">

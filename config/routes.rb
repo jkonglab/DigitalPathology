@@ -11,6 +11,10 @@ Rails.application.routes.draw do
       post 'make_public' => 'projects#make_public'
       post 'make_private' => 'projects#make_private'
     end
+
+    member do      
+      get 'rerun' => 'projects#rerun'
+    end
   end
 
   get 'my_projects' => 'projects#my_projects'
