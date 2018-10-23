@@ -12,7 +12,7 @@ class Project < ActiveRecord::Base
   end
 
   MODALITY_TYPES = ['2D', '3D', '4D']
-  TISSUE_TYPES = ['Liver', 'Brain', 'Kidney']
+  TISSUE_TYPES = ['Liver', 'Brain', 'Kidney', 'Pancreas']
   METHOD_TYPES = ['IHC', 'Stain', 'Method2', 'Method3']
 
 end

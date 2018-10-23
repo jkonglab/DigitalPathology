@@ -76,6 +76,7 @@ class ImagesController < ApplicationController
   end
 
   def confirm_convert_3d
+    @images = @images.order('title asc')
     if @images.length < 1
       return redirect_to @images.first.project, alert: 'Volume could not be created because all selected images are already attached to a 3D volume.'
     end
@@ -84,7 +85,8 @@ class ImagesController < ApplicationController
   def convert_3d
     i = 0
     first_image = nil
-    @images.each do |image|
+    params['image_ids'].each do |id|
+      image = Image.find(id.to_i)
       if image
         first_image = first_image || image
         image.update_attributes!(:slice_order => i, :image_type => Image::IMAGE_TYPE_THREED)
