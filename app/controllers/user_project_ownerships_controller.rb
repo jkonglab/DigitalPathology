@@ -4,10 +4,6 @@ class UserProjectOwnershipsController < ApplicationController
 
 
   def confirm_share
-    query_params = params['q'] || {}
-    query_builder = QueryBuilder.new(query_params)
-    @q = query_builder.to_ransack(current_user.projects)
-    @projects= @q.result.reorder(query_builder.sort_order)
   	@ownership = UserProjectOwnership.new
   end
 
