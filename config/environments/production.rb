@@ -49,7 +49,7 @@ Rails.application.configure do
   # when problems arise.
   config.log_level = :debug
 
-  config.action_mailer.default_url_options = { host: 'https://dp.bmi.emory.edu' }
+  config.action_mailer.default_url_options = { host: ENV['EMAIL_HOST'] }
   config.data_directory = 'data'
   config.action_mailer.delivery_method = :smtp
   # SMTP settings for gmail
