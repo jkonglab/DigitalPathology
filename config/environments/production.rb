@@ -3,7 +3,8 @@ Rails.application.configure do
 
   # Code is not reloaded between requests.
   config.cache_classes = true
-  config.data_directory = 'dp-data'
+  config.data_directory = ENV['DATA_DIRECTORY']
+
 
   # Eager load code on boot. This eager loads most of Rails and
   # your application in memory, allowing both threaded web servers
@@ -50,7 +51,6 @@ Rails.application.configure do
   config.log_level = :debug
 
   config.action_mailer.default_url_options = { host: ENV['EMAIL_HOST'] }
-  config.data_directory = 'data'
   config.action_mailer.delivery_method = :smtp
   # SMTP settings for gmail
   config.action_mailer.smtp_settings = {
