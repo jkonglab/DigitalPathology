@@ -61,16 +61,25 @@ In pg_hba.conf, change all occurances of "ident" to "password"
     rake secret
     touch .env
     vim .env
-    export SECRET_KEY_BASE=SECRET_GENERATED_BY_RAKE_ABOVE
-    export DATABASE_USERNAME=imageviewer
-    export DATABASE_PASSWORD=MY_PASSWORD_HERE
-    export DATABASE_HOST=localhost
+
+In the file `.env` have:
+    
+    SECRET_KEY_BASE=SECRET_GENERATED_BY_RAKE_ABOVE
+    DATABASE_USERNAME=imageviewer
+    DATABASE_PASSWORD=MY_PASSWORD_HERE
+    DATABASE_HOST=localhost
+    RACK_ENV=production
+    RAILS_ENV=production
+    EMAIL_HOST=URL_OF_YOUR_APP_HERE
+
+Then run:
+   
     RAILS_ENV=production bundle exec rake assets:precompile
     RAILS_ENV=production rake db:create
     RAILS_ENV=production rake db:migrate
 
 # Create passenger config file
-    cd /var/www/imageviewer
+    cd /imageviewer
     vim Passengerfile.json
     
     {
@@ -80,12 +89,51 @@ In pg_hba.conf, change all occurances of "ident" to "password"
         "port": 80,
         // Tell Passenger to daemonize into the background.
         "daemonize": true,
-        // Tell Passenger to run the app as the given user. Only has effect
-        // if Passenger was started with root privileges.
-        "user": "imageviewer"
     }
 
-# Run passenger
-    sudo /usr/local/rvm/gems/ruby-2.5.1/wrappers/bundle exec passenger start
+# Running passenger
 
+To start passenger:
+
+    sudo /usr/local/rvm/gems/ruby-2.5.1/wrappers/bundle exec passenger start
+    
+To stop passenger:
+
+    sudo /usr/local/rvm/gems/ruby-2.5.1/wrappers/bundle exec passenger stop
+    
+To restart passenger:
+
+    sudo /usr/local/rvm/gems/ruby-2.5.1/wrappers/bundle exec passenger-config restart
+
+# Set up virtual envs for python
+
+Install some basic requirements to do python scipy, numpy and scikit-learn
+
+    yum install python3
+    yum install scipy
+    yum install numpy
+    yum install gcc-gfortran
+    yum install atlas-devel
+    
+Set up pip and virtualenv
+
+    curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+    sudo python get-pip.py
+    rm get-pip.py
+    sudo pip install -U virtualenv
+    
+Set up the first virtual environment in the /python folder:
+
+    cd /imageviewer/python
+    virtualenv --system-site-packages -p python3 ./env
+    source env/bin/activate
+    pip install -r requirements.txt
+
+Set up the second virtual environment in the /algorithms/python3 folder:
+
+    cd /imageviewer/algorithms/python3
+    virtualenv --system-site-packages -p python3 ./env
+    source env/bin/activate
+    pip install -r requirements.txt
+    
 
