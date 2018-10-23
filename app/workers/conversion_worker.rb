@@ -19,6 +19,16 @@ class ConversionWorker
         file_path = file_path || image.file_folder_path
         output_file = file_path + '/done'
 
+        %x{mkdir jobs/#{image.id}}
+
+        File.open("jobs/#{image.id}/#{image.id}.sh", 'a') do |file|
+            file.puts "cd #{python_file_path}"
+            file.puts "source env/bin/activate"
+            file.puts "cd #{file_path}"
+            file.puts "python3 #{python_file_path}/deepzoom_tile.py #{image.file.path}"
+            file.puts "touch #{output_file}"
+        end
+
         %x{cd #{python_file_path}; 
             source env/bin/activate; 
             cd #{file_path}
@@ -36,6 +46,7 @@ class ConversionWorker
         end
 
         %x{rm #{output_file}}
+        %x{rm jobs/#{image.id}/#{image_id}.sh}
         dzi_file = File.open(image.dzi_path){ |f| Nokogiri::XML(f) }
         height = dzi_file.css('xmlns|Size').first["Height"]
         width = dzi_file.css('xmlns|Size').first["Width"]
