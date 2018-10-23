@@ -17,13 +17,25 @@ class ConversionWorker
 
         python_file_path = File.join(Rails.root.to_s, 'python')
         file_path = file_path || image.file_folder_path
+        output_file = file_path + '/done'
 
         %x{cd #{python_file_path}; 
             source env/bin/activate; 
             cd #{file_path}
             python3 #{python_file_path}/deepzoom_tile.py #{image.file.path}
+            touch #{output_file}
         }
 
+        timer = 0
+        until File.exist?(output_file)
+            timer +=1
+            sleep 1
+            if timer > 300
+                break
+            end
+        end
+
+        %x{rm #{output_file}}
         dzi_file = File.open(image.dzi_path){ |f| Nokogiri::XML(f) }
         height = dzi_file.css('xmlns|Size').first["Height"]
         width = dzi_file.css('xmlns|Size').first["Width"]
