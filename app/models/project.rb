@@ -11,8 +11,8 @@ class Project < ActiveRecord::Base
     self.images.destroy_all
   end
 
-  MODALITY_TYPES = ['2D', '3D', '4D']
-  TISSUE_TYPES = ['Liver', 'Brain', 'Kidney', 'Pancreas']
-  METHOD_TYPES = ['IHC', 'Stain', 'Method2', 'Method3']
+  DIMENSION_TYPES = ['2D', '3D', '4D']
+  LOCATION_TYPES = ['Brain', 'Breast', 'Colon', 'Head', 'Kidney', 'Liver', 'Lung', 'Ovary', 'Pancreas', 'Prostate', 'Skin', 'Stomach', 'Thyroid', 'Uterus', 'Other']
+  MODALITY_TYPES = ['CT', 'CR', 'Fluorescent', 'H&E', 'IHC', 'MRI', 'PET', 'Ultrasound' ]
 
 end

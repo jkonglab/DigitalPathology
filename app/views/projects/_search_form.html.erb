@@ -23,9 +23,9 @@
 	  			},
 	  	   tissue_type:
 	  	   	{
-	  	   		title: 'Tissue Type',
+	  	   		title: 'Location',
 	  	   		type: 'Select',
-	  	   		options: <%=Project::TISSUE_TYPES.to_json.html_safe%>,
+	  	   		options: <%=Project::LOCATION_TYPES.to_json.html_safe%>,
 	  	   		editorClass: 'form-control',
 	  	   		editorAttrs: { name: 'q[tissue_type]'}
 	  	   	},
@@ -38,9 +38,9 @@
 	  			},
 	  	   	method:
 	  	   	{
-	  	   		title: 'Method',
+	  	   		title: 'Dimensionality',
 	  	   		type: 'Select',
-	  	   		options: <%=Project::METHOD_TYPES.to_json.html_safe%>,
+	  	   		options: <%=Project::DIMENSION_TYPES.to_json.html_safe%>,
 	  	   		editorClass: 'form-control',
 	  	   		editorAttrs: { name: 'q[method]'}
 	  	   	}

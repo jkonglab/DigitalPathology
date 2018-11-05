@@ -13,18 +13,18 @@
   </div>
 
   <div class="field form-group">
-    <%= f.label :tissue_type %><br />
-    <%= f.select('tissue_type', Project::TISSUE_TYPES, { :selected => 0 }, { class: 'form-control' }) %>
+    <%= f.label 'Location' %><br />
+    <%= f.select('tissue_type', Project::LOCATION_TYPES, { :selected => 0 }, { class: 'form-control' }) %>
   </div>
 
   <div class="field form-group">
-    <%= f.label :modality %><br />
+    <%= f.label 'Modality' %><br />
     <%= f.select('modality', Project::MODALITY_TYPES, { :selected => 0 }, { class: 'form-control' }) %>
   </div>
 
   <div class="field form-group">
-    <%= f.label :method %><br />
-    <%= f.select('method', Project::METHOD_TYPES, { :selected => 0 }, { class: 'form-control' }) %>
+    <%= f.label 'Dimensionality' %><br />
+    <%= f.select('method', Project::DIMENSION_TYPES, { :selected => 0 }, { class: 'form-control' }) %>
   </div>
 
   <div class="field form-group">
