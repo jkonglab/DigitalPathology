@@ -4,8 +4,5 @@
     // Run Passenger on port 80, the standard HTTP port.
     "port": 80,
     // Tell Passenger to daemonize into the background.
-    "daemonize": true,
-    // Tell Passenger to run the app as the given user. Only has effect
-    // if Passenger was started with root privileges.
-    "user": "ashen2"
+    "daemonize": true
 }
