@@ -18,21 +18,30 @@ class ConversionWorker
     output_file = file_path + '/done'
 
     %x{mkdir jobs/#{image.id}}
-
-    File.open("jobs/#{image.id}/#{image.id}.sh", 'a') do |file|
-        file.puts "cd #{python_file_path}"
+    File.open("jobs/#{image.id}/job.sh", 'a') do |file|
+        file.puts "virtualenv -p python3 env"
         file.puts "source env/bin/activate"
+        file.puts "cp #{python_file_path}/requirements.txt ."
+        file.puts "pip install -r requirements.txt"
         file.puts "cd #{file_path}"
         file.puts "python3 #{python_file_path}/deepzoom_tile.py #{image.file.path}"
         file.puts "touch #{output_file}"
     end
 
-    %x{cd #{python_file_path}; 
-        source env/bin/activate; 
-        cd #{file_path}
-        python3 #{python_file_path}/deepzoom_tile.py #{image.file.path}
-        touch #{output_file}
+    File.open("jobs/#{image.id}/env.sh", 'a') do |file|
+        file.puts "module load Compilers/Python3.5"
+    end
+
+    %x{ cd jobs/#{image.id};
+        msub job.sh 10 4 qGPU RS10272 P env.sh 3000
     }
+
+    # %x{cd #{python_file_path}; 
+    #     source env/bin/activate; 
+    #     cd #{file_path}
+    #     python3 #{python_file_path}/deepzoom_tile.py #{image.file.path}
+    #     touch #{output_file}
+    # }
 
     timer = 0
     until File.exist?(output_file)
@@ -42,9 +51,8 @@ class ConversionWorker
             break
         end
     end
-
     %x{rm #{output_file}}
-    %x{rm jobs/#{image.id}/#{image_id}.sh}
+
     dzi_file = File.open(image.dzi_path){ |f| Nokogiri::XML(f) }
     height = dzi_file.css('xmlns|Size').first["Height"]
     width = dzi_file.css('xmlns|Size').first["Width"]
