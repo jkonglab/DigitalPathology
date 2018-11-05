@@ -8,7 +8,8 @@ class Image < ActiveRecord::Base
     url: "#{Rails.application.config.data_directory}/:id_partition/:hash/:filename",
     hash_data: ":class/:attachment/:id",
     validate_media_type: false,
-    preserve_files: false
+    preserve_files: false,
+    override_file_permissions: 0775
   }
 
   validates_attachment_content_type :file, :content_type => ["image/jpg", "image/jpeg", "image/png", "image/tiff", "application/octet-stream", "application/dicom"]
