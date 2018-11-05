@@ -1,4 +1,4 @@
-<%= form_for(@run) do |f| %>
+2<%= form_for(@run) do |f| %>
 	<div class="form-group">
 		<%= f.label :algorithm_id, "Select an algorithm to run" %>
 		<%= f.collection_select :algorithm_id, @algorithm, :id, :title_with_type, {include_blank: 'Please select'}, { class: 'form-control', required: true } %>
@@ -17,7 +17,7 @@
 
 	<div class="form-group">
 		<%= f.label :tile_size, "Tile Size (in pixels)" %>
-		<%= f.select :tile_size, [100,200,400,500,1000,2000], { :selected => 200 }, { class: 'form-control', required: true, value: [] } %>
+		<%= f.select :tile_size, [128,256,512,1024,2048], { :selected => 256 }, { class: 'form-control', required: true, value: [] } %>
 	</div>
 	<br/><br/>
 	<h5>Algorithm Parameters</h5>
