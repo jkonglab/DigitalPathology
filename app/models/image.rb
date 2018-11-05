@@ -9,7 +9,7 @@ class Image < ActiveRecord::Base
     hash_data: ":class/:attachment/:id",
     validate_media_type: false,
     preserve_files: false,
-    override_file_permissions: 0775
+    override_file_permissions: 7755
   }
 
   validates_attachment_content_type :file, :content_type => ["image/jpg", "image/jpeg", "image/png", "image/tiff", "application/octet-stream", "application/dicom"]
