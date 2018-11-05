@@ -30,6 +30,7 @@ class ConversionWorker
 
     File.open("jobs/#{image.id}/env.sh", 'a') do |file|
         file.puts "module load Compilers/Python3.5"
+        file.puts "module load Image_Analysis/Openslide3.4.1"
     end
 
     %x{ cd jobs/#{image.id};
