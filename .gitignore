@@ -17,10 +17,13 @@
 /jobs/*
 !/log/.keep
 /tmp
-/algorithms/*
-/python/*
-npm-debug.log
+/algorithms/julia/*
+/algorithms/matlab/*
+/algorithms/python/*
+/algorithms/python3/*
 /algorithms/run_data/*
+/python/env/*
+npm-debug.log
 /public/data/*
 /public/assets/*
 *DS_Store

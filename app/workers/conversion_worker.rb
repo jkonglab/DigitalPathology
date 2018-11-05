@@ -23,6 +23,7 @@ class ConversionWorker
         file.puts "source env/bin/activate"
         file.puts "cp #{python_file_path}/requirements.txt ."
         file.puts "pip install -r requirements.txt"
+        file.puts 'cp #{python_file_path}/deepzoom.py env/lib/python3.5/site-packages/openslide'
         file.puts "cd #{file_path}"
         file.puts "python3 #{python_file_path}/deepzoom_tile.py #{image.file.path}"
         file.puts "touch #{output_file}"
@@ -36,13 +37,6 @@ class ConversionWorker
     %x{ cd jobs/#{image.id};
         msub job.sh 10 4 qGPU RS10272 P env.sh 3000
     }
-
-    # %x{cd #{python_file_path}; 
-    #     source env/bin/activate; 
-    #     cd #{file_path}
-    #     python3 #{python_file_path}/deepzoom_tile.py #{image.file.path}
-    #     touch #{output_file}
-    # }
 
     timer = 0
     until File.exist?(output_file)
