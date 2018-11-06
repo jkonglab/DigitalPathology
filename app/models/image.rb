@@ -9,7 +9,7 @@ class Image < ActiveRecord::Base
     hash_data: ":class/:attachment/:id",
     validate_media_type: false,
     preserve_files: false,
-    override_file_permissions: 7755
+    override_file_permissions: 755
   }
 
   validates_attachment_content_type :file, :content_type => ["image/jpg", "image/jpeg", "image/png", "image/tiff", "application/octet-stream", "application/dicom"]
@@ -23,7 +23,12 @@ class Image < ActiveRecord::Base
   enum visibility: { hidden: 0, visible: 1 }
   enum image_type: [:twod, :threed, :fourd]
   before_destroy :destroy_children
+  after_post_process :change_folder_permissions
 
+  def change_folder_permissions
+    folder = self.fold_folder_path
+    %x{chmod 775 #{folder}}
+  end
 
   def dzi_path
     file_base = File.basename(self.file_file_name, File.extname(self.file_file_name))
