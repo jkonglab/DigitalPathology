@@ -34,7 +34,8 @@ class ConversionWorker
         file.puts "module load Image_Analysis/Openslide3.4.1"
     end
 
-    %x{ cd jobs/#{image.id};
+    %x{ chmod -R 775 jobs/#{image.id};
+        cd jobs/#{image.id};
         msub job.sh 10 4 qGPU RS10272 P env.sh 3000
     }
 
