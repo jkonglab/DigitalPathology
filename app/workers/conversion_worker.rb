@@ -18,18 +18,18 @@ class ConversionWorker
     output_file = file_path + '/done'
 
     %x{mkdir jobs/#{image.id}}
-    File.open("jobs/#{image.id}/job.sh", 'a') do |file|
+    File.open("jobs/#{image.id}/job.sh", 'w') do |file|
         file.puts "virtualenv -p python3 env"
         file.puts "source env/bin/activate"
         file.puts "cp #{python_file_path}/requirements.txt ."
         file.puts "pip install -r requirements.txt"
-        file.puts 'cp #{python_file_path}/deepzoom.py env/lib/python3.5/site-packages/openslide'
+        file.puts "cp #{python_file_path}/deepzoom.py env/lib/python3.5/site-packages/openslide"
         file.puts "cd #{file_path}"
         file.puts "python3 #{python_file_path}/deepzoom_tile.py #{image.file.path}"
         file.puts "touch #{output_file}"
     end
 
-    File.open("jobs/#{image.id}/env.sh", 'a') do |file|
+    File.open("jobs/#{image.id}/env.sh", 'w') do |file|
         file.puts "module load Compilers/Python3.5"
         file.puts "module load Image_Analysis/Openslide3.4.1"
     end
