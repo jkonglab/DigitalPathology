@@ -23,11 +23,13 @@ class Image < ActiveRecord::Base
   enum visibility: { hidden: 0, visible: 1 }
   enum image_type: [:twod, :threed, :fourd]
   before_destroy :destroy_children
-  after_commit :change_folder_permissions
+  after_create :change_folder_permissions
 
   def change_folder_permissions
-    folder = self.file_folder_path
-    %x{chmod 775 #{folder}/..}
+    if self.file.path
+      folder = self.file_folder_path
+      %x{chmod 775 #{folder}/..}
+    end
   end
 
   def dzi_path
