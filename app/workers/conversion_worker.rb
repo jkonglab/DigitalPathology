@@ -36,7 +36,7 @@ class ConversionWorker
 
     %x{ chmod -R 775 jobs/#{image.id};
         cd jobs/#{image.id};
-        msub job.sh 10 4 qGPU RS10272 P env.sh 3000
+        msub job.sh 1 1 qGPU RS10272 P env.sh 1000
     }
 
     timer = 0
