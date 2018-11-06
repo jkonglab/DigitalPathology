@@ -26,7 +26,7 @@ class Image < ActiveRecord::Base
   after_post_process :change_folder_permissions
 
   def change_folder_permissions
-    folder = self.fold_folder_path
+    folder = self.file_folder_path
     %x{chmod 775 #{folder}}
   end
 
