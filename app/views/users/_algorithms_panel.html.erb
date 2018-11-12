@@ -1,6 +1,6 @@
 <h3>All Algorithms</h3>
 
-<%= link_to admin_new_algorithm_path do %>
+<%= link_to new_algorithm_path do %>
   <button style="float:right" class="btn btn-success">+ New Algorithm</button>
 <% end %>
 
@@ -30,7 +30,10 @@
                 Actions
               </button>
               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <%=link_to admin_algorithms_delete_path(:algorithm_id => algorithm.id), :class=> 'dropdown-item', :data => {:method=> :delete, :confirm => 'VERY DANGEROUS! If you delete this algorithm, you will delete ALL existing analyses and results that have used this algorithm previously.'} do %>Delete<%end%>
+                <%=link_to edit_algorithm_path(algorithm), :class=> 'dropdown-item' do%>
+                  Edit
+                <% end %>
+                <%=link_to algorithm_path(:id => algorithm.id), :class=> 'dropdown-item', :data => {:method=> :delete, :confirm => 'VERY DANGEROUS! If you delete this algorithm, you will delete ALL existing analyses and results that have used this algorithm previously.'} do %>Delete<%end%>
               </div>
             </div>
           </td>

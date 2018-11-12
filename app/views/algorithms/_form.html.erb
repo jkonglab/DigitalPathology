@@ -1,7 +1,3 @@
-<div class="narrow-container">
-<h2>New Algorithm</h2>
-
-
 <%= form_for(@algorithm) do |f| %>
   <% if @algorithm.errors.any? %>
     <ul>
@@ -48,10 +44,20 @@
     <%= f.number_field :tile_size %>
   </div>
 
+  <div class="field form-group">
+    <%= f.label 'Multiple Outputs? (optional)', :class=>"bmd-label-static"%><br />
+    <%= f.check_box :multioutput %>
+  </div>
+
+  <div class="field form-group">
+    <%= f.label 'Multi-Output Parameters in JSON format (optional)' %>
+    Warning: This is advanced configuration. <br/> Please refer to <a href="/algorithmguide" onclick="window.open(this.href,'targetWindow','width=500,height=SomeSize'); return false;">this documentation</a> for more information
+    <br />
+    <%= f.text_area :multioutput_options, {:style=> 'width:100%;', :placeholder=>'[{"key":"sample_key","title":"Sample Parameter","type":1,"required":true,"order":1,"default_value":100}]'}%>
+  </div>
+
 
   <div class="actions form-group float-right">
-    <%= f.submit "Create", class: 'btn btn-raised btn-success'%>
+    <%= f.submit "Save", class: 'btn btn-raised btn-success'%>
   </div>
 <% end %>
-
-</div>
