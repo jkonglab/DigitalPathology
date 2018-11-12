@@ -35,7 +35,6 @@ import sys
 import numpy as np
 import cv2
 import colorsys 
-import matplotlib
 from skimage import measure
 
 def filer(min_score, max_score,r,image):

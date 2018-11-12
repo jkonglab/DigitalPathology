@@ -13,30 +13,52 @@ class AnalysisWorker
     @tile_height = @run.tile_size
     output_file = File.join(@run.run_folder, "/output_#{tile_x.to_s}_#{tile_y.to_s}.json")
 
-    if @algorithm.language == Algorithm::LANGUAGE_LOOKUP["matlab"]
-      parameters = convert_parameters_cell_array_string(@run.parameters)
-      logger.info "main('#{@image.tile_folder_path}','#{output_file}',#{parameters},'#{@algorithm.name}',#{@tile_x},#{@tile_y},#{@tile_width},#{@tile_height}); exit;"
-      %x{cd #{algorithm_path}; matlab -nodisplay -r "main('#{@image.tile_folder_path}','#{output_file}',#{parameters},'#{@algorithm.name}',#{@tile_x},#{@tile_y},#{@tile_width},#{@tile_height}); exit;"}
-    elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["python"]
-      parameters = @run.parameters
-      logger.info "python3 -m main #{@image.tile_folder_path} #{output_file} #{parameters} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height}"
-      %x{cd #{algorithm_path}; source env/bin/activate; python3 -m main #{@image.tile_folder_path} #{output_file} #{parameters} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height}}
-    elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["python3"]
-      parameters = @run.parameters
-      logger.info "python3 -m main #{@image.tile_folder_path} #{output_file} #{parameters} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height}"
-      %x{cd #{algorithm_path}; source env/bin/activate; python3 -m main #{@image.tile_folder_path} #{output_file} #{parameters} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height}}
-
-    elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["julia"]
-      ## NEEDS MAJOR REFACTORING!
-      ## PRETTY MUCH BUILT ONLY TO RUN COLOR DECONV
-      parameters = ""
-      output_file = File.join(@run.run_folder, "/output.tif")
-      @run.parameters.each do |parameter|
-        parameters = parameters + parameter.to_json + ' '
+    %x{mkdir jobs/analysis_#{@run.id}}
+    File.open("jobs/analysis_#{@run.id}/job.sh", 'w') do |file|
+      if @algorithm.language == Algorithm::LANGUAGE_LOOKUP["matlab"]
+        parameters = convert_parameters_cell_array_string(@run.parameters)
+        command_line = "matlab -nodisplay -r \"main('#{@image.tile_folder_path}','#{output_file}',#{parameters},'#{@algorithm.name}',#{@tile_x},#{@tile_y},#{@tile_width},#{@tile_height}); exit;\""
+      elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["python"]
+        parameters = @run.parameters
+        command_line = "python -m main #{@image.tile_folder_path} #{output_file} #{parameters} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height}"
+        file.puts "virtualenv -p python2 env"
+        file.puts "source env/bin/activate"
+        file.puts "cp #{algorithm_path}/#{@algorithm.name}_requirements.txt ."
+        file.puts "pip install -r #{@algorithm.name}_requirements.txt"
+      elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["python3"]
+        parameters = @run.parameters
+        command_line = "python3 -m main #{@image.tile_folder_path} #{output_file} #{parameters} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height}}"
+        file.puts "virtualenv -p python3 env"
+        file.puts "source env/bin/activate"
+        file.puts "cp #{algorithm_path}/#{@algorithm.name}_requirements.txt ."
+        file.puts "pip install -r #{@algorithm.name}_requirements.txt"
+      elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["julia"]
+        ## NEEDS MAJOR REFACTORING!
+        ## PRETTY MUCH BUILT ONLY TO RUN COLOR DECONV
+        parameters = ""
+        output_file = File.join(@run.run_folder, "/output.tif")
+        @run.parameters.each do |parameter|
+          parameters = parameters + parameter.to_json + ' '
+        end
+        command_line = "julia julia-adapter.jl #{@image.file.path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}"
       end
-      logger.info "julia julia-adapter.jl #{@image.file.path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}"
-      %x{cd #{algorithm_path}; julia julia-adapter.jl #{@image.file.path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}}
+
+      file.puts "cd #{algorithm_path}"
+      file.puts command_line
     end
+    logger.info command_line
+
+     File.open("jobs/analysis_#{@run.id}/env.sh", 'w') do |file|
+        file.puts "module load Compilers/Python3.5"
+        file.puts "module load Python2.7"
+        file.puts "module load Framework/Matlab2016b"
+        file.puts "module load Compilers/Julia0.6.2"
+    end
+
+    %x{ chmod -R 775 jobs/analysis_#{@run.id};
+        cd jobs/analysis_#{@run.id};
+        msub job.sh 1 1 qAR RS10272 P env.sh 1000
+    }
 
     timer = 0
     until File.exist?(output_file)

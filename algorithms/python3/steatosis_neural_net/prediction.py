@@ -10,9 +10,6 @@ import re
 import time
 import numpy as np
 import tensorflow as tf
-import matplotlib
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches
 from mrcnn import utils
 from mrcnn import visualize2
 from mrcnn.visualize2 import display_images
@@ -105,9 +102,9 @@ def get_ax(rows=1, cols=1, size=16):
     
     Adjust the size attribute to control how big to render images
     """
-    fig, ax = plt.subplots(rows, cols, figsize=(size*cols, size*rows))
-    fig.tight_layout()
-    return ax
+    #fig, ax = plt.subplots(rows, cols, figsize=(size*cols, size*rows))
+    #fig.tight_layout()
+    #return ax
 
 
     

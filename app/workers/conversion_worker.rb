@@ -47,6 +47,7 @@ class ConversionWorker
             break
         end
     end
+    
     %x{rm #{output_file}}
 
     dzi_file = File.open(image.dzi_path){ |f| Nokogiri::XML(f) }
@@ -63,7 +64,11 @@ class ConversionWorker
 
   def convert_dicom_to_jpg(image)
     matlab_path = File.join(Rails.root.to_s, 'algorithms', 'matlab')
-    %x{cd #{matlab_path}; matlab -nodisplay -r "dicom2jpg('#{image.file.path}', 2); exit;"}
+    %x{
+        cd #{matlab_path}; 
+        module load Framework/Matlab2016a;
+        matlab -nodisplay -r "dicom2jpg('#{image.file.path}', 2); exit;"
+    }
     if File.extname(image.file_file_name) == '.dcm'
         file_base = File.basename(image.file_file_name, File.extname(image.file_file_name))
     else

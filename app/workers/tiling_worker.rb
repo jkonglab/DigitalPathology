@@ -29,8 +29,10 @@ class TilingWorker
               x, y = convert_and_save_whole_slide_annotation
             end
             
-            %x{cd #{algorithm_path};
-                matlab -nodisplay -r "tiling('#{@image.file.path}','#{@run.run_folder}', #{tile_size}); exit;"
+            %x{
+              module load Framework/Matlab2016a;
+              cd #{algorithm_path};
+              matlab -nodisplay -r "tiling('#{@image.file.path}','#{@run.run_folder}', #{tile_size}); exit;"
             }
 
             timer = 0

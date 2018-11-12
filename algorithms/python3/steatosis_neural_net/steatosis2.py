@@ -29,12 +29,6 @@ Usage: import the module (see Jupyter notebooks for examples), or run from
 # This has to be done before other importa that might
 # set it, but only if we're running in script mode
 # rather than being imported.
-if __name__ == '__main__':
-    import matplotlib
-    # Agg backend runs without a display
-    matplotlib.use('Agg')
-    import matplotlib.pyplot as plt
-
 import os
 import sys
 import json
@@ -401,9 +395,6 @@ def detect(model, dataset_dir, subset):
             show_bbox=False, show_mask=True,
             title="Predictions")
         
-        plt.savefig("{}/{}.png".format(submit_dir, dataset.image_info[image_id]["id"]))
-        
-
     # Save to csv file
     submission = "ImageId,EncodedPixels\n" + "\n".join(submission)
     file_path = os.path.join(submit_dir, "submit.csv")
