@@ -66,8 +66,14 @@ class Algorithm < ActiveRecord::Base
 		end
   	end
 
-  	def parameters
-  		return super.class == String ? eval(super) : super
+  	def parameters=(value)
+  		value = JSON.parse(value)
+  		super(value)
+  	end
+
+  	def multioutput_options=(value)
+  		new_value = !value.blank? ? JSON.parse(value) : nil
+  		super(new_value)
   	end
 
 end
