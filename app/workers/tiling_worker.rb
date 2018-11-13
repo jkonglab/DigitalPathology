@@ -28,12 +28,15 @@ class TilingWorker
             else
               x, y = convert_and_save_whole_slide_annotation
             end
-            
-            %x{
-              module load Framework/Matlab2016b;
-              cd #{algorithm_path};
-              matlab -nodisplay -r "tiling('#{@image.file.path}','#{@run.run_folder}', #{tile_size}); exit;"
-            }
+
+            File.open(@run.run_folder+"/job.sh", 'w') do |file|
+              file.puts "cd #{lgorithm_path}"  
+              file.puts "matlab -nodisplay -r \"tiling('#{@image.file.path}','#{@run.run_folder}', #{tile_size}); exit;\""
+            end
+
+            File.open(@run.run_folder+"/env.sh", 'w') do |file|
+              file.puts "module load Framework/Matlab2016b"
+            end
 
             timer = 0
             until File.exist?(File.join(@run.run_folder,'/tiles_to_analyze.json'))

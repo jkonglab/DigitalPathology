@@ -42,6 +42,8 @@ class AnalysisWorker
           parameters = parameters + parameter.to_json + ' '
         end
         command_line = "julia julia-adapter.jl #{@image.file.path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}"
+      else
+        command_line = ""
       end
 
       file.puts "cd #{algorithm_path}"
