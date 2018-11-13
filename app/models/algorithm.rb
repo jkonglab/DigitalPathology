@@ -66,4 +66,8 @@ class Algorithm < ActiveRecord::Base
 		end
   	end
 
+  	def parameters
+  		return super.class == String ? eval(super) : super
+  	end
+
 end

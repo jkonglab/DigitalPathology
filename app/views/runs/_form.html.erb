@@ -1,4 +1,4 @@
-2<%= form_for(@run) do |f| %>
+<%= form_for(@run) do |f| %>
 	<div class="form-group">
 		<%= f.label :algorithm_id, "Select an algorithm to run" %>
 		<%= f.collection_select :algorithm_id, @algorithm, :id, :title_with_type, {include_blank: 'Please select'}, { class: 'form-control', required: true } %>
