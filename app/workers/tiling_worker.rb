@@ -13,7 +13,7 @@ class TilingWorker
     num_tiles_counter = 0
     tile_size = @run.tile_size || 200
 
-    if @image && @image.complete && !@run.processing
+    if @image && @image.complete
         @run.update_attributes!(:run_at=>@run_time, :processing=>true, :tiles_processed=>0)
         
         %x{mkdir #{@run.run_folder}}
@@ -30,7 +30,7 @@ class TilingWorker
             end
 
             File.open(@run.run_folder+"/job.sh", 'w') do |file|
-              file.puts "cd #{lgorithm_path}"  
+              file.puts "cd #{algorithm_path}"  
               file.puts "matlab -nodisplay -r \"tiling('#{@image.file.path}','#{@run.run_folder}', #{tile_size}); exit;\""
             end
 
