@@ -14,7 +14,7 @@ function main_output = main(image_folder_path, output_file_path, extra_parameter
       maximum = max(folder_numbers);
 
       if tile_width ~= 0 && tile_height ~= 0
-         image_file = strcat(image_folder_path, '/', num2str(maximum), '/', num2str(dzi_x_index), '_', num2str(dzi_y_index), '.jpeg');
+         image_file = strcat(image_folder_path, '/', num2str(maximum), '/', num2str(dzi_x_index), '_', num2str(dzi_y_index), '.png');
          entire_image = imread(image_file);
          image_size = size(entire_image);
          end_height = y_offset + tile_height;
