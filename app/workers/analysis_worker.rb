@@ -48,8 +48,8 @@ class AnalysisWorker
 
       file.puts "cd #{algorithm_path}"
       file.puts command_line
+      logger.info command_line
     end
-    logger.info command_line
 
     File.open("jobs/analysis_#{@run.id}/env.sh", 'w') do |file|
         file.puts "module load Compilers/Python3.5"
