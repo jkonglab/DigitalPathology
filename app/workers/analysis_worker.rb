@@ -14,6 +14,7 @@ class AnalysisWorker
     output_file = File.join(@run.run_folder, "/output_#{tile_x.to_s}_#{tile_y.to_s}.json")
 
     %x{mkdir jobs/analysis_#{@run.id}}
+    
     File.open("jobs/analysis_#{@run.id}/job.sh", 'w') do |file|
       if @algorithm.language == Algorithm::LANGUAGE_LOOKUP["matlab"]
         parameters = convert_parameters_cell_array_string(@run.parameters)
@@ -48,7 +49,7 @@ class AnalysisWorker
     end
     logger.info command_line
 
-     File.open("jobs/analysis_#{@run.id}/env.sh", 'w') do |file|
+    File.open("jobs/analysis_#{@run.id}/env.sh", 'w') do |file|
         file.puts "module load Compilers/Python3.5"
         file.puts "module load Python2.7"
         file.puts "module load Framework/Matlab2016b"

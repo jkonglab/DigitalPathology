@@ -30,7 +30,7 @@ class TilingWorker
             end
             
             %x{
-              module load Framework/Matlab2016a;
+              module load Framework/Matlab2016b;
               cd #{algorithm_path};
               matlab -nodisplay -r "tiling('#{@image.file.path}','#{@run.run_folder}', #{tile_size}); exit;"
             }
