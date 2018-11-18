@@ -4,7 +4,6 @@ import theano.tensor as T
 import pickle
 import lasagne
 import scipy.ndimage.filters as filters
-import matplotlib.pyplot as plt
 import skimage.data
 import os
 import sys

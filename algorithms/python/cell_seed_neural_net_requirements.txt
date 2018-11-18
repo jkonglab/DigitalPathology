@@ -1,8 +1,6 @@
 Lasagne==0.1
-matplotlib
 networkx
 numpy
-Pillow
 scikit-image
 scipy
 Theano
