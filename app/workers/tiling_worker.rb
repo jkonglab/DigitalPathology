@@ -38,6 +38,10 @@ class TilingWorker
               file.puts "module load Framework/Matlab2016b"
             end
 
+            %x{ cd #{@run.run_folder};
+        		msub job.sh 1 1 qAR RS10272 P env.sh 1000
+    		}
+
             timer = 0
             until File.exist?(File.join(@run.run_folder,'/tiles_to_analyze.json'))
                 timer +=1
