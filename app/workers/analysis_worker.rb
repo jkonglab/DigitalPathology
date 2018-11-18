@@ -12,18 +12,16 @@ class AnalysisWorker
     @tile_width = @run.tile_size
     @tile_height = @run.tile_size
     output_file = File.join(@run.run_folder, "/output_#{tile_x.to_s}_#{tile_y.to_s}.json")
-
-
-    %x{mkdir jobs/analysis_#{@run.id}}
+    @work_folder = "#{@run.run_folder}/#{tile_x.to_s}_#{tile_y.to_s}"
     
-    File.open("jobs/analysis_#{@run.id}/job_#{tile_x.to_s}_#{tile_y.to_s}.sh", 'w') do |file|
+    File.open("#{@work_folder}/job.sh", 'w') do |file|
       if @algorithm.language == Algorithm::LANGUAGE_LOOKUP["matlab"]
         parameters = convert_parameters_cell_array_string(@run.parameters)
         command_line = "matlab -nodisplay -r \"main('#{@image.tile_folder_path}','#{output_file}',#{parameters},'#{@algorithm.name}',#{@tile_x},#{@tile_y},#{@tile_width},#{@tile_height}); exit;\""
       elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["python"]
         parameters = @run.parameters
         command_line = "python -m main #{@image.tile_folder_path} #{output_file} #{parameters} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height}"
-        file.puts "virtualenv -p python2 env"
+        file.puts "virtualenv env"
         file.puts "source env/bin/activate"
         file.puts "cp #{algorithm_path}/#{@algorithm.name}_requirements.txt ."
         file.puts "pip install -r #{@algorithm.name}_requirements.txt"
@@ -52,16 +50,16 @@ class AnalysisWorker
       logger.info command_line
     end
 
-    File.open("jobs/analysis_#{@run.id}/env_#{tile_x.to_s}_#{tile_y.to_s}.sh", 'w') do |file|
+    File.open("#{@work_folder}/env.sh", 'w') do |file|
         file.puts "module load Compilers/Python3.5"
         file.puts "module load Python2.7"
         file.puts "module load Framework/Matlab2016b"
         file.puts "module load Compilers/Julia0.6.2"
     end
 
-    %x{ chmod -R 775 jobs/analysis_#{@run.id};
-        cd jobs/analysis_#{@run.id};
-        msub job_#{tile_x.to_s}_#{tile_y.to_s}.sh 1 1 qAR RS10272 P env_#{tile_x.to_s}_#{tile_y.to_s}.sh 1000
+    %x{ chmod -R 775 #{@work_folder};
+        cd #{@work_folder};
+        msub job.sh 1 1 qAR RS10272 P env.sh 1000
     }
 
     timer = 0

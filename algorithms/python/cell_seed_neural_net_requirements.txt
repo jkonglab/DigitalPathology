@@ -1,6 +1,0 @@
-Lasagne==0.1
-networkx
-numpy
-scikit-image
-scipy
-Theano
