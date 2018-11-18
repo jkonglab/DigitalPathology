@@ -1,0 +1,5 @@
+numpy
+mrcnn
+scikit-image
+tensorflow-gpu
+oauthlib

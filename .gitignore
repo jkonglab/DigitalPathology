@@ -17,10 +17,7 @@
 /jobs/*
 !/log/.keep
 /tmp
-/algorithms/julia/*
-/algorithms/matlab/*
-/algorithms/python/*
-/algorithms/python3/*
+/algorithms/*/env
 /algorithms/run_data/*
 /python/env/*
 npm-debug.log
