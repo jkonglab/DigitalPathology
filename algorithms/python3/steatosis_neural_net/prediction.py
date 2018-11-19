@@ -62,7 +62,7 @@ def load_image(config,image):
 
 
 def Predict(image):
-    weights_path = '/labs/konglab/Steatosis_Seg_DP_xiaoyuan/logs/steatosis20180624T1732/mask_rcnn_steatosis_0060.h5'
+    weights_path = 'mask_rcnn_steatosis_0060.h5'
     # Inference Configuration
     config = steatosis2.SteatosisInferenceConfig()       
     #DEVICE = "/gpu:0"  # /cpu:0 or /gpu:0
