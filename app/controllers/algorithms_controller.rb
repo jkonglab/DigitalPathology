@@ -33,11 +33,11 @@ class AlgorithmsController < ApplicationController
     def create
         @algorithm = Algorithm.new(algorithm_params)
         if @algorithm.valid?
-            if @algorithm.parameters == ""
+            if @algorithm.parameters.blank?
                 @algorithm.parameters = []
             end
 
-            if @algorithm.multioutput_options == ""
+            if @algorithm.multioutput_options.blank?
                 @algorithm.multioutput_options = []
             end
 
