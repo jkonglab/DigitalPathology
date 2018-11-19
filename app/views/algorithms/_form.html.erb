@@ -19,17 +19,17 @@
 
   <div class="field form-group">
     <%= f.label :language %><br />
-    <%= f.select('language', options_from_collection_for_select(Algorithm::LANGUAGE_LOOKUP, :last, :first, @algorithm.language), { class: 'form-control' }) %>
+    <%= f.select('language', options_from_collection_for_select(Algorithm::LANGUAGE_LOOKUP, :last, :first, @algorithm.language), {}, { class: 'form-control' }) %>
   </div>
 
   <div class="field form-group">
     <%= f.label :input_type %><br />
-    <%= f.select('input_type', options_from_collection_for_select(Algorithm::INPUT_TYPE_LOOKUP, :last, :first, :selected => @algorithm.input_type), { class: 'form-control' }) %>
+    <%= f.select('input_type', options_from_collection_for_select(Algorithm::INPUT_TYPE_LOOKUP, :last, :first, :selected => @algorithm.input_type), {}, { class: 'form-control' }) %>
   </div>
 
   <div class="field form-group">
     <%= f.label :output_type %><br />
-    <%= f.select('output_type', options_from_collection_for_select(Algorithm::OUTPUT_TYPE_LOOKUP, :last, :first, :selected => @algorithm.output_type), { class: 'form-control' }) %>
+    <%= f.select('output_type', options_from_collection_for_select(Algorithm::OUTPUT_TYPE_LOOKUP, :last, :first, :selected => @algorithm.output_type), {}, { class: 'form-control' }) %>
   </div>
 
   <div class="field form-group">
