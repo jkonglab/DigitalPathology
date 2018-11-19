@@ -98,7 +98,7 @@ for i = 1:length(B)
             continue;   
         end
         candidate_pts=linspace(1,n,n);%generate points index
-         fprintf("***Step2:Detect close Adjacent points and Nonadjacent points using radius r_1\n")
+         fprintf('***Step2:Detect close Adjacent points and Nonadjacent points using radius r_1\n')
         %% compute Euclidean distance between two points
         close_Mat=Close_Detection(list_ind,b);%close_Mat stores the distance value of each two points 
         [close_adj_pts,close_nonadj_pts,count_nonadj,count_adj,nonadj_close_distance]=close_pts(close_Mat,curvature,list_ind,b,Gmag, Gdir);
