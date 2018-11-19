@@ -67,13 +67,13 @@ class Algorithm < ActiveRecord::Base
   	end
 
   	def parameters=(value)
-  		value = JSON.parse(value)
+  		value = value.present? ? JSON.parse(value) : nil
   		super(value)
   	end
 
   	def multioutput_options=(value)
-  		new_value = !value.blank? ? JSON.parse(value) : nil
-  		super(new_value)
+  		value = value.present? ? JSON.parse(value) : nil
+  		super(value)
   	end
 
 end
