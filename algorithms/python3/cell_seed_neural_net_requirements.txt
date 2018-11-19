@@ -3,4 +3,4 @@ networkx
 numpy
 scikit-image
 scipy
-Theano
+theano==0.7
