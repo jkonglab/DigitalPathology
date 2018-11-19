@@ -34,11 +34,11 @@ class AlgorithmsController < ApplicationController
         @algorithm = Algorithm.new(algorithm_params)
         if @algorithm.valid?
             if @algorithm.parameters.blank?
-                @algorithm.parameters = []
+                @algorithm[:parameters] = []
             end
 
             if @algorithm.multioutput_options.blank?
-                @algorithm.multioutput_options = []
+                @algorithm[:multioutput_options] = []
             end
 
             begin
