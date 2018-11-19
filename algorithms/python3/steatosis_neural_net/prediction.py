@@ -11,10 +11,8 @@ import time
 import numpy as np
 import tensorflow as tf
 from mrcnn import utils
-from mrcnn import visualize2
-from mrcnn.visualize2 import display_images
-import mrcnn.model2 as modellib
-from mrcnn.model2 import log
+import mrcnn.model as modellib
+from mrcnn.model import log
 import numpy as np
 import cv2
 import steatosis2
