@@ -1,5 +1,6 @@
 matplotlib
 numpy
+keras
 mrcnn
 Pillow
 scikit-build
