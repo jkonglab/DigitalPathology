@@ -13,6 +13,8 @@ class AnalysisWorker
     @tile_height = @run.tile_size
     output_file = File.join(@run.run_folder, "/output_#{tile_x.to_s}_#{tile_y.to_s}.json")
     @work_folder = "#{@run.run_folder}/#{tile_x.to_s}_#{tile_y.to_s}"
+
+    %x{mkdir #{work_folder}}
     
     File.open("#{@work_folder}/job.sh", 'w') do |file|
       if @algorithm.language == Algorithm::LANGUAGE_LOOKUP["matlab"]
