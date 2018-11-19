@@ -57,6 +57,7 @@ class AnalysisWorker
         file.puts "module load Python2.7"
         file.puts "module load Framework/Matlab2016b"
         file.puts "module load Compilers/Julia0.6.2"
+        file.puts "module load DeepLearning/tensorflow"
     end
 
     %x{ chmod -R 775 #{@work_folder};
