@@ -2,7 +2,7 @@ function main_output = main(image_folder_path, output_file_path, extra_parameter
    try
       addpath('.')
       addpath(['./' algorithm_name]) 
-      dzi_size = 2000;
+      dzi_size = 2048;
       dzi_x_index = floor(tile_x / dzi_size);
       dzi_y_index = floor(tile_y / dzi_size);
       x_offset =  mod(tile_x, dzi_size);

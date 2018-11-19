@@ -11,7 +11,7 @@ class TilingWorker
     @image = run.image
     @algorithm = run.algorithm
     num_tiles_counter = 0
-    tile_size = @run.tile_size || 200
+    tile_size = @run.tile_size || 256
 
     if @image && @image.complete
         @run.update_attributes!(:run_at=>@run_time, :processing=>true, :tiles_processed=>0)
