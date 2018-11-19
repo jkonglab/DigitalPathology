@@ -67,8 +67,8 @@ class AnalysisWorker
     timer = 0
     until File.exist?(output_file)
       timer +=1
-      sleep 1
-      if timer > 800
+      sleep 10
+      if timer > 60
           break
       end
     end
@@ -76,6 +76,7 @@ class AnalysisWorker
     if @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"]
       handle_3d_volume_output_generation
     else
+      sleep 10
       raw = File.read(output_file)
 
       if raw.present?
