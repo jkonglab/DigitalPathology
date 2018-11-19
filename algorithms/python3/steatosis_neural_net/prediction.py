@@ -12,7 +12,6 @@ import numpy as np
 import tensorflow as tf
 from mrcnn import utils
 import mrcnn.model as modellib
-from mrcnn.model import log
 import numpy as np
 import cv2
 import steatosis2
