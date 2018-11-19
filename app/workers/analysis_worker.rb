@@ -61,14 +61,14 @@ class AnalysisWorker
 
     %x{ chmod -R 775 #{@work_folder};
         cd #{@work_folder};
-        msub job.sh 1 1 qAR RS10272 P env.sh 1000
+        msub job.sh 10 1 qAR RS10272 P env.sh 3000
     }
 
     timer = 0
     until File.exist?(output_file)
       timer +=1
       sleep 1
-      if timer > 300
+      if timer > 800
           break
       end
     end
