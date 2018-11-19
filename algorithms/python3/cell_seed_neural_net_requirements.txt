@@ -3,4 +3,4 @@ networkx
 numpy
 scikit-image
 scipy
-git+https://github.com/Theano/Theano.git@15c90dd3#egg=Theano==0.8.git
+theano==0.8
