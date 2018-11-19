@@ -1,6 +1,6 @@
 matplotlib
 numpy
-keras
+keras==2.1.6
 Pillow
 scikit-build
 scikit-image
