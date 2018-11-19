@@ -37,7 +37,7 @@ def get_dzi_file(tile_folder_path, dzi_x_index, dzi_y_index):
 	items = os.listdir(tile_folder_path)
 	folder_numbers = list(map(graceful_str2int, items))
 	maximum = max(folder_numbers);
-	image_file = tile_folder_path + '/' + str(maximum) + '/' + str(dzi_x_index) + '_' + str(dzi_y_index) + '.jpeg'
+	image_file = tile_folder_path + '/' + str(maximum) + '/' + str(dzi_x_index) + '_' + str(dzi_y_index) + '.png'
 	return image_file
 
 def graceful_str2int(string):
