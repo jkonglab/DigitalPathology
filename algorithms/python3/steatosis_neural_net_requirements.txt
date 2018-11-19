@@ -1,5 +1,13 @@
+matplotlib
 numpy
 mrcnn
+Pillow
+scikit-build
 scikit-image
+scikit-learn
+scipy
+sklearn
 tensorflow-gpu
 oauthlib
+
+
