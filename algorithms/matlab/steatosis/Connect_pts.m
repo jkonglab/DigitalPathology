@@ -73,7 +73,7 @@ line_num=line_num+1;
 Connected_Pts(line_num,1)=p;
 Connected_Pts(line_num,2)=q;
 % add connection
-fprintf("This is  %d  line \n",line_num);
+fprintf('This is  %d  line \n',line_num);
 conn_lines{1,line_num}=curve;
  
 [m,~]=size(curve);
