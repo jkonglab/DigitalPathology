@@ -10,8 +10,6 @@ scipy
 sklearn
 tensorflow
 oauthlib
-
-
-
+opencv-python
 
 
