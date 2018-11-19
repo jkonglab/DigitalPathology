@@ -16,7 +16,7 @@ def predict_return(X):
 
 	modelFns = { 'vgg_segnet':Models.VGGSegnet.VGGSegnet , 'vgg_unet':Models.VGGUnet.VGGUnet , 'vgg_unet2':Models.VGGUnet.VGGUnet2 , 'fcn8':Models.FCN8.FCN8 , 'fcn32':Models.FCN32.FCN32   }
 	modelFN = modelFns[ model_name ]
-	save_weights_path = 'image-segmentation-keras-master.model.9'
+	save_weights_path = '/home/users/ashen2/RS10272/app/imageviewer/algorithms/python3/fibrosis/image-segmentation-keras-master.model.9'
 	m = modelFN( n_classes , input_height=input_height, input_width=input_width   )
 	m.load_weights(  save_weights_path  )
 	m.compile(loss='categorical_crossentropy',
