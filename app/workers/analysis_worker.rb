@@ -98,14 +98,16 @@ class AnalysisWorker
               svg_data = ""
             end
 
-            new_result = @run.results.new(
-              :tile_x => @tile_x,
-              :tile_y => @tile_y,
-              :raw_data => output,
-              :svg_data => svg_data,
-              :run_at => @run.run_at)
+            if svg_data.present?
+              new_result = @run.results.new(
+                :tile_x => @tile_x,
+                :tile_y => @tile_y,
+                :raw_data => output,
+                :svg_data => svg_data,
+                :run_at => @run.run_at)
 
-            new_result.save
+              new_result.save
+            end
           end
         else
           @algorithm.multioutput_options.each_with_index do |option, index|
@@ -116,14 +118,16 @@ class AnalysisWorker
             if output_type == Algorithm::OUTPUT_TYPE_LOOKUP["contour"]
               output.each do |value|
                 svg_data = convert_to_svg_contour(value)
-                new_result = @run.results.create!(
-                  :tile_x => @tile_x,
-                  :tile_y => @tile_y,
-                  :raw_data => value,
-                  :svg_data => svg_data,
-                  :run_at => @run.run_at,
-                  :output_key => output_key,
-                  :output_type => output_type)
+                if svg_data.present?
+                  new_result = @run.results.create!(
+                    :tile_x => @tile_x,
+                    :tile_y => @tile_y,
+                    :raw_data => value,
+                    :svg_data => svg_data,
+                    :run_at => @run.run_at,
+                    :output_key => output_key,
+                    :output_type => output_type)
+                end
               end
             elsif output_type == Algorithm::OUTPUT_TYPE_LOOKUP["points"]
               output.each do |value|
@@ -214,6 +218,10 @@ class AnalysisWorker
       point_y = point[1].to_i
       vector_width = (((@tile_x.to_i + point_x).to_f / @image.width) * 100)
       vector_height = (((@tile_y.to_i + point_y).to_f / @image.height) * 100)
+
+      if vector_height > 100 || vector_width > 100
+        return nil
+      end
 
       if svg_data_string.length == 0
         svg_data_string += "M" + vector_width.to_s + ' ' + vector_height.to_s
