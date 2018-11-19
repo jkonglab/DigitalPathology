@@ -38,7 +38,7 @@ class AnalysisWorker
         ## NEEDS MAJOR REFACTORING!
         ## PRETTY MUCH BUILT ONLY TO RUN COLOR DECONV
         parameters = ""
-        output_file = File.join(@run.run_folder, "/output.tif")
+        output_file = File.join(@work_folder, "/output.tif")
         @run.parameters.each do |parameter|
           parameters = parameters + parameter.to_json + ' '
         end
@@ -165,15 +165,15 @@ class AnalysisWorker
   end
 
   def handle_3d_volume_output_generation
-    Dir.entries(@run.run_folder + '/').each do |file_name|
+    Dir.entries(@work_folder + '/').each do |file_name|
       if file_name.include?('.tif')
         i = 0
         while(true)
           begin
-            layer = Vips::Image.tiffload File.join(@run.run_folder, file_name), :page => i
-            layer.write_to_file(File.join(@run.run_folder, i.to_s + '_' + file_name))
+            layer = Vips::Image.tiffload File.join(@work_folder, file_name), :page => i
+            layer.write_to_file(File.join(@work_folder, i.to_s + '_' + file_name))
             new_image = Image.new
-            file = File.open(File.join(@run.run_folder, i.to_s + '_' + file_name))
+            file = File.open(File.join(@work_folder, i.to_s + '_' + file_name))
             new_image.file = file
             file.close
             new_image.save!
