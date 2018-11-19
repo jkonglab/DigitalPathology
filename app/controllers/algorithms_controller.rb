@@ -37,6 +37,10 @@ class AlgorithmsController < ApplicationController
                 @algorithm.parameters = []
             end
 
+            if @algorithm.multioutput_options == ""
+                @algorithm.multioutput_options = []
+            end
+
             begin
                 !!JSON.parse(@algorithm.parameters.to_s)
             rescue
