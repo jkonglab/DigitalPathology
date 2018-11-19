@@ -29,7 +29,7 @@ class AnalysisWorker
         file.puts "pip install -r #{@algorithm.name}_requirements.txt"
       elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["python3"]
         parameters = @run.parameters
-        command_line = "python3 -m main #{@image.tile_folder_path} #{output_file} #{parameters} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height}}"
+        command_line = "python3 -m main #{@image.tile_folder_path} #{output_file} #{parameters} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height}"
         file.puts "virtualenv -p python3 env"
         file.puts "source env/bin/activate"
         file.puts "cp #{algorithm_path}/#{@algorithm.name}_requirements.txt ."
