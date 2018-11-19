@@ -11,3 +11,4 @@ sklearn
 tensorflow
 oauthlib
 opencv-python
+imgaug
