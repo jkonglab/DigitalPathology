@@ -10,6 +10,7 @@ class AlgorithmsController < ApplicationController
     def edit
         @algorithm = Algorithm.find(params[:id])
         @algorithm[:parameters] = @algorithm.parameters.to_json
+        @algorithm[:multioutput_options] = @algorithm.parameters.to_json
     end
     
     def update
