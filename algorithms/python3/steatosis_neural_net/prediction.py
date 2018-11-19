@@ -14,9 +14,7 @@ from mrcnn import utils
 import mrcnn.model as modellib
 import numpy as np
 import cv2
-import steatosis2
 from Filter_prediction_results import filer
-
 
 # This code is used for predicting the mask of different steatosis for Project 2_2
 
@@ -57,11 +55,20 @@ def load_image(config,image):
 
     return image, image_meta
 
+class SteatosisInferenceConfig(SteatosisConfig):
+    # Set batch size to 1 to run one image at a time
+    GPU_COUNT = 1 #2
+    IMAGES_PER_GPU = 1 #6
+    # Don't resize imager for inferencing
+    IMAGE_RESIZE_MODE = "pad64"
+    # Non-max suppression threshold to filter RPN proposals.
+    # You can increase this during training to generate more propsals.
+    RPN_NMS_THRESHOLD = 0.7
 
 def Predict(image):
     weights_path = 'mask_rcnn_steatosis_0060.h5'
     # Inference Configuration
-    config = steatosis2.SteatosisInferenceConfig()       
+    config = SteatosisInferenceConfig()       
     #DEVICE = "/gpu:0"  # /cpu:0 or /gpu:0
     DEVICE = "/gpu:0"
     # Inspect the model in training or inference modes
@@ -78,12 +85,6 @@ def Predict(image):
     print("Loading weights ", weights_path)
     model.load_weights(weights_path, by_name=True)
 
-    # Load validation dataset
-    #dataset = steatosis2.SteatosisDataset()
-    #dataset.load_steatosis(DATASET_DIR,image_name)
-    #dataset.prepare()
-
-    #for image_id in range(0,len(dataset.image_ids)):
     image, image_meta = modellib.load_image(config,image)
     r = model.detect_molded(np.expand_dims(image, 0), np.expand_dims(image_meta, 0), verbose=1)
     min_score=0.1
