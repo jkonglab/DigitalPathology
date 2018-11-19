@@ -33,7 +33,7 @@ ARC = 10;
 UNUSED=1;
 
 if sum(I)==0
-    fprintf("No bad steatosis need to be separated!\n")
+    fprintf('No bad steatosis need to be separated!\n')
     return
 end
 
