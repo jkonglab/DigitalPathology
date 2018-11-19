@@ -37,7 +37,7 @@ class AnalysisWorker
 
         ## FILTHY HACK
         if @algorithm.name == 'steatosis_neural_net'
-          file.puts "cp #{algorithm_path}/steatosis_neural_net/model2.py env/lib/python3.5/site-packages/mrcnn"
+          file.puts "cp -r #{algorithm_path}/steatosis_neural_net/mrcnn env/lib/python3.5/site-packages"
         end
 
       elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["julia"]
