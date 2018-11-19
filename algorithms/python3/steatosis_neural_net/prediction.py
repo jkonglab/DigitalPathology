@@ -12,7 +12,7 @@ import numpy as np
 import tensorflow as tf
 from mrcnn import utils
 from mrcnn.config import Config
-import mrcnn.model as modellib
+import mrcnn.model2 as modellib
 import numpy as np
 import cv2
 from Filter_prediction_results import filer

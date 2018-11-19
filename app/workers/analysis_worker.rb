@@ -34,6 +34,12 @@ class AnalysisWorker
         file.puts "source env/bin/activate"
         file.puts "cp #{algorithm_path}/#{@algorithm.name}_requirements.txt ."
         file.puts "pip install -r #{@algorithm.name}_requirements.txt"
+
+        ## FILTHY HACK
+        if @algorithm.name == 'steatosis_neural_net'
+          file.puts "cp #{algorithm_path}/steatosis_neural_net/model2.py env/lib/python3.5/site-packages/mrcnn"
+        end
+
       elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["julia"]
         ## NEEDS MAJOR REFACTORING!
         ## PRETTY MUCH BUILT ONLY TO RUN COLOR DECONV
