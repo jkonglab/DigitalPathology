@@ -1,5 +1,5 @@
 <head>
-  <title>Digital Pathology: Emory University Biomedical Informatics</title>
+  <title>Digital Pathology: Online Pathology Workbench</title>
   <script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js" integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U" crossorigin="anonymous"></script>
   <%= javascript_include_tag 'application', 'data-turbolinks-track' => false %>
   <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => false %>
@@ -17,7 +17,7 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <a class="navbar-brand" href="/">
-      <img style="width:100px; margin-right:10px;" src="<%=asset_path("public/emory.png")%>"/>
+      <img style="width:100px; margin-right:10px;" src="<%=asset_path("public/logo.png")%>"/>
       Digital Pathology
     </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#left-navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -28,13 +28,28 @@
         <li class="nav-item">
           <a class="nav-link" href="/about">About<a>
         </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" id="images-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Images</a>
+        <li class="nav-item">
+          <a class="nav-link" href="https://slimwiki.com/digital-pathology">Wiki<a>
+        </li>
+<!--         <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" id="images-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a>
           <div class="dropdown-menu" aria-labelledby="images-dropdown">
             <a class="dropdown-item" href="/images">Public Archive</a>
             <a class="dropdown-item" href="/images/new">Upload</a>
           </div>
-        </li>
+        </li> -->
+        <% if current_user %>
+          <li class = "nav-item">
+            <a class="nav-link" href="<%=my_projects_path%>">Projects</a>
+          </li>
+          <li class = "nav-item">
+            <a class="nav-link" href="<%=my_projects_path%>">Analyses</a>
+          </li>
+        <% else %>
+          <li class = "nav-item">
+            <a class="nav-link" href="<%= new_user_registration_path %>">Sign Up</a>
+          </li>
+        <% end %>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <% if !current_user %>
