@@ -1,5 +1,5 @@
 #!/usr/local/bin/julia
-
+Pkg.add("Images")
 using Images
 
 # Sort out command line arguments
