@@ -254,7 +254,7 @@ class AnalysisWorker
     svg_data = ["circle", {
       "cx"=>vector_width,
       "cy"=>vector_height,
-      "r"=>0.05,
+      "r"=>"1px",
       "fill"=> "none",
       "stroke"=> "lime",
       "stroke-width"=> 3,
