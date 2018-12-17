@@ -1,7 +1,7 @@
 <script>
 	$(document).ready(function() {
 		$(".upload").upload({
-			maxSize: 1073741824,
+			maxSize: 5000000000,
 			beforeSend: onBeforeSend,
 			postKey: 'image[file]'
 		}).on("start.upload", onStart)
