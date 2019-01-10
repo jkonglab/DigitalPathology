@@ -15,7 +15,7 @@
   <tbody>
   	<% @projects.each do |project| %>
   		<tr>
-  			<td><%= check_box_tag "project_ids[]", project.id, false, class: 'project-check-box'%></td>
+  			<td><%= check_box_tag "project_ids[]", project.id, :default => true, class: 'project-check-box'%></td>
   			<td class="d-none d-md-table-cell"><%=project.id%></td>
   			<td class="d-none d-md-table-cell"><a href="<%=project_path(project.id)%>"><%=project.title%></a></td>
   			<td><%=project.created_at%></td>

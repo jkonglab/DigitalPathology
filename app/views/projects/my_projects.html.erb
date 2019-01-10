@@ -25,8 +25,6 @@
 		  	</tr>
 		  </thead>
 		  <%= form_tag make_public_projects_path do %>
-		  	<%= submit_tag "Make Public", :style=>"float:right; margin-left:10px;", :class=>"btn-raised btn btn-danger" %>
-		  	<%= submit_tag "Make Private", :style=>"float:right; margin-left:10px;", :class=>"btn-raised btn btn-primary", :formaction=>  make_private_projects_path %>
 		  	<%= submit_tag "Share", :style=>"float:right; margin-left:10px;", :class=>"btn-raised btn btn-primary", :formaction=>  confirm_share_user_project_ownerships_path %>
 			  <tbody>
 			  	<% @projects.each do |project| %>

@@ -52,7 +52,7 @@ class ProjectsController < ApplicationController
 		if @project.valid?
 			@project.save!
 			UserProjectOwnership.create!(:project_id=>@project.id, :user_id=>current_user.id)
-			redirect_back(fallback_location: my_projects_path, notice: "Project created.")
+			redirect_to my_projects_path, notice: "Project created."
 		else
 			redirect_back(fallback_location: my_projects_path)
 		end
