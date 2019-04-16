@@ -28,7 +28,7 @@ class Image < ActiveRecord::Base
   def change_folder_permissions
     if self.file.path
       folder = self.file_folder_path
-      %x{chmod -R 775 #{folder}/..}
+      %x{chmod -R 777 #{folder}/..}
     end
   end
 
