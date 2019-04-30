@@ -7,6 +7,6 @@
     "ssl_port": 443,
     // Tell Passenger to daemonize into the background.
     "daemonize": true,
-    "ssl_certificate_key": "/etc/ssl/private/apache-selfsigned.key",
-    "ssl_certificate": "/etc/ssl/certs/apache-selfsigned.crt"
+    "ssl_certificate_key": "/home/users/ashen2/server.key",
+    "ssl_certificate": "/home/users/ashen2/cert.pem"
 }
