@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181019143916) do
+ActiveRecord::Schema.define(version: 20190508220023) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -79,6 +79,7 @@ ActiveRecord::Schema.define(version: 20181019143916) do
     t.string "method"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "description"
   end
 
   create_table "results", id: :serial, force: :cascade do |t|
@@ -117,6 +118,15 @@ ActiveRecord::Schema.define(version: 20181019143916) do
     t.integer "lock_version", default: 0, null: false
     t.integer "tile_size"
     t.index ["user_id"], name: "index_runs_on_user_id"
+  end
+
+  create_table "sessions", id: :serial, force: :cascade do |t|
+    t.string "session_id", null: false
+    t.text "data"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["session_id"], name: "index_sessions_on_session_id", unique: true
+    t.index ["updated_at"], name: "index_sessions_on_updated_at"
   end
 
   create_table "user_project_ownerships", force: :cascade do |t|

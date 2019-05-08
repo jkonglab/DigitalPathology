@@ -11,7 +11,7 @@
 		</div>
     </div>
 
-    <div class="bmd-layout-content">
+    <div class="bmd-layout-content" style="background:#eee;">
 		<div style="height:100%;" class="row">
 			<div class="<%= @image.threed? ? 'col-10' : 'col-12' %>" style="padding-right:0px;">
 				<div id="openseadragon-container" class="openseadragon">
@@ -119,12 +119,19 @@
 	$('.stop-draw').click(stopDrawing);
 
 	function stopDrawing(){
+		<% if @image.threed? %>
+			$('.slider-container').css('opacity', 1);
+		<% end %>
 		viewer.stopDrawing(); 
 		$('.start-draw').show(); 
 		$('.stop-draw').hide();
 	}
 
 	function startDrawing(){
+		<% if @image.threed? %>
+			slice_slider.bootstrapSlider('setValue', <%=@slices.length/2%>, true, true);
+			$('.slider-container').css('opacity', 0);
+		<% end %>
 		viewer.startDrawing(); 
 		bindAnnotationPrompt();
 		$('.start-draw').hide(); 

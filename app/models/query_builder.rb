@@ -24,14 +24,23 @@ class QueryBuilder
       @query['processing_eq'] = query_params['processing'] == 'Complete' ? 0 : 1
     end
 
+
     @query
   end
 
   def to_ransack(context=nil)
     if context
-      ransack = context.ransack(query)
+      if query_params['annotation_label'].present?
+        ransack = context.where('id IN (?)', (Annotation.where("label ILIKE ?", "%#{query_params['annotation_label']['s']}%").pluck(:image_id))).ransack(query)
+      else
+        ransack = context.ransack(query)
+      end
     else
-      ransack = Image.ransack(query)
+      if query_params['annotation_label'].present?
+        ransack = Image.where('id IN (?)', (Annotation.where("label ILIKE ?", "%#{query_params['annotation_label']['s']}%").pluck(:image_id))).ransack(query)
+      else
+        ransack = Image.ransack(query)
+      end
     end
     ransack.sorts = sort_order
     ransack

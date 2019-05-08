@@ -13,6 +13,11 @@
   </div>
 
   <div class="field form-group">
+    <%= f.label :description%><br/>
+    <%= f.text_area :description, class: 'form-control' %>
+  </div>
+
+  <div class="field form-group">
     <%= f.label 'Location' %><br />
     <%= f.select('tissue_type', Project::LOCATION_TYPES, { :selected => 0 }, { class: 'form-control' }) %>
   </div>

@@ -79,7 +79,7 @@ class ProjectsController < ApplicationController
 
 	private
 	  def project_params
-	    params.require(:project).permit(:title, :modality, :tissue_type, :method, :visibility)
+	    params.require(:project).permit(:title, :modality, :tissue_type, :method, :visibility, :description)
 	  end
 
 	  def set_project_validated
