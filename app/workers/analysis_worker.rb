@@ -67,7 +67,7 @@ class AnalysisWorker
 
     %x{ chmod -R 775 #{@work_folder};
         cd #{@work_folder};
-        msub job.sh 1 1 qDPGPU RS10272 P env.sh 1000
+        msub job.sh 1 1 qDP RS10272 P env.sh 1000
     }
 
     timer = 0
