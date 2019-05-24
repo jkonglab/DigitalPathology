@@ -37,7 +37,7 @@ class ConversionWorker
 
         %x{ chmod -R 775 jobs/#{image.id};
             cd jobs/#{image.id};
-            msub job.sh 1 1 qAR RS10272 P env.sh 1000
+            msub job.sh 1 1 qDP RS10272 P env.sh 1000
         }
 
         timer = 0
