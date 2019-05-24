@@ -54,8 +54,7 @@ class ImagesController < ApplicationController
     if @images.length == 1
       image = @images[0]
       project = image.project
-      images = Image.where('(images.id IN (?) or parent_id IN (?))', image.id, image.id)
-      images.destroy_all
+      image.destroy
       return redirect_to project, notice: "Image #{image.title} deleted"
     end
   end

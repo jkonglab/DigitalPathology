@@ -70,6 +70,8 @@ class Image < ActiveRecord::Base
   end
 
   def destroy_children
+    children = Image.where(:parent_id=>self.id)
+    children.destroy_all
     self.file = nil
     self.save
     self.annotations.destroy_all 

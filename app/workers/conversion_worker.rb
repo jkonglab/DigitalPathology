@@ -17,34 +17,36 @@ class ConversionWorker
     file_path = file_path || image.file_folder_path
     output_file = file_path + '/done'
 
-    %x{mkdir jobs/#{image.id}}
-    File.open("jobs/#{image.id}/job.sh", 'w') do |file|
-        file.puts "virtualenv -p python3 env"
-        file.puts "source env/bin/activate"
-        file.puts "cp #{python_file_path}/requirements.txt ."
-        file.puts "pip install -r requirements.txt"
-        file.puts "cp #{python_file_path}/deepzoom.py env/lib/python3.5/site-packages/openslide"
-        file.puts "cd #{file_path}"
-        file.puts "python3 #{python_file_path}/deepzoom_tile.py #{image.file.path}"
-        file.puts "touch #{output_file}"
-    end
+    if !File.exist?(output_file)
+        %x{mkdir jobs/#{image.id}}
+        File.open("jobs/#{image.id}/job.sh", 'w') do |file|
+            file.puts "virtualenv -p python3 env"
+            file.puts "source env/bin/activate"
+            file.puts "cp #{python_file_path}/requirements.txt ."
+            file.puts "pip install -r requirements.txt"
+            file.puts "cp #{python_file_path}/deepzoom.py env/lib/python3.5/site-packages/openslide"
+            file.puts "cd #{file_path}"
+            file.puts "python3 #{python_file_path}/deepzoom_tile.py #{image.file.path}"
+            file.puts "touch #{output_file}"
+        end
 
-    File.open("jobs/#{image.id}/env.sh", 'w') do |file|
-        file.puts "module load Compilers/Python3.5"
-        file.puts "module load Image_Analysis/Openslide3.4.1"
-    end
+        File.open("jobs/#{image.id}/env.sh", 'w') do |file|
+            file.puts "module load Compilers/Python3.5"
+            file.puts "module load Image_Analysis/Openslide3.4.1"
+        end
 
-    %x{ chmod -R 775 jobs/#{image.id};
-        cd jobs/#{image.id};
-        msub job.sh 1 1 qAR RS10272 P env.sh 1000
-    }
+        %x{ chmod -R 775 jobs/#{image.id};
+            cd jobs/#{image.id};
+            msub job.sh 1 1 qAR RS10272 P env.sh 1000
+        }
 
-    timer = 0
-    until File.exist?(output_file)
-        timer +=1
-        sleep 1
-        if timer > 300
-            break
+        timer = 0
+        until File.exist?(output_file)
+            timer +=1
+            sleep 1
+            if timer > 300
+                break
+            end
         end
     end
     
