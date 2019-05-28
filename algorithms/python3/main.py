@@ -14,7 +14,7 @@ def main(argv):
 	tile_height = int(argv[7])
 
 	# Get the roi region to be analyzed
-	dzi_size = 2048
+	dzi_size = 4096
 	dzi_x_index = int(math.floor(tile_x / dzi_size))
 	dzi_y_index = int(math.floor(tile_y / dzi_size))
 	x_offset = tile_x%dzi_size

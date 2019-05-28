@@ -22,7 +22,8 @@ class ConversionWorker
         File.open("jobs/#{image.id}/job.sh", 'w') do |file|
             file.puts "cd #{python_file_path}"
             file.puts "source env/bin/activate"
-            file.puts "python3 deepzoom_tile.py #{image.file.path}"
+            file.puts "cd #{file_path}"
+            file.puts "python3 #{python_file_path}/deepzoom_tile.py #{image.file.path}"
             file.puts "touch #{output_file}"
         end
 
