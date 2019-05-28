@@ -40,7 +40,7 @@ class ConversionWorker
         until File.exist?(output_file)
             timer +=1
             sleep 1
-            if timer > 300
+            if timer > 600
                 break
             end
         end
