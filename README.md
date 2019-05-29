@@ -9,7 +9,7 @@
     rvm --default use ruby-2.5.1
 
 # Install other prerequisites
-    sudo yum install -y redis git epel-release
+    sudo yum install -y redis git
     sudo yum install -y gtk-doc libxml2-devel libjpeg-turbo-devel libpng-devel libtiff-devel libexif-devel libgsf-devel lcms-devel ImageMagick-devel curl
     sudo yum install -y libwebp-devel
     sudo yum install -y vips vips-devel vips-tools
