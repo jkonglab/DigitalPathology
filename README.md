@@ -13,7 +13,9 @@
     sudo yum install -y gtk-doc libxml2-devel libjpeg-turbo-devel libpng-devel libtiff-devel libexif-devel libgsf-devel lcms-devel ImageMagick-devel curl
     sudo yum install -y libwebp-devel
     sudo yum install -y vips vips-devel vips-tools
-    
+
+Or for Ubuntu:
+
     sudo apt-get install -y redis git
     sudo apt-get install -y gtk-doc-tools libxml2-dev libjpeg-dev libpng-dev libtiff-dev libexif-dev libgsf-1-dev liblcms2-dev imagemagick curl libwebp-dev
     sudo apt-get install -y libvips libvips-dev libvips-tools
@@ -21,6 +23,11 @@
 
 # Install Postgres and configure imageviewer user
     sudo yum install postgresql-server postgresql-contrib postgresql-devel
+
+Or for Ubuntu:
+
+    sudo apt-get install postgresql postgresql-contrib libpq-dev
+    
     sudo postgresql-setup initdb
     sudo systemctl start postgresql
     sudo systemctl enable postgresql
@@ -29,6 +36,8 @@
     psql -d template1 -c "ALTER USER postgres WITH PASSWORD 'MY_PASSWORD_HERE';"
     psql -d template1 -c "CREATE USER imageviewer WITH PASSWORD 'MY_PASSWORD_HERE';"
     psql -d template1 -c "ALTER USER imageviewer WITH SUPERUSER;"
+    
+    
     
 ## Setup Postgres to use passwords instead of ident
 In pg_hba.conf, change all occurances of "ident" to "password"
