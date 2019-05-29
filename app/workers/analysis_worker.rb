@@ -17,29 +17,23 @@ class AnalysisWorker
     %x{mkdir #{@work_folder}}
     
     File.open("#{@work_folder}/job.sh", 'w') do |file|
+      file.puts "cd #{algorithm_path}"
+      
       if @algorithm.language == Algorithm::LANGUAGE_LOOKUP["matlab"]
         parameters = convert_parameters_cell_array_string(@run.parameters)
-        command_line = "matlab -nodisplay -r \"main('#{@image.tile_folder_path}','#{output_file}',#{parameters},'#{@algorithm.name}',#{@tile_x},#{@tile_y},#{@tile_width},#{@tile_height}); exit;\""
-      elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["python"]
+        file.puts "matlab -nodisplay -r \"main('#{@image.tile_folder_path}','#{output_file}',#{parameters},'#{@algorithm.name}',#{@tile_x},#{@tile_y},#{@tile_width},#{@tile_height}); exit;\""
+      
+      elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["python3"] ||  @algorithm.language == Algorithm::LANGUAGE_LOOKUP["python"] 
         parameters = @run.parameters
-        command_line = "python -m main #{@image.tile_folder_path} #{output_file} #{parameters} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height}"
-        file.puts "virtualenv env"
         file.puts "source env/bin/activate"
-        file.puts "cp #{algorithm_path}/#{@algorithm.name}_requirements.txt ."
-        file.puts "pip install -r #{@algorithm.name}_requirements.txt"
-      elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["python3"]
-        parameters = @run.parameters
-        command_line = "python3 -m main #{@image.tile_folder_path} #{output_file} #{parameters} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height}"
-        file.puts "virtualenv -p python3 env"
-        file.puts "source env/bin/activate"
-        file.puts "cp #{algorithm_path}/#{@algorithm.name}_requirements.txt ."
-        file.puts "pip install -r #{@algorithm.name}_requirements.txt"
 
         ## FILTHY HACK
         if @algorithm.name == 'steatosis_neural_net'
           file.puts "cp -r #{algorithm_path}/steatosis_neural_net/mrcnn env/lib/python3.5/site-packages"
         end
-
+        
+        file.puts "python -m main #{@image.tile_folder_path} #{output_file} #{parameters} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height}"
+      
       elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["julia"]
         ## NEEDS MAJOR REFACTORING!
         ## PRETTY MUCH BUILT ONLY TO RUN COLOR DECONV
@@ -48,19 +42,12 @@ class AnalysisWorker
         @run.parameters.each do |parameter|
           parameters = parameters + parameter.to_json + ' '
         end
-        command_line = "julia julia-adapter.jl #{@image.file.path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}"
-      else
-        command_line = ""
+        file.puts "julia julia-adapter.jl #{@image.file.path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}"
       end
-
-      file.puts "cd #{algorithm_path}"
-      file.puts command_line
-      logger.info command_line
     end
 
     File.open("#{@work_folder}/env.sh", 'w') do |file|
         file.puts "module load Compilers/Python3.5"
-        file.puts "module load Python2.7"
         file.puts "module load Framework/Matlab2016b"
         file.puts "module load Compilers/Julia0.6.2"
     end
