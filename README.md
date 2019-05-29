@@ -47,7 +47,7 @@ In pg_hba.conf, change all occurances of "ident" to "password"
     
 # Set up App Code & Install Gems
     cd /var/www
-    git clone git@github.com:ays0110/imageviewer.git
+    git clone http://github.com/ays0110/imageviewer
     cd imageviewer
     gem install bundler
     bundle install
