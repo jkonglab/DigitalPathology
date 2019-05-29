@@ -13,6 +13,10 @@
     sudo yum install -y gtk-doc libxml2-devel libjpeg-turbo-devel libpng-devel libtiff-devel libexif-devel libgsf-devel lcms-devel ImageMagick-devel curl
     sudo yum install -y libwebp-devel
     sudo yum install -y vips vips-devel vips-tools
+    
+    sudo apt-get install -y redis git
+    sudo apt-get install -y gtk-doc-tools libxml2-dev libjpeg-turbo-dev libpng-dev libtiff-dev libexif-dev libgsf-dev lcms-dev ImageMagick-dev curl libwebp-dev
+    sudo apt-get install -y vips vips-devel vips-tools
 
 
 # Install Postgres and configure imageviewer user
