@@ -62,7 +62,6 @@ In pg_hba.conf, change all occurances of "ident" to "password"
     chown -R `whoami`:webapp /var/www
 
 # Set up Environmental Variables & DB
-    su - imageviewer
     cd /var/www/imageviewer
     rake secret
     touch .env
