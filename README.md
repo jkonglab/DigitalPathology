@@ -10,13 +10,9 @@
 
 # Install other prerequisites
     sudo yum install -y redis git epel-release
-    sudo yum install -y --enablerepo=epel nodejs npm
     sudo yum install -y gtk-doc libxml2-devel libjpeg-turbo-devel libpng-devel libtiff-devel libexif-devel libgsf-devel lcms-devel ImageMagick-devel curl
-    sudo yum install -y http://li.nux.ro/download/nux/dextop/el6/x86_64/nux-dextop-release-0-2.el6.nux.noarch.rpm
-    sudo yum install -y --enablerepo=nux-dextop gobject-introspection-devel
-    sudo yum install -y http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
-    sudo yum install -y --enablerepo=remi libwebp-devel
-    sudo yum install -y --enablerepo=remi vips vips-devel vips-tools
+    sudo yum install -y libwebp-devel
+    sudo yum install -y vips vips-devel vips-tools
 
 
 # Install Postgres and configure imageviewer user
