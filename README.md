@@ -16,7 +16,7 @@
     
     sudo apt-get install -y redis git
     sudo apt-get install -y gtk-doc-tools libxml2-dev libjpeg-dev libpng-dev libtiff-dev libexif-dev libgsf-1-dev liblcms2-dev imagemagick curl libwebp-dev
-    sudo apt-get install -y vips vips-devel vips-tools
+    sudo apt-get install -y libvips libvips-dev libvips-tools
 
 
 # Install Postgres and configure imageviewer user
@@ -39,6 +39,12 @@ In pg_hba.conf, change all occurances of "ident" to "password"
     sudo systemctl restart postgresql
     exit
     
+    su - postgres
+    cd /etc/lib/postgresql/##/main   
+    vim pg_hba.conf
+    logout
+    sudo systemctl restart postgresql
+    
 # Set up App Code & Install Gems
     cd /var/www
     git clone git@github.com:ays0110/imageviewer.git
@@ -46,7 +52,7 @@ In pg_hba.conf, change all occurances of "ident" to "password"
     gem install bundler
     bundle install
 
-# Setup imageviewer user and permissions
+# Setup imageviewer user and permissions (SKIP ON DEVELOPMENT)
     sudo adduser imageviewer
     sudo passwd imageviewer
     sudo groupadd webapp
