@@ -120,7 +120,7 @@ Set up pip and virtualenv
     
 Set up the first virtual environment in the /python folder:
 
-    cd /imageviewer/python
+    cd /imageviewer/python/conversion
     virtualenv --system-site-packages -p python3 ./env
     source env/bin/activate
     pip install -r requirements.txt
