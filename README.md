@@ -13,7 +13,9 @@
     sudo yum install -y gtk-doc libxml2-devel libjpeg-turbo-devel libpng-devel libtiff-devel libexif-devel libgsf-devel lcms-devel ImageMagick-devel curl
     sudo yum install -y libwebp-devel
     sudo yum install -y vips vips-devel vips-tools
-    
+
+Or for Ubuntu:
+
     sudo apt-get install -y redis git
     sudo apt-get install -y gtk-doc-tools libxml2-dev libjpeg-dev libpng-dev libtiff-dev libexif-dev libgsf-1-dev liblcms2-dev imagemagick curl libwebp-dev
     sudo apt-get install -y libvips libvips-dev libvips-tools
@@ -21,6 +23,11 @@
 
 # Install Postgres and configure imageviewer user
     sudo yum install postgresql-server postgresql-contrib postgresql-devel
+
+Or for Ubuntu:
+
+    sudo apt-get install postgresql postgresql-contrib libpq-dev
+    
     sudo postgresql-setup initdb
     sudo systemctl start postgresql
     sudo systemctl enable postgresql
@@ -29,6 +36,8 @@
     psql -d template1 -c "ALTER USER postgres WITH PASSWORD 'MY_PASSWORD_HERE';"
     psql -d template1 -c "CREATE USER imageviewer WITH PASSWORD 'MY_PASSWORD_HERE';"
     psql -d template1 -c "ALTER USER imageviewer WITH SUPERUSER;"
+    
+    
     
 ## Setup Postgres to use passwords instead of ident
 In pg_hba.conf, change all occurances of "ident" to "password"
@@ -62,7 +71,6 @@ In pg_hba.conf, change all occurances of "ident" to "password"
     chown -R `whoami`:webapp /var/www
 
 # Set up Environmental Variables & DB
-    su - imageviewer
     cd /var/www/imageviewer
     rake secret
     touch .env
@@ -78,7 +86,8 @@ In the file `.env` have:
     RAILS_ENV=production
     EMAIL_HOST=URL_OF_YOUR_APP_HERE
 
-Then run:
+Then run: 
+(for development, if setting up imageviewer user was skipped, you may need to set /var/www to chmod 777 in order to proceed)
    
     RAILS_ENV=production bundle exec rake assets:precompile
     RAILS_ENV=production rake db:create
@@ -140,6 +149,9 @@ Set up the second virtual environment in the /algorithms/python3 folder:
     cd /imageviewer/algorithms/python3
     virtualenv --system-site-packages -p python3 ./env
     source env/bin/activate
+
+(Due to a foolish scipy bug, you may need to run pip install numpy before running pip install -r requirements.txt)
+
     pip install -r requirements.txt
     
 
