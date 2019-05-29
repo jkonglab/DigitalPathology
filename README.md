@@ -9,14 +9,14 @@
     rvm --default use ruby-2.5.1
 
 # Install other prerequisites
-    sudo yum install -y redis git epel-release
-    sudo yum install -y --enablerepo=epel nodejs npm
+    sudo yum install -y redis git
     sudo yum install -y gtk-doc libxml2-devel libjpeg-turbo-devel libpng-devel libtiff-devel libexif-devel libgsf-devel lcms-devel ImageMagick-devel curl
-    sudo yum install -y http://li.nux.ro/download/nux/dextop/el6/x86_64/nux-dextop-release-0-2.el6.nux.noarch.rpm
-    sudo yum install -y --enablerepo=nux-dextop gobject-introspection-devel
-    sudo yum install -y http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
-    sudo yum install -y --enablerepo=remi libwebp-devel
-    sudo yum install -y --enablerepo=remi vips vips-devel vips-tools
+    sudo yum install -y libwebp-devel
+    sudo yum install -y vips vips-devel vips-tools
+    
+    sudo apt-get install -y redis git
+    sudo apt-get install -y gtk-doc-tools libxml2-dev libjpeg-dev libpng-dev libtiff-dev libexif-dev libgsf-1-dev liblcms2-dev imagemagick curl libwebp-dev
+    sudo apt-get install -y libvips libvips-dev libvips-tools
 
 
 # Install Postgres and configure imageviewer user
@@ -39,14 +39,20 @@ In pg_hba.conf, change all occurances of "ident" to "password"
     sudo systemctl restart postgresql
     exit
     
+    su - postgres
+    cd /etc/lib/postgresql/##/main   
+    vim pg_hba.conf
+    logout
+    sudo systemctl restart postgresql
+    
 # Set up App Code & Install Gems
     cd /var/www
-    git clone git@github.com:ays0110/imageviewer.git
+    git clone http://github.com/ays0110/imageviewer
     cd imageviewer
     gem install bundler
     bundle install
 
-# Setup imageviewer user and permissions
+# Setup imageviewer user and permissions (SKIP ON DEVELOPMENT)
     sudo adduser imageviewer
     sudo passwd imageviewer
     sudo groupadd webapp
@@ -124,7 +130,7 @@ Set up pip and virtualenv
     
 Set up the first virtual environment in the /python folder:
 
-    cd /imageviewer/python
+    cd /imageviewer/python/conversion
     virtualenv --system-site-packages -p python3 ./env
     source env/bin/activate
     pip install -r requirements.txt
