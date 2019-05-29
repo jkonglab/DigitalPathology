@@ -86,7 +86,8 @@ In the file `.env` have:
     RAILS_ENV=production
     EMAIL_HOST=URL_OF_YOUR_APP_HERE
 
-Then run:
+Then run: 
+(for development, if setting up imageviewer user was skipped, you may need to set /var/www to chmod 777 in order to proceed)
    
     RAILS_ENV=production bundle exec rake assets:precompile
     RAILS_ENV=production rake db:create
