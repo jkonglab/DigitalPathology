@@ -140,14 +140,14 @@ Set up pip and virtualenv
 Set up the first virtual environment in the /python folder:
 
     cd /imageviewer/python/conversion
-    virtualenv --system-site-packages -p python3 ./env
+    virtualenv -p python3 ./env
     source env/bin/activate
     pip install -r requirements.txt
 
 Set up the second virtual environment in the /algorithms/python3 folder:
 
     cd /imageviewer/algorithms/python3
-    virtualenv --system-site-packages -p python3 ./env
+    virtualenv -p python3 ./env
     source env/bin/activate
 
 (Due to a foolish scipy bug, you may need to run pip install numpy before running pip install -r requirements.txt)
