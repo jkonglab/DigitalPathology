@@ -15,7 +15,7 @@
     sudo yum install -y vips vips-devel vips-tools
     
     sudo apt-get install -y redis git
-    sudo apt-get install -y gtk-doc-tools libxml2-dev libjpeg-turbo-dev libpng-dev libtiff-dev libexif-dev libgsf-dev lcms-dev ImageMagick-dev curl libwebp-dev
+    sudo apt-get install -y gtk-doc-tools libxml2-dev libjpeg-dev libpng-dev libtiff-dev libexif-dev libgsf-1-dev liblcms2-dev imagemagick curl libwebp-dev
     sudo apt-get install -y vips vips-devel vips-tools
 
 
