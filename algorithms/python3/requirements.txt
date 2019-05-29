@@ -1,0 +1,16 @@
+matplotlib
+numpy
+keras
+Pillow
+scikit-build
+scikit-image
+scikit-learn
+scipy
+sklearn
+tensorflow
+oauthlib
+opencv-python
+Lasagne==0.1
+networkx
+theano==0.8
+imgaug
