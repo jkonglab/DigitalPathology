@@ -8,10 +8,13 @@ class ConversionWorker
     image = Image.find(image_id)
     image.update_attributes!(:processing=>true)
 
-    dcm = DICOM::DObject.read(image.file.path)
-    if dcm.read?
-        convert_dicom_to_jpg(image)
-    end
+
+    ## DICOM IS SLOW
+    
+    #dcm = DICOM::DObject.read(image.file.path)
+    #if dcm.read?
+    #    convert_dicom_to_jpg(image)
+    #end
 
     python_file_path = File.join(Rails.root.to_s, 'python', 'conversion')
     file_path = file_path || image.file_folder_path
@@ -47,8 +50,6 @@ class ConversionWorker
         end
     end
     
-    %x{rm #{output_file}}
-
     dzi_file = File.open(image.dzi_path){ |f| Nokogiri::XML(f) }
     height = dzi_file.css('xmlns|Size').first["Height"]
     width = dzi_file.css('xmlns|Size').first["Width"]
