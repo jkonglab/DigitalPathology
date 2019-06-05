@@ -13,56 +13,102 @@ class AnalysisWorker
     @tile_height = @run.tile_size
     output_file = File.join(@run.run_folder, "/output_#{tile_x.to_s}_#{tile_y.to_s}.json")
     @work_folder = "#{@run.run_folder}/#{tile_x.to_s}_#{tile_y.to_s}"
+    %x{mkdir #{@work_folder};
+      chmod -R 775 #{@work_folder};
+    }
 
-    %x{mkdir #{@work_folder}}
-    
-    File.open("#{@work_folder}/job.sh", 'w') do |file|
-      file.puts "cd #{algorithm_path}"
+    if !Rails.application.config.local_processing
       
+      File.open("#{@work_folder}/job.sh", 'w') do |file|
+        file.puts "cd #{algorithm_path}"
+        
+        if @algorithm.language == Algorithm::LANGUAGE_LOOKUP["matlab"]
+          parameters = convert_parameters_cell_array_string(@run.parameters)
+          file.puts "matlab -nodisplay -r \"main('#{@image.tile_folder_path}','#{output_file}',#{parameters},'#{@algorithm.name}',#{@tile_x},#{@tile_y},#{@tile_width},#{@tile_height}); exit;\""
+        
+        elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["python3"] ||  @algorithm.language == Algorithm::LANGUAGE_LOOKUP["python"] 
+          parameters = @run.parameters
+          file.puts "source env/bin/activate"
+
+          ## FILTHY HACK
+          if @algorithm.name == 'steatosis_neural_net'
+            file.puts "cp -r #{algorithm_path}/steatosis_neural_net/mrcnn env/lib/python3.5/site-packages"
+          end
+          
+          file.puts "python -m main #{@image.tile_folder_path} #{output_file} #{parameters} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height}"
+        
+        elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["julia"]
+          ## NEEDS MAJOR REFACTORING!
+          ## PRETTY MUCH BUILT ONLY TO RUN COLOR DECONV
+          parameters = ""
+          output_file = File.join(@work_folder, "/output.tif")
+          @run.parameters.each do |parameter|
+            parameters = parameters + parameter.to_json + ' '
+          end
+          file.puts "julia julia-adapter.jl #{@image.file.path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}"
+        end
+      end
+
+      File.open("#{@work_folder}/env.sh", 'w') do |file|
+          file.puts "module load Compilers/Python3.5"
+          file.puts "module load Framework/Matlab2016b"
+          file.puts "module load Compilers/Julia0.6.2"
+      end
+
+      %x{ chmod -R 775 #{@work_folder};
+          cd #{@work_folder};
+          msub job.sh 4 1 qDPGPU RS10272 P env.sh 4000
+      }
+
+      timer = 0
+      until File.exist?(output_file)
+        timer +=1
+        sleep 10
+        if timer > 60
+            break
+        end
+      end
+
+    else
       if @algorithm.language == Algorithm::LANGUAGE_LOOKUP["matlab"]
+        
         parameters = convert_parameters_cell_array_string(@run.parameters)
-        file.puts "matlab -nodisplay -r \"main('#{@image.tile_folder_path}','#{output_file}',#{parameters},'#{@algorithm.name}',#{@tile_x},#{@tile_y},#{@tile_width},#{@tile_height}); exit;\""
-      
+        
+        %x{cd #{algorithm_path};
+          matlab -nodisplay -r "main('#{@image.tile_folder_path}','#{output_file}',#{parameters},'#{@algorithm.name}',#{@tile_x},#{@tile_y},#{@tile_width},#{@tile_height}); exit;"
+        }
+        
       elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["python3"] ||  @algorithm.language == Algorithm::LANGUAGE_LOOKUP["python"] 
         parameters = @run.parameters
-        file.puts "source env/bin/activate"
 
         ## FILTHY HACK
         if @algorithm.name == 'steatosis_neural_net'
-          file.puts "cp -r #{algorithm_path}/steatosis_neural_net/mrcnn env/lib/python3.5/site-packages"
+          %x{cd #{algorithm_path};
+            source env/bin/activate;
+            cp -r #{algorithm_path}/steatosis_neural_net/mrcnn env/lib/python3.5/site-packages;
+            python -m main #{@image.tile_folder_path} #{output_file} #{parameters} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height}
+          }
+        else
+          %x{cd #{algorithm_path};
+            source env/bin/activate;
+            python -m main #{@image.tile_folder_path} #{output_file} #{parameters} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height}
+          }
         end
-        
-        file.puts "python -m main #{@image.tile_folder_path} #{output_file} #{parameters} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height}"
-      
+    
       elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["julia"]
         ## NEEDS MAJOR REFACTORING!
         ## PRETTY MUCH BUILT ONLY TO RUN COLOR DECONV
         parameters = ""
         output_file = File.join(@work_folder, "/output.tif")
+
         @run.parameters.each do |parameter|
           parameters = parameters + parameter.to_json + ' '
         end
-        file.puts "julia julia-adapter.jl #{@image.file.path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}"
-      end
-    end
+        
+        %x{cd #{algorithm_path};
+          julia julia-adapter.jl #{@image.file.path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}
+        }
 
-    File.open("#{@work_folder}/env.sh", 'w') do |file|
-        file.puts "module load Compilers/Python3.5"
-        file.puts "module load Framework/Matlab2016b"
-        file.puts "module load Compilers/Julia0.6.2"
-    end
-
-    %x{ chmod -R 775 #{@work_folder};
-        cd #{@work_folder};
-        msub job.sh 4 1 qDPGPU RS10272 P env.sh 4000
-    }
-
-    timer = 0
-    until File.exist?(output_file)
-      timer +=1
-      sleep 10
-      if timer > 60
-          break
       end
     end
 
