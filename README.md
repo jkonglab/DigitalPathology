@@ -136,6 +136,14 @@ Install some basic requirements to do python scipy, numpy and scikit-learn
     yum install gcc-gfortran
     yum install atlas-devel
     
+Or for Ubuntu:
+
+    sudo apt-get install python3
+    sudo apt-get install python-scipy
+    sudo apt-get install python-numpy
+    sudo apt-get install gfortran
+    sudo apt-get install libatlas-base-dev
+    
 Set up pip and virtualenv
 
     curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
