@@ -61,7 +61,7 @@ In pg_hba.conf, change all occurances of "ident" to "password"
     gem install bundler
     bundle install
 
-# Setup imageviewer user and permissions (SKIP ON DEVELOPMENT)
+# Setup imageviewer user and permissions
     sudo adduser imageviewer
     sudo passwd imageviewer
     sudo groupadd webapp
@@ -85,6 +85,7 @@ In the file `.env` have:
     RACK_ENV=production
     RAILS_ENV=production
     EMAIL_HOST=URL_OF_YOUR_APP_HERE
+    LOCAL_PROCESSING=true
 
 Then run: 
 (for development, if setting up imageviewer user was skipped, you may need to set /var/www to chmod 777 in order to proceed)
@@ -150,7 +151,7 @@ Set up the second virtual environment in the /algorithms/python3 folder:
     virtualenv -p python3 ./env
     source env/bin/activate
 
-(Due to a foolish scipy bug, you may need to run pip install numpy before running pip install -r requirements.txt)
+(Due to a foolish scipy bug, you may need to run `pip install numpy` before running pip install -r requirements.txt)
 
     pip install -r requirements.txt
     
