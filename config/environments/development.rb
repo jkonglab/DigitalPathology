@@ -7,6 +7,9 @@ Rails.application.configure do
   config.cache_classes = false
   config.log_level = :debug
   config.web_console.whiny_requests = false
+  config.local_processing = true
+
+
   # Do not eager load code on boot.
   config.eager_load = false
   # Show full error reports and disable caching.

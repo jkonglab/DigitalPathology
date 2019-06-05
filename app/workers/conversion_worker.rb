@@ -8,9 +8,7 @@ class ConversionWorker
     image = Image.find(image_id)
     image.update_attributes!(:processing=>true)
 
-
-    ## DICOM IS SLOW
-    
+    ## DICOM READING IS SLOW, REFACTOR TO DO IT ONLY IF FILE EXTENSION IS .dcm
     #dcm = DICOM::DObject.read(image.file.path)
     #if dcm.read?
     #    convert_dicom_to_jpg(image)
@@ -21,32 +19,42 @@ class ConversionWorker
     output_file = file_path + '/done'
 
     if !File.exist?(output_file)
-        %x{mkdir jobs/#{image.id}}
-        File.open("jobs/#{image.id}/job.sh", 'w') do |file|
-            file.puts "cd #{python_file_path}"
-            file.puts "source env/bin/activate"
-            file.puts "cd #{file_path}"
-            file.puts "python3 #{python_file_path}/deepzoom_tile.py #{image.file.path}"
-            file.puts "touch #{output_file}"
-        end
-
-        File.open("jobs/#{image.id}/env.sh", 'w') do |file|
-            file.puts "module load Compilers/Python3.5"
-            file.puts "module load Image_Analysis/Openslide3.4.1"
-        end
-
-        %x{ chmod -R 775 jobs/#{image.id};
-            cd jobs/#{image.id};
-            msub job.sh 4 1 qDP RS10272 P env.sh 8000
-        }
-
-        timer = 0
-        until File.exist?(output_file)
-            timer +=1
-            sleep 1
-            if timer > 900
-                break
+        if !Rails.application.config.local_processing
+            %x{mkdir jobs/#{image.id}}
+            File.open("jobs/#{image.id}/job.sh", 'w') do |file|
+                file.puts "cd #{python_file_path}"
+                file.puts "source env/bin/activate"
+                file.puts "cd #{file_path}"
+                file.puts "python3 #{python_file_path}/deepzoom_tile.py #{image.file.path}"
+                file.puts "touch #{output_file}"
             end
+
+            File.open("jobs/#{image.id}/env.sh", 'w') do |file|
+                file.puts "module load Compilers/Python3.5"
+                file.puts "module load Image_Analysis/Openslide3.4.1"
+            end
+
+            %x{ chmod -R 775 jobs/#{image.id};
+                cd jobs/#{image.id};
+                msub job.sh 4 1 qDP RS10272 P env.sh 8000
+            }
+
+            timer = 0
+            
+            until File.exist?(output_file)
+                timer +=1
+                sleep 1
+                if timer > 900
+                    break
+                end
+            end
+        else
+            %x{cd #{python_file_path}; 
+                source env/bin/activate; 
+                cd #{file_path}
+                python3 #{python_file_path}/deepzoom_tile.py #{image.file.path}
+                touch #{output_file}
+            }
         end
     end
     

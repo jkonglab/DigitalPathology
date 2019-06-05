@@ -19,6 +19,11 @@ import re
 import shutil
 import sys
 from unicodedata import normalize
+import PIL.Image
+
+"""Limited to running on files less than 10GB"""
+
+PIL.Image.MAX_IMAGE_PIXELS = 10000000000
 
 VIEWER_SLIDE_NAME = 'slide'
 
