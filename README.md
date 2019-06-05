@@ -131,6 +131,7 @@ To restart passenger:
 Install some basic requirements to do python scipy, numpy and scikit-learn
 
     yum install python3
+    yum install python3-dev
     yum install scipy
     yum install numpy
     yum install gcc-gfortran
@@ -139,10 +140,12 @@ Install some basic requirements to do python scipy, numpy and scikit-learn
 Or for Ubuntu:
 
     sudo apt-get install python3
+    sudo apt-get install python3-dev
     sudo apt-get install python-scipy
     sudo apt-get install python-numpy
     sudo apt-get install gfortran
     sudo apt-get install libatlas-base-dev
+    sudo apt-get install libopenslide-dev
     
 Set up pip and virtualenv
 
