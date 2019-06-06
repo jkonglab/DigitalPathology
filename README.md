@@ -88,7 +88,9 @@ In the file `.env` have:
     RACK_ENV=production
     RAILS_ENV=production
     EMAIL_HOST=URL_OF_YOUR_APP_HERE
-    LOCAL_PROCESSING=true
+    
+    # ONLY IF LOCAL VERSION!
+    LOCAL_PROCESSING=true 
 
 Then run: 
 (for development, if setting up imageviewer user was skipped, you may need to set /var/www to chmod 777 in order to proceed)
@@ -170,5 +172,50 @@ Set up the second virtual environment in the /algorithms/python3 folder:
 (Due to a foolish scipy bug, you may need to run `pip install numpy` before running pip install -r requirements.txt)
 
     pip install -r requirements.txt
+    
+    
+# Confirming Functionality
+
+## Start up sidekiq and the server
+
+    sudo /usr/local/rvm/gems/ruby-2.5.1/wrappers/bundle exec passenger-config restart
+    bundle exec sidekiqctl stop tmp/sidekiq.pid
+    bundle exec sidekiq -d -L log/sidekiq.log -C config/sidekiq.yml -e production
+
+## Create a user
+1.) Go to your URL, whether that's a production URL like dp.gsu.edu or localhost:80, and sign up a new user.
+2.) The app will send a confirmation email to the email that you signed up with.  
+3.) Click the confirmation link to confirm the account.  Please note that the link will default to https://dp.gsu.edu, so if you are signing up a localhost account, simply change the url from http://dp.gsu.edu to localhost:80.
+
+## Make that user an admin
+Open up your terminal and cd into your imageviewer folder.  Then run `RAILS_ENV=production bundle exec rails c`
+Inside the interactive rails session, run the following lines:
+
+    a = User.first
+    a.admin = 10
+    a.save
+    
+## Log in and upload a new image
+1.) Log in with the account you just made
+2.) Navigate to /sidekiq and confirm that you can access this page.  If you can't, something bad happened in the admin stage above, and you should retry that
+3.) Create a new project and upload an image. 
+4.) After the image is uploaded, a job should appear in the sidekiq monitoring page /sidekiq.  Make sure it runs successfully.
+
+## Troubleshooting a broken upload
+1.) If you are on a local machine, do you have LOCAL_PROCESSING=true in your .env file?
+2.) Restart sidekiq and the app server using the following commands
+
+To restart Sidekiq:
+
+    bundle exec sidekiqctl stop tmp/sidekiq.pid
+    bundle exec sidekiq -d -L log/sidekiq.log -C config/sidekiq.yml -e production
+    
+To restart the server:
+
+    sudo /usr/local/rvm/gems/ruby-2.5.1/wrappers/bundle exec passenger stop
+    sudo /usr/local/rvm/gems/ruby-2.5.1/wrappers/bundle exec passenger start
+
+    
+
     
 
