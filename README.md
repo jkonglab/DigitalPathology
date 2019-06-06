@@ -1,5 +1,7 @@
 
-# Install RVM and Ruby 2.5.1
+# Set Up Libraries and Machine
+
+## Install RVM and Ruby 2.5.1
     sudo yum update
     sudo yum install -y curl gpg gcc gcc-c++ make
     sudo gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
@@ -8,7 +10,7 @@
     rvm install ruby-2.5.1
     rvm --default use ruby-2.5.1
 
-# Install other prerequisites
+## Install other prerequisites
     sudo yum install -y redis git
     sudo yum install -y gtk-doc libxml2-devel libjpeg-turbo-devel libpng-devel libtiff-devel libexif-devel libgsf-devel lcms-devel ImageMagick-devel curl
     sudo yum install -y libwebp-devel
@@ -20,8 +22,9 @@ Or for Ubuntu:
     sudo apt-get install -y gtk-doc-tools libxml2-dev libjpeg-dev libpng-dev libtiff-dev libexif-dev libgsf-1-dev liblcms2-dev imagemagick curl libwebp-dev
     sudo apt-get install -y libvips libvips-dev libvips-tools
 
+# Setting up PostreSQL
 
-# Install Postgres and configure imageviewer user
+## Install Postgres and configure imageviewer user
     sudo yum install postgresql-server postgresql-contrib postgresql-devel
 
 Or for Ubuntu:
@@ -37,8 +40,7 @@ Or for Ubuntu:
     psql -d template1 -c "CREATE USER imageviewer WITH PASSWORD 'MY_PASSWORD_HERE';"
     psql -d template1 -c "ALTER USER imageviewer WITH SUPERUSER;"
     
-    
-    
+
 ## Setup Postgres to use passwords instead of ident
 In pg_hba.conf, change all occurances of "ident" to "password"
     
@@ -54,14 +56,15 @@ In pg_hba.conf, change all occurances of "ident" to "password"
     logout
     sudo systemctl restart postgresql
     
-# Set up App Code & Install Gems
+# Setting up the Application 
+## Set up App Code & Install Gems
     cd /var/www
     git clone http://github.com/ays0110/imageviewer
     cd imageviewer
     gem install bundler
     bundle install
 
-# Setup imageviewer user and permissions (SKIP ON DEVELOPMENT)
+## Setup imageviewer user and permissions
     sudo adduser imageviewer
     sudo passwd imageviewer
     sudo groupadd webapp
@@ -70,7 +73,7 @@ In pg_hba.conf, change all occurances of "ident" to "password"
     sudo mkdir /var/www
     chown -R `whoami`:webapp /var/www
 
-# Set up Environmental Variables & DB
+## Set up Environmental Variables & DB
     cd /var/www/imageviewer
     rake secret
     touch .env
@@ -85,6 +88,7 @@ In the file `.env` have:
     RACK_ENV=production
     RAILS_ENV=production
     EMAIL_HOST=URL_OF_YOUR_APP_HERE
+    LOCAL_PROCESSING=true
 
 Then run: 
 (for development, if setting up imageviewer user was skipped, you may need to set /var/www to chmod 777 in order to proceed)
@@ -93,7 +97,9 @@ Then run:
     RAILS_ENV=production rake db:create
     RAILS_ENV=production rake db:migrate
 
-# Create passenger config file
+# Serve the Application
+
+## Create passenger config file
     cd /imageviewer
     vim Passengerfile.json
     
@@ -106,7 +112,7 @@ Then run:
         "daemonize": true,
     }
 
-# Running passenger
+## Running passenger
 
 To start passenger:
 
@@ -120,15 +126,26 @@ To restart passenger:
 
     sudo /usr/local/rvm/gems/ruby-2.5.1/wrappers/bundle exec passenger-config restart
 
-# Set up virtual envs for python
+## Set up virtual envs for python
 
 Install some basic requirements to do python scipy, numpy and scikit-learn
 
     yum install python3
+    yum install python3-dev
     yum install scipy
     yum install numpy
     yum install gcc-gfortran
     yum install atlas-devel
+    
+Or for Ubuntu:
+
+    sudo apt-get install python3
+    sudo apt-get install python3-dev
+    sudo apt-get install python-scipy
+    sudo apt-get install python-numpy
+    sudo apt-get install gfortran
+    sudo apt-get install libatlas-base-dev
+    sudo apt-get install libopenslide-dev
     
 Set up pip and virtualenv
 
@@ -150,7 +167,7 @@ Set up the second virtual environment in the /algorithms/python3 folder:
     virtualenv -p python3 ./env
     source env/bin/activate
 
-(Due to a foolish scipy bug, you may need to run pip install numpy before running pip install -r requirements.txt)
+(Due to a foolish scipy bug, you may need to run `pip install numpy` before running pip install -r requirements.txt)
 
     pip install -r requirements.txt
     
