@@ -29,10 +29,11 @@ Or for Ubuntu:
     sudo yum install postgresql-server postgresql-contrib postgresql-devel
 
 Or for Ubuntu:
-
+    
     sudo apt-get install postgresql postgresql-contrib libpq-dev
     
 Then set up the database:
+
     sudo postgresql-setup initdb
     sudo systemctl start postgresql
     sudo systemctl enable postgresql
