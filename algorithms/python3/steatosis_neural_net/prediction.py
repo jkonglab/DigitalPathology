@@ -133,7 +133,7 @@ class SteatosisInferenceConfig(SteatosisConfig):
     RPN_NMS_THRESHOLD = 0.7
 
 def Predict(image):
-    weights_path = '/home/users/ashen2/RS10272/app/imageviewer/algorithms/python3/steatosis_neural_net/mask_rcnn_steatosis_0060.h5'
+    weights_path = '/var/www/imageviewer/algorithms/python3/steatosis_neural_net/mask_rcnn_coco.h5'
     # Inference Configuration
     config = SteatosisInferenceConfig()       
     #DEVICE = "/gpu:0"  # /cpu:0 or /gpu:0
