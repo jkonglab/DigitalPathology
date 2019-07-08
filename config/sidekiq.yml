@@ -3,6 +3,6 @@
 :pidfile: ./tmp/sidekiq.pid
 :dynamic: true
 production:
-  :concurrency: 25
+  :concurrency: 3
   :limits:
     single_analysis_queue: 1
