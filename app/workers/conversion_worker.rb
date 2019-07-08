@@ -42,9 +42,9 @@ class ConversionWorker
         else
             %x{cd #{python_file_path}; 
                 source env/bin/activate; 
-                cd #{file_path}
-                python3 #{python_file_path}/deepzoom_tile.py #{image.file.path}
-                touch #{output_file}
+                cd #{file_path};
+                python3 #{python_file_path}/deepzoom_tile.py #{image.file.path};
+                touch #{output_file};
             }
         end
     end
