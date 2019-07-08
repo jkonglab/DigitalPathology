@@ -7,11 +7,12 @@
     sudo gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
     curl -sSL https://get.rvm.io | sudo bash -s stable
     sudo usermod -a -G rvm `whoami`
+    sudo -i
     rvm install ruby-2.5.1
     rvm --default use ruby-2.5.1
 
 ## Install other prerequisites
-    sudo yum install -y redis git
+    sudo yum install -y redis-server git
     sudo yum install -y gtk-doc libxml2-devel libjpeg-turbo-devel libpng-devel libtiff-devel libexif-devel libgsf-devel lcms-devel ImageMagick-devel curl
     sudo yum install -y libwebp-devel
     sudo yum install -y vips vips-devel vips-tools
@@ -28,9 +29,11 @@ Or for Ubuntu:
     sudo yum install postgresql-server postgresql-contrib postgresql-devel
 
 Or for Ubuntu:
-
+    
     sudo apt-get install postgresql postgresql-contrib libpq-dev
     
+Then set up the database:
+
     sudo postgresql-setup initdb
     sudo systemctl start postgresql
     sudo systemctl enable postgresql
