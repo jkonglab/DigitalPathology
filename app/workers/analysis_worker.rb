@@ -60,15 +60,6 @@ class AnalysisWorker
           msub job.sh 4 1 qDPGPU RS10272 P env.sh 4000
       }
 
-      timer = 0
-      until File.exist?(output_file)
-        timer +=1
-        sleep 10
-        if timer > 60
-            break
-        end
-      end
-
     else
       if @algorithm.language == Algorithm::LANGUAGE_LOOKUP["matlab"]
         
@@ -109,6 +100,15 @@ class AnalysisWorker
           julia julia-adapter.jl #{@image.file.path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}
         }
 
+      end
+    end
+
+    timer = 0
+    until File.exist?(output_file)
+      timer +=1
+      sleep 10
+      if timer > 60
+          break
       end
     end
 

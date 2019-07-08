@@ -39,15 +39,6 @@ class ConversionWorker
                 msub job.sh 4 1 qDP RS10272 P env.sh 8000
             }
 
-            timer = 0
-            
-            until File.exist?(output_file)
-                timer +=1
-                sleep 1
-                if timer > 900
-                    break
-                end
-            end
         else
             %x{cd #{python_file_path}; 
                 source env/bin/activate; 
@@ -55,6 +46,16 @@ class ConversionWorker
                 python3 #{python_file_path}/deepzoom_tile.py #{image.file.path}
                 touch #{output_file}
             }
+        end
+    end
+
+    timer = 0
+
+    until File.exist?(output_file)
+        timer +=1
+        sleep 1
+        if timer > 900
+            break
         end
     end
     
