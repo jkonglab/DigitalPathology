@@ -51,7 +51,7 @@ Rails.application.configure do
   # when problems arise.
   config.log_level = :debug
 
-  config.action_mailer.default_url_options = { host: 'https://dp.gsu.edu' }
+  config.action_mailer.default_url_options = { host: ENV['ROOT_URL'] }
   config.action_mailer.delivery_method = :smtp
   # SMTP settings for gmail
   config.action_mailer.default_options = { from: 'Digital Pathology <no-reply@dp.gsu.edu>' }
