@@ -16,9 +16,8 @@ class ConversionWorker
 
     python_file_path = File.join(Rails.root.to_s, 'python', 'conversion')
     file_path = file_path || image.file_folder_path
-    output_file = file_path + '/done'
 
-    if !File.exist?(output_file)
+    if !File.exist?(image.dzi_path)
         if !Rails.application.config.local_processing
             %x{mkdir jobs/#{image.id}}
             File.open("jobs/#{image.id}/job.sh", 'w') do |file|
@@ -26,7 +25,6 @@ class ConversionWorker
                 file.puts "source env/bin/activate"
                 file.puts "cd #{file_path}"
                 file.puts "python3 #{python_file_path}/deepzoom_tile.py #{image.file.path}"
-                file.puts "touch #{output_file}"
             end
 
             File.open("jobs/#{image.id}/env.sh", 'w') do |file|
@@ -43,14 +41,14 @@ class ConversionWorker
             %x{cd #{python_file_path};
             source env/bin/activate;
             cd #{file_path};
-            python3 #{python_file_path}/deepzoom_tile.py #{image.file.path} && touch #{output_file};
+            python3 #{python_file_path}/deepzoom_tile.py #{image.file.path};
             }
         end
     end
 
     timer = 0
 
-    until File.exist?(output_file)
+    until File.exist?(image.dzi_path)
         timer +=1
         sleep 1
         if timer > 900
