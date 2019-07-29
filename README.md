@@ -16,12 +16,15 @@
     sudo yum install -y gtk-doc libxml2-devel libjpeg-turbo-devel libpng-devel libtiff-devel libexif-devel libgsf-devel lcms-devel ImageMagick-devel curl
     sudo yum install -y libwebp-devel
     sudo yum install -y vips vips-devel vips-tools
+    sudo yum install openslide
+    sudo yum install openslide-python
 
 Or for Ubuntu:
 
     sudo apt-get install -y redis git
     sudo apt-get install -y gtk-doc-tools libxml2-dev libjpeg-dev libpng-dev libtiff-dev libexif-dev libgsf-1-dev liblcms2-dev imagemagick curl libwebp-dev
     sudo apt-get install -y libvips libvips-dev libvips-tools
+    suto apt-get install -y openslide-tools python3-openslide
 
 # Setting up PostreSQL
 
@@ -53,8 +56,7 @@ In pg_hba.conf, change all occurances of "ident" to "password"
     sudo systemctl restart postgresql
     exit
     
-    su - postgres
-    cd /etc/lib/postgresql/##/main   
+    su - postgre    cd /etc/lib/postgresql/##/main   
     vim pg_hba.conf
     logout
     sudo systemctl restart postgresql
