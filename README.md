@@ -91,6 +91,7 @@ In the file `.env` have:
     RACK_ENV=production
     RAILS_ENV=production
     EMAIL_HOST=URL_OF_YOUR_APP_HERE
+    ROOT_URL=URL_OF_YOUR_APP_HERE
     
     # ONLY IF LOCAL VERSION!
     LOCAL_PROCESSING=true 
