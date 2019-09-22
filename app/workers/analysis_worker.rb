@@ -20,7 +20,25 @@ class AnalysisWorker
     if !Rails.application.config.local_processing
       
       File.open("#{@work_folder}/job.sh", 'w') do |file|
-        file.puts "cd #{algorithm_path}"
+        	file.puts "#!/bin/bash"
+                file.puts "#SBATCH -N 1"
+                file.puts "#SBATCH -n 4"
+                file.puts "#SBATCH -p qDP"
+                file.puts "#SBATCH -t 1440"
+                file.puts "#SBATCH -J conversion"
+                file.puts "#SBATCH -e error%A.err"
+                file.puts "#SBATCH -o out%A.out"
+                file.puts "#SBATCH -A RS10272"
+                file.puts "#SBATCH --oversubscribe"
+                file.puts "#SBATCH --uid dbhuvanapalli1"
+	        file.puts "sleep 7s"
+                file.puts "export OMP_NUM_THREADS=4"
+		file.puts "NODE=$(hostname)"
+		file.puts "export MODULEPATH=/apps/Compilers/modules-3.2.10/Debug-Build/Modules/3.2.10/modulefiles/"
+		file.puts "module load Compilers/Python3.7.4"
+	        file.puts "module load Framework/Matlab2016b"
+                file.puts "module load Compilers/Julia0.6.2"	
+                file.puts "cd #{algorithm_path}"
         
         if @algorithm.language == Algorithm::LANGUAGE_LOOKUP["matlab"]
           parameters = convert_parameters_cell_array_string(@run.parameters)
@@ -32,7 +50,7 @@ class AnalysisWorker
 
           ## FILTHY HACK
           if @algorithm.name == 'steatosis_neural_net'
-            file.puts "cp -r #{algorithm_path}/steatosis_neural_net/mrcnn env/lib/python3.5/site-packages"
+            file.puts "cp -r #{algorithm_path}/steatosis_neural_net/mrcnn env/lib/python3.7.4/site-packages"
           end
           
           file.puts "python -m main #{@image.tile_folder_path} #{output_file} #{parameters} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height}"
@@ -49,15 +67,9 @@ class AnalysisWorker
         end
       end
 
-      File.open("#{@work_folder}/env.sh", 'w') do |file|
-          file.puts "module load Compilers/Python3.5"
-          file.puts "module load Framework/Matlab2016b"
-          file.puts "module load Compilers/Julia0.6.2"
-      end
-
       %x{ chmod -R 775 #{@work_folder};
           cd #{@work_folder};
-          msub job.sh 4 1 qDPGPU RS10272 P env.sh 4000
+          sbatch job.sh
       }
 
     else
