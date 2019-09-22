@@ -50,7 +50,7 @@ class AnalysisWorker
 
           ## FILTHY HACK
           if @algorithm.name == 'steatosis_neural_net'
-            file.puts "cp -r #{algorithm_path}/steatosis_neural_net/mrcnn env/lib/python3.7.4/site-packages"
+            file.puts "cp -r #{algorithm_path}/steatosis_neural_net/mrcnn env/lib/python3.7/site-packages"
           end
           
           file.puts "python -m main #{@image.tile_folder_path} #{output_file} #{parameters} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height}"
