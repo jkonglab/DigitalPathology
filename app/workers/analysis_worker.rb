@@ -25,7 +25,7 @@ class AnalysisWorker
                 file.puts "#SBATCH -n 4"
                 file.puts "#SBATCH -p qDP"
                 file.puts "#SBATCH -t 1440"
-                file.puts "#SBATCH -J conversion"
+                file.puts "#SBATCH -J analysis"
                 file.puts "#SBATCH -e error%A.err"
                 file.puts "#SBATCH -o out%A.out"
                 file.puts "#SBATCH -A RS10272"
