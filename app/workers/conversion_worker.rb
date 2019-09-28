@@ -13,7 +13,7 @@ class ConversionWorker
     #if dcm.read?
     #    convert_dicom_to_jpg(image)
     #end
-    python_virtualenv_path = File.join(Rails.root.to_s,'algorithms')
+    python_virtualenv_path = File.join(Rails.root.to_s,'algorithms','python3')
     conversion_file_path = File.join(Rails.root.to_s,'algorithms','python3','conversion')
     file_path = file_path || image.file_folder_path
     if !File.exist?(image.dzi_path)
