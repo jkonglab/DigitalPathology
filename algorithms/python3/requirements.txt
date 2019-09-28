@@ -14,3 +14,4 @@ Lasagne==0.1
 networkx
 theano==0.8
 imgaug
+openslide-python

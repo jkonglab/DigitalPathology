@@ -22,8 +22,8 @@ class AnalysisWorker
       File.open("#{@work_folder}/job.sh", 'w') do |file|
         	file.puts "#!/bin/bash"
                 file.puts "#SBATCH -N 1"
-                file.puts "#SBATCH -n 4"
-                file.puts "#SBATCH -p qDP"
+                file.puts "#SBATCH -c 4"
+                file.puts "#SBATCH -p qDPGPU"
                 file.puts "#SBATCH -t 1440"
                 file.puts "#SBATCH -J analysis"
                 file.puts "#SBATCH -e error%A.err"
@@ -31,6 +31,7 @@ class AnalysisWorker
                 file.puts "#SBATCH -A RS10272"
                 file.puts "#SBATCH --oversubscribe"
                 file.puts "#SBATCH --uid dbhuvanapalli1"
+		file.puts "#SBATCH --mem 4000"
 	        file.puts "sleep 7s"
                 file.puts "export OMP_NUM_THREADS=4"
 		file.puts "NODE=$(hostname)"
@@ -88,7 +89,7 @@ class AnalysisWorker
         if @algorithm.name == 'steatosis_neural_net'
           %x{cd #{algorithm_path};
             source env/bin/activate;
-            cp -r #{algorithm_path}/steatosis_neural_net/mrcnn env/lib/python3.5/site-packages;
+            cp -r #{algorithm_path}/steatosis_neural_net/mrcnn env/lib/python3.7/site-packages;
             python -m main #{@image.tile_folder_path} #{output_file} #{parameters} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height}
           }
         else
