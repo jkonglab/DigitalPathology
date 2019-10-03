@@ -38,7 +38,7 @@ class TilingWorker
               file.puts "#SBATCH -J tiling"
               file.puts "#SBATCH -e error%A.err"
               file.puts "#SBATCH -o out%A.out"
-	      file.puts "#SBATCH --mem 1000"	
+	      file.puts "#SBATCH --mem 4000"	
               file.puts "#SBATCH --uid dbhuvanapalli1"
               file.puts "#SBATCH -A RS10272"
               file.puts "#SBATCH --oversubscribe"
