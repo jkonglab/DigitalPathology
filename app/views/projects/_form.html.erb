@@ -19,22 +19,22 @@
 
   <div class="field form-group">
     <%= f.label 'Location' %><br />
-    <%= f.select('tissue_type', Project::LOCATION_TYPES, { :selected => 0 }, { class: 'form-control' }) %>
+    <%= f.select('tissue_type', Project::LOCATION_TYPES, { :selected => @project.tissue_type }, { class: 'form-control' }) %>
   </div>
 
   <div class="field form-group">
     <%= f.label 'Modality' %><br />
-    <%= f.select('modality', Project::MODALITY_TYPES, { :selected => 0 }, { class: 'form-control' }) %>
+    <%= f.select('modality', Project::MODALITY_TYPES, { :selected => @project.modality }, { class: 'form-control' }) %>
   </div>
 
   <div class="field form-group">
     <%= f.label 'Dimensionality' %><br />
-    <%= f.select('method', Project::DIMENSION_TYPES, { :selected => 0 }, { class: 'form-control' }) %>
+    <%= f.select('method', Project::DIMENSION_TYPES, { :selected => @project.method }, { class: 'form-control' }) %>
   </div>
 
   <div class="field form-group">
     <%= f.label :visibility %><br />
-    <%= f.select :visibility, [["Private", 'hidden'], ["Public", 'visible']] , { :selected => 0 }, { class: 'form-control' }%>
+    <%= f.select :visibility, [["Private", 'hidden'], ["Public", 'visible']] , { :selected => @project.visibility }, { class: 'form-control' }%>
   </div>
 
 

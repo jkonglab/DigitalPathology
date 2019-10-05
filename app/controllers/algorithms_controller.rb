@@ -45,7 +45,7 @@ class AlgorithmsController < ApplicationController
                 !!JSON.parse(@algorithm.parameters.to_s)
             rescue
                 flash.now[:alert] = 'Your JSON for parameters is not properly formatted.  Please put your parameters JSON through a linter before resubmitting.'
-                render 'users/admin_new_algorithm' and return
+                render 'users/_algorithms_panel' and return
             end
 
 
