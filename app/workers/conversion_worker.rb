@@ -46,7 +46,7 @@ class ConversionWorker
 	 end
 
             %x{
-		chmod -R 775 jobs/#{image.id};
+		#chmod -R 775 jobs/#{image.id};
                 cd jobs/#{image.id};
                 sbatch job.sh
 	      }
