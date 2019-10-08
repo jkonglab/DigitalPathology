@@ -55,7 +55,7 @@ class AnalysisWorker
             file.puts "cp -r #{algorithm_path}/steatosis_neural_net/mrcnn env/lib/python3.7/site-packages"
           end
           
-          file.puts "python -m main #{@image.tile_folder_path} #{output_file} #{parameters} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height}"
+          file.puts "python -m main #{@image.tile_folder_path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}"
         
         elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["julia"]
           ## NEEDS MAJOR REFACTORING!
@@ -91,12 +91,12 @@ class AnalysisWorker
           %x{cd #{algorithm_path};
             source env/bin/activate;
             cp -r #{algorithm_path}/steatosis_neural_net/mrcnn env/lib/python3.7/site-packages;
-            python -m main #{@image.tile_folder_path} #{output_file} #{parameters} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height}
+            python -m main #{@image.tile_folder_path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}
           }
         else
           %x{cd #{algorithm_path};
             source env/bin/activate;
-            python -m main #{@image.tile_folder_path} #{output_file} #{parameters} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height}
+            python -m main #{@image.tile_folder_path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}
           }
         end
     

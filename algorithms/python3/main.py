@@ -6,12 +6,13 @@ from skimage import io
 def main(argv):
 	tile_folder_path = argv[0]
 	output_file_path = argv[1]
-	parameters = argv[2]
-	algorithm_name = argv[3]
-	tile_x = int(argv[4])
-	tile_y = int(argv[5])
-	tile_width = int(argv[6])
-	tile_height = int(argv[7])
+	#parameters = argv[2]
+	algorithm_name = argv[2]
+	tile_x = int(argv[3])
+	tile_y = int(argv[4])
+	tile_width = int(argv[5])
+	tile_height = int(argv[6])
+	parameters = argv[7:]
 
 	# Get the roi region to be analyzed
 	dzi_size = 2048

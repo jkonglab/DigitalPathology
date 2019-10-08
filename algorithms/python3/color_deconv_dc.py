@@ -1,3 +1,4 @@
+
 from time import time, localtime
 import os
 
@@ -18,10 +19,10 @@ def postprocess(main_output, output_file_path):
 def main(img, params):
 	sys.path.insert(0, './color_deconv_utils')
 	algorithm_module = __import__('color_deconv_utils')
-	if params[1] == 'HE':
+	if params[0] == 'HE':
 		function_handler = getattr(algorithm_module,'Ref.get_he_ref')
 		ref = function_handler()
-	elif params[1] == 'Customer':
+	elif params[0] == 'Customer':
 		# reference image
 		try:
 			function_handler = getattr(algorithm_module,'read_im')
@@ -30,13 +31,13 @@ def main(img, params):
 			print("The option `--ref_img` is necessary when choose `Customer` as the option `--ref`.")
 		function_handler = getattr(algorithm_module,'custom_ref')
 		ref = function_handler(rf_img)
-	elif params[1] == 'None':
+	elif params[0] == 'None':
 		ref = None
-	if params[3] == 'default':
+	if params[2] == 'default':
 		tc = localtime(time())
 		name = '{:04d}{:02d}{:02d}{:02d}{:02d}{:02d}'.format(tc.tm_year, tc.tm_mon, tc.tm_mday, tc.tm_hour, tc.tm_min, tc.tm_sec)
 	else:
-		name = params[3]
+		name = params[2]
 	function_handler = getattr(algorithm_module, 'stain_deconv')
 	H, E = function_handler(img, ref)
 	return H, E, name
