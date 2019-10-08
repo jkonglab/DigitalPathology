@@ -28,33 +28,13 @@ class TilingWorker
             else
               x, y = convert_and_save_whole_slide_annotation
             end
-
-            File.open(@run.run_folder+"/job.sh", 'w') do |file|
-              file.puts "#!/bin/bash"
-              file.puts "#SBATCH -N 1"
-              file.puts "#SBATCH -c 4"
-              file.puts "#SBATCH -p qDP"
-              file.puts "#SBATCH -t 1440"
-              file.puts "#SBATCH -J tiling"
-              file.puts "#SBATCH -e error%A.err"
-              file.puts "#SBATCH -o out%A.out"
-	      file.puts "#SBATCH --mem 4000"	
-              file.puts "#SBATCH --uid dbhuvanapalli1"
-              file.puts "#SBATCH -A RS10272"
-              file.puts "#SBATCH --oversubscribe"
-	      file.puts "sleep 7s"
-              file.puts "export OMP_NUM_THREADS=4"
-              file.puts "export MODULEPATH=/apps/Compilers/modules-3.2.10/Debug-Build/Modules/3.2.10/modulefiles/"
-              file.puts "module load Framework/Matlab2016b"
-              file.puts "NODE=$(hostname)"              
-              file.puts "cd #{algorithm_path}"  
-              file.puts "matlab -nodisplay -r \"tiling('#{@image.file.path}','#{@run.run_folder}', #{tile_size}); exit;\""
-            end
-
-            %x{ cd #{@run.run_folder};
-	        sbatch job.sh
-		}
-
+	 
+           %x{ 
+		module load Framework/Matlab2016b;
+		cd #{algorithm_path}; 
+                matlab -nodisplay -r \"tiling('#{@image.file.path}','#{@run.run_folder}', #{tile_size}); exit;
+            }
+          
             timer = 0
             until File.exist?(File.join(@run.run_folder,'/tiles_to_analyze.json'))
                 timer +=1

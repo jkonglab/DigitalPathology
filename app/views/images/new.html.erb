@@ -30,7 +30,7 @@
 	function onBeforeSend(formData, file) {
 		console.log("Before Send");
 		var file_name_lower = file.name.split('.').pop().toLowerCase();
-		var accepted_extensions = ['svs', 'ndpi', 'jpg', 'jpeg', 'tif', 'png', 'tiff', 'dcm']
+		var accepted_extensions = ['svs', 'ndpi', 'jpg', 'jpeg', 'tif', 'png', 'tiff', 'dcm', 'mrxs']
 
 		if (!(accepted_extensions.includes(file_name_lower) || !isNaN(parseInt(file_name_lower)) )) {
        		alert("Your file type is not supported. NDPI, SVS, JPG, TIF, PNG, DCM are supported at this time");
