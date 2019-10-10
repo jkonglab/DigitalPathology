@@ -49,4 +49,15 @@ class Run < ActiveRecord::Base
     	end
     	h
   	end
+
+
+	def tilesizes
+           tilesize = []
+           [128,256,512,1024,2048].each do |size|
+	        if self.image.width >= size
+			tilesize << size
+		end
+           end
+        tilesize
+        end
 end

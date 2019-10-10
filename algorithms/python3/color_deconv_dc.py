@@ -17,6 +17,7 @@ def postprocess(main_output, output_file_path):
 
 
 def main(img, params):
+	ref = None
 	sys.path.insert(0, './color_deconv_utils')
 	algorithm_module = __import__('color_deconv_utils')
 	if params[0] == 'HE':

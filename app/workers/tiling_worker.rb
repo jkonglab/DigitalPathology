@@ -32,9 +32,9 @@ class TilingWorker
            %x{ 
 		module load Framework/Matlab2016b;
 		cd #{algorithm_path}; 
-                matlab -nodisplay -r \"tiling('#{@image.file.path}','#{@run.run_folder}', #{tile_size}); exit;
+                matlab -nodisplay -r \"tiling('#{@image.file.path}','#{@run.run_folder}', #{tile_size}); exit;"
             }
-          
+		         
             timer = 0
             until File.exist?(File.join(@run.run_folder,'/tiles_to_analyze.json'))
                 timer +=1
