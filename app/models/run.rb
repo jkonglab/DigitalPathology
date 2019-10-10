@@ -35,7 +35,7 @@ class Run < ActiveRecord::Base
 	def status_words
 		if self.complete
 			return 'Complete'
-		elsif self.processing
+		elsif self.processing && File.exists?(File.join(self.run_folder,'tiles_to_analyze.json'))
 			return "Processing (#{self.tiles_processed}/#{self.total_tiles || '?'})"
 		else
 			return 'In Queue'
