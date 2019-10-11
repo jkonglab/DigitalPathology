@@ -105,7 +105,9 @@ class ImagesController < ApplicationController
       :file_updated_at => first_image.file_updated_at,
       :clinical_data => first_image.clinical_data,
       :generated_by_run_id => first_image.generated_by_run_id,
-      :project_id => first_image.project_id
+      :project_id => first_image.project_id,
+      :height => first_image.height,
+      :width => first_image.width
     )
 
     @images.update_all(:parent_id=> parent_image.id)

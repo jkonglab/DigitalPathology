@@ -24,7 +24,9 @@ class AnalysisWorker
                 file.puts "#SBATCH -N 1"
                 file.puts "#SBATCH -c 4"
                 file.puts "#SBATCH -p qDPGPU"
-		#file.puts "#SBATCH --gres=gpu:1"
+		if @algorithm.name.include? "ML based"
+		   file.puts "#SBATCH --gres=gpu:1"
+		end
 	        file.puts "#SBATCH -t 1440"
                 file.puts "#SBATCH -J analysis"
                 file.puts "#SBATCH -e error%A.err"

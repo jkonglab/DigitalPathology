@@ -20,8 +20,10 @@
 			<% if @image.threed? %>
 				<div class="col-2 slider-container">
 						<button id="slideUp"><i class="material-icons" role="presentation">arrow_drop_up</i></button>
-						<input id="sliceNavigator" class="form-control" type="text" data-slider-min="0" data-slider-max="<%=@slices.length - 1%>" data-slider-step="1" data-slider-value="0" data-slider-orientation="vertical"/>
+						<input id="sliceNavigator" class="form-control" type="text" data-slider-min="0" data-slider-max="<%=@slices.length - 1%>" data-slider-step="1" data-slider-value="<%=@slices.length/2%>" data-slider-orientation="vertical"/>	
+						
 						<button id="slideDown"><i class="material-icons" role="presentation">arrow_drop_down</i></button>
+<span id="sliderValLabel">Current Slide: <span id="sliderVal"><%=@slices.length/2%></span></span>
 				</div>
 			<% end %>
 		</div>
@@ -211,8 +213,16 @@
 			});
 		};
 
-		var slice_slider = $("#sliceNavigator").bootstrapSlider({reversed : true}).on('change', changeSlide);
+		$('#sliceNavigator').slider({
+		tooltip: 'always'
+		});
+	
 
+		var slice_slider = $("#sliceNavigator").bootstrapSlider({reversed : true}).on('change', changeSlide);
+		$("#sliceNavigator").slider();
+                $("#sliceNavigator").on("slide", function(slideEvt) {
+                        $("#sliderVal").text(slideEvt.value);
+                });		
 		$('#slideUp').bind('click', function(){
 			var currentSlide = slice_slider.bootstrapSlider('getValue');
 			if(currentSlide < <%=@slices.length - 1%>){
