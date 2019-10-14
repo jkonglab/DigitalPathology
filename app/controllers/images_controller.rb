@@ -34,7 +34,7 @@ class ImagesController < ApplicationController
     @annotations = @image.hidden? ? @image.annotations.where(:user_id=>current_user.id).order('id desc') : @image.annotations
     @clinical_data = @image.clinical_data || {}
     @slices = Image.where(:parent_id => @image.id).order('slice_order asc')
-    @image_shown = @image.threed? && @image.parent_id.blank? ? @slices.first : @image
+    @image_shown = @image.threed? && @image.parent_id.blank? ? (@slices.length-1)/2 : @image
   end
 
   def show_3d
