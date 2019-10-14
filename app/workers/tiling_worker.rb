@@ -49,7 +49,7 @@ class TilingWorker
             tiles.each do |tile|
                 tile_x = tile.split(',')[0].to_i
                 tile_y = tile.split(',')[1].to_i
-		if tile_x != tile_size and tile_y != tile_size
+		if tile_x != @image.width and tile_y != @image.height
 			num_tiles_counter += 1
 		        if @algorithm.single_queue_flag
         	          Sidekiq::Client.push('queue' => 'single_analysis_queue', 'class' =>  AnalysisWorker, 'args' => [run_id, tile_x, tile_y])
