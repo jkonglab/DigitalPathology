@@ -32,7 +32,7 @@ class ConversionWorker
                 file.puts "#SBATCH -A RS10272"
 		file.puts "#SBATCH --mem 8000"
                 file.puts "#SBATCH --oversubscribe"
-            	file.puts "#SBATCH --uid #{username}"
+            	file.puts "#SBATCH --uid #{user_name}"
 		file.puts "sleep 7s"
                 file.puts "export OMP_NUM_THREADS=4"
                 file.puts "export MODULEPATH=/apps/Compilers/modules-3.2.10/Debug-Build/Modules/3.2.10/modulefiles/"
