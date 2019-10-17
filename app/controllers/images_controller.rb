@@ -13,16 +13,20 @@ class ImagesController < ApplicationController
     @project = Project.find(params[:project_id])
   end
 
+  
+
   def create
     if !current_user.projects.pluck(:id).include?(params['project_id'].to_i)
       render :json =>  {error: 'You do not have permission to upload images to this project'}, :status=> 422 and return
     else
+      temp_idx = current_user.email.index('@')
+      username = current_user.email[0..temp_idx-1]
       @image = Image.create(image_params)
       @image.project_id = params['project_id']
       @image.title = @image.file_file_name.gsub('_', ' ')
       @image.image_type = Image::IMAGE_TYPE_TWOD
       @image.save
-      Sidekiq::Client.push('queue' => 'user_conversion_queue_' + current_user.id.to_s, 'class' =>  ConversionWorker, 'args' => [@image.id])
+      Sidekiq::Client.push('queue' => 'user_conversion_queue_' + current_user.id.to_s, 'class' =>  ConversionWorker, 'args' => [@image.id,username])
       redirect_to @image.project, notice: 'Image created, please wait for it to be processed'
     end
   end
@@ -34,7 +38,7 @@ class ImagesController < ApplicationController
     @annotations = @image.hidden? ? @image.annotations.where(:user_id=>current_user.id).order('id desc') : @image.annotations
     @clinical_data = @image.clinical_data || {}
     @slices = Image.where(:parent_id => @image.id).order('slice_order asc')
-    @image_shown = @image.threed? && @image.parent_id.blank? ? @slices.first : @image
+    @image_shown = @image.threed? && @image.parent_id.blank? ? @slices[(@slices.length-1)/2] : @image
   end
 
   def show_3d

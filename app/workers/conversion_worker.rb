@@ -4,7 +4,7 @@ class ConversionWorker
   sidekiq_options :retry => 3
 
 
-  def perform(image_id, file_path=nil, force_flag=false)
+  def perform(image_id, user_name,file_path=nil, force_flag=false)
     image = Image.find(image_id)
     image.update_attributes!(:processing=>true)
 
@@ -13,8 +13,6 @@ class ConversionWorker
     #if dcm.read?
     #    convert_dicom_to_jpg(image)
     #end
-    idx = current_user.email.index("@")
-    user = current_user.email[0..idx-1]
     python_virtualenv_path = File.join(Rails.root.to_s,'algorithms','python3')
     conversion_file_path = File.join(Rails.root.to_s,'algorithms','python3','conversion')
     file_path = file_path || image.file_folder_path
@@ -28,13 +26,13 @@ class ConversionWorker
                 file.puts "#SBATCH -p qDPGPU" 
 		#file.puts "#SBATCH --gres=gpu:1"
                 file.puts "#SBATCH -t 1440"
-                file.puts "#SBATCH -J conv_#{image.id}"
+                file.puts "#SBATCH -J conv_#{image_id}"
                 file.puts "#SBATCH -e error%A.err"
                 file.puts "#SBATCH -o out%A.out"
                 file.puts "#SBATCH -A RS10272"
 		file.puts "#SBATCH --mem 8000"
                 file.puts "#SBATCH --oversubscribe"
-            	file.puts "#SBATCH --uid #{user}"
+            	file.puts "#SBATCH --uid #{username}"
 		file.puts "sleep 7s"
                 file.puts "export OMP_NUM_THREADS=4"
                 file.puts "export MODULEPATH=/apps/Compilers/modules-3.2.10/Debug-Build/Modules/3.2.10/modulefiles/"
