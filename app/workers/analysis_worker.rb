@@ -3,7 +3,7 @@ class AnalysisWorker
   attr_accessor :run, :tile_x, :tile_y
   sidekiq_options :retry => 3
 
-  def perform(run_id, tile_x, tile_y)
+  def perform(run_id, user_name,tile_x, tile_y)
     @run = Run.find(run_id)
     @algorithm = @run.algorithm
     @image = @run.image
@@ -28,12 +28,12 @@ class AnalysisWorker
 		   file.puts "#SBATCH --gres=gpu:1"
 		end
 	        file.puts "#SBATCH -t 1440"
-                file.puts "#SBATCH -J analysis"
+                file.puts "#SBATCH -J analysis_#{run_id}"
                 file.puts "#SBATCH -e error%A.err"
                 file.puts "#SBATCH -o out%A.out"
                 file.puts "#SBATCH -A RS10272"
                 file.puts "#SBATCH --oversubscribe"
-                file.puts "#SBATCH --uid dbhuvanapalli1"
+                file.puts "#SBATCH --uid #{user_name}"
 		file.puts "#SBATCH --mem 4000"
 	        file.puts "sleep 7s"
                 file.puts "export OMP_NUM_THREADS=4"

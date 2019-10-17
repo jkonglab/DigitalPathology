@@ -60,10 +60,11 @@ class RunsController < ApplicationController
   end
 
   def create
-  	@run = Run.new(run_params)
+    @run = Run.new(run_params)
     image = Image.find(@run.image_id)
     algorithm = Algorithm.find(@run.algorithm_id)
-    
+    temp_idx = current_user.email.index('@')
+    user_name = current_user.email[0..temp_idx-1]
     if image.threed? && image.parent_id.blank?
       @run.image_id = Image.where(:parent_id => image.id).order('slice_order asc')[0].id
     end
@@ -112,7 +113,7 @@ class RunsController < ApplicationController
 
   	if @run.save
       UserRunOwnership.create!(:user_id=> current_user.id,:run_id=> @run.id)
-      Sidekiq::Client.push('queue' => 'user_tiling_queue_' + current_user.id.to_s, 'class' =>  TilingWorker, 'args' => [@run.id])
+      Sidekiq::Client.push('queue' => 'user_tiling_queue_' + current_user.id.to_s, 'class' =>  TilingWorker, 'args' => [@run.id, user_name])
       redirect_to @run, notice: 'New analysis created, please wait for it to finish running.'
   	end
   end
