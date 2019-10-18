@@ -4,7 +4,7 @@ class ConversionWorker
   sidekiq_options :retry => 3
 
 
-  def perform(image_id, user_name,file_path=nil, force_flag=false)
+  def perform(image_id, user_id,file_path=nil, force_flag=false)
     image = Image.find(image_id)
     image.update_attributes!(:processing=>true)
 
@@ -26,13 +26,13 @@ class ConversionWorker
                 file.puts "#SBATCH -p qDPGPU" 
 		#file.puts "#SBATCH --gres=gpu:1"
                 file.puts "#SBATCH -t 1440"
-                file.puts "#SBATCH -J conv_#{image_id}"
+                file.puts "#SBATCH -J c#{image_id}_#{user_id}"
                 file.puts "#SBATCH -e error%A.err"
                 file.puts "#SBATCH -o out%A.out"
                 file.puts "#SBATCH -A RS10272"
 		file.puts "#SBATCH --mem 8000"
                 file.puts "#SBATCH --oversubscribe"
-            	file.puts "#SBATCH --uid #{user_name}"
+            	#file.puts "#SBATCH --uid #{user_name}"
 		file.puts "sleep 7s"
                 file.puts "export OMP_NUM_THREADS=4"
                 file.puts "export MODULEPATH=/apps/Compilers/modules-3.2.10/Debug-Build/Modules/3.2.10/modulefiles/"

@@ -19,14 +19,14 @@ class ImagesController < ApplicationController
     if !current_user.projects.pluck(:id).include?(params['project_id'].to_i)
       render :json =>  {error: 'You do not have permission to upload images to this project'}, :status=> 422 and return
     else
-      temp_idx = current_user.email.index('@')
-      username = current_user.email[0..temp_idx-1]
+      #temp_idx = current_user.email.index('@')
+      #username = current_user.email[0..temp_idx-1]
       @image = Image.create(image_params)
       @image.project_id = params['project_id']
       @image.title = @image.file_file_name.gsub('_', ' ')
       @image.image_type = Image::IMAGE_TYPE_TWOD
       @image.save
-      Sidekiq::Client.push('queue' => 'user_conversion_queue_' + current_user.id.to_s, 'class' =>  ConversionWorker, 'args' => [@image.id,username])
+      Sidekiq::Client.push('queue' => 'user_conversion_queue_' + current_user.id.to_s, 'class' =>  ConversionWorker, 'args' => [@image.id, current_user.id])
       redirect_to @image.project, notice: 'Image created, please wait for it to be processed'
     end
   end

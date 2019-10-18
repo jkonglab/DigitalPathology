@@ -5,7 +5,7 @@ class TilingWorker
   sidekiq_options :retry => 3
 
 
-  def perform(run_id, user_name)
+  def perform(run_id, user_id)
     @run = Run.find(run_id)
     @run_time = Time.now.to_i
     @image = run.image
@@ -52,9 +52,9 @@ class TilingWorker
 		if tile_x != @image.width and tile_y != @image.height
 			num_tiles_counter += 1
 		        if @algorithm.single_queue_flag
-        	          Sidekiq::Client.push('queue' => 'single_analysis_queue', 'class' =>  AnalysisWorker, 'args' => [run_id, user_name,tile_x, tile_y])
+        	          Sidekiq::Client.push('queue' => 'single_analysis_queue', 'class' =>  AnalysisWorker, 'args' => [run_id, user_id,tile_x, tile_y])
                 	else
-                	  Sidekiq::Client.push('queue' => 'user_analysis_queue_' + @run.users.first.id.to_s, 'class' =>  AnalysisWorker, 'args' => [run_id, user_name,tile_x, tile_y])
+                	  Sidekiq::Client.push('queue' => 'user_analysis_queue_' + @run.users.first.id.to_s, 'class' =>  AnalysisWorker, 'args' => [run_id, user_id,tile_x, tile_y])
                 	end
 		end
             end
