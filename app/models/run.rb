@@ -57,12 +57,12 @@ class Run < ActiveRecord::Base
 	def tilesizes
            tilesize = []
 	   minsize = 0	
-           if self.annotations.id == 0
-	   	minsize = get_Min(self.image.width, self.image.height)
+#           if self.annotations.id == 0
+           minsize = get_Min(self.image.width, self.image.height)
 #	   else
 #		@annotation = self.annotation.find(self.annotation.annotation_id)
 #		minsize = get_Min(@annotation.width, @annotation.height)
-	   end
+#	   end
            [128,256,512,1024,2048].each do |size|
 	        if minsize > size
 			tilesize << size
