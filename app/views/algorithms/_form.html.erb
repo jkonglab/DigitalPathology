@@ -9,7 +9,7 @@
 
   <div class="field form-group">
     <%= f.label :slug %><br/>
-    <%= f.text_field :name, autofocus: true, class: 'form-control' %>
+    <%= f.text_field :name, autofocus: true, class: 'form-control', :readonly => @algorithm.persisted? %>
   </div>
 
   <div class="field form-group">

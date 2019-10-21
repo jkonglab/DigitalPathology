@@ -33,7 +33,8 @@
 		var accepted_extensions = ['svs', 'ndpi', 'jpg', 'jpeg', 'tif', 'png', 'tiff', 'dcm', 'mrxs']
 
 		if (!(accepted_extensions.includes(file_name_lower) || !isNaN(parseInt(file_name_lower)) )) {
-       		alert("Your file type is not supported. NDPI, SVS, JPG, TIF, PNG, DCM are supported at this time");
+       		alert("Your file type is not supported. NDPI, SVS, JPG, TIF, PNG, DCM, MRSX are supported at this time");
+		
        		return false;
     	}
 
@@ -43,17 +44,26 @@
 	function onQueued(e, files) {
 		console.log("Queued");
 		var html = '';
+		if(files.length<=5)
+		{
 		for (var i = 0; i < files.length; i++) {
 			html += '<li data-index="' + files[i].index + '"><span class="content"><span class="file">' + files[i].name + '</span><span class="cancel">Cancel</span><span class="progress">Queued</span></span><span class="bar"></span></li>';
+		}
 		}
 		$(this).parents("form").find(".filelist.queue")
 			.append(html);
 	}
 	function onStart(e, files) {
 		console.log("Start");
+		if(files.length>5){
+			alert("Upload limit exceeded!");
+			$(this).parents("form").find(".upload").upload("abort");
+		}
+		else{
 		$(this).parents("form").find(".filelist.queue")
 			.find("li")
 			.find(".progress").text("Waiting");
+	}
 	}
 	function onComplete(e) {
 		// All done!
@@ -87,7 +97,7 @@
 	function onFileError(e, file, error) {
 		$(this).parents("form").find(".filelist.queue")
 			.find("li[data-index=" + file.index + "]").addClass("error")
-			.find(".progress").text("Upload Cancled");
+			.find(".progress").text("Upload Canceled");
 
 	}
 	function onChunkStart(e, file) {
@@ -108,6 +118,7 @@
 	<br/><br/>
 	<h1>Upload Images</h1>
 	<h4>NDPI, SVS, JPG, TIF, PNG, DICOM File Formats Supported</h4>
+	<h4>Maximum file upload limit: 5</h4>
 	<br/><br/>
 	<form action="#" method="GET" class="form image_form">
 		<div class="upload" data-upload-options='{"action":"/images?project_id=<%=@project.id%>"}'></div>

@@ -49,25 +49,27 @@ class Run < ActiveRecord::Base
     	end
     	h
   	end
-	
-	def get_Min(a, b)
-		a>b ? b:a
-	end
 
 	def tilesizes
-           tilesize = []
+	if self.annotation_id == 0
+		get_tilesizes(self.image.height, self.image.width)
+#	else
+#		@annotaion = self.image.annotation.find(:self.annotation_id)
+#		get_tilesizes(@annotation.height, @annotation.width)
+	end
+	end	
+
+	def get_tilesizes(height, width)
+           tilesizes = []
 	   minsize = 0	
-#           if self.annotations.id == 0
-           minsize = get_Min(self.image.width, self.image.height)
-#	   else
-#		@annotation = self.annotation.find(self.annotation.annotation_id)
-#		minsize = get_Min(@annotation.width, @annotation.height)
-#	   end
+           minsize = height>width ? width:height
            [128,256,512,1024,2048].each do |size|
 	        if minsize > size
-			tilesize << size
+			tilesizes << size
 		end
            end
-        tilesize
+        tilesizes
         end
+
+	
 end
