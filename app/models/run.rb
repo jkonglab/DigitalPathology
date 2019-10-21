@@ -51,12 +51,14 @@ class Run < ActiveRecord::Base
   	end
 
 	def tilesizes
+	t = []
 	if self.annotation_id == 0
-		get_tilesizes(self.image.height, self.image.width)
+	 t = get_tilesizes(self.image.height, self.image.width)
 #	else
 #		@annotaion = self.image.annotation.find(:self.annotation_id)
 #		get_tilesizes(@annotation.height, @annotation.width)
 	end
+	t
 	end	
 
 	def get_tilesizes(height, width)
