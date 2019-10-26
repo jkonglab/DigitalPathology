@@ -1,0 +1,4 @@
+<%= form_for(@run) do |f| %>
+	<%= f.label :tile_size, "Tile Size (in pixels)" %>	
+	<%= f.select :tile_size, options_for_select(@tilesizes), {class: 'form-control', required: true, value: []} %>
+<% end %>

@@ -173,6 +173,30 @@ class RunsController < ApplicationController
     render partial: 'annotation_form'
   end
 
+  def tilesize_form
+	flag = params[:flag]
+	@tilesizes = []
+	if(flag == '0')
+		image = Image.find(params[:id])
+		height = image.height
+		width = image.width
+	else
+		annotation = Annotation.find(params[:id])
+		height = annotation.height
+		width = annotation.width
+	end
+	minsize = height > width ? width : height	
+	[128,256,512,1024,2048].each do |size|
+             if minsize > size
+                  @tilesizes << size
+             end
+        end
+	if @tilesizes.empty?
+		@tilesizes << 128
+	end
+	@run = current_user.runs.new
+	render partial: 'tilesize_form'
+  end
 
   private
     def run_params

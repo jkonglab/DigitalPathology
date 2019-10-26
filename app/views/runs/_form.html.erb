@@ -15,10 +15,10 @@
 	<div id="annotation-select" class="form-group">
 	</div>
 
-	<div class="form-group">
-		<%= f.label :tile_size, "Tile Size (in pixels)" %>
-		<%= f.select :tile_size, @run.tilesizes, { :selected => 128 }, { class: 'form-control', required: true, value: [] } %>
+	<div id="tilesize-select" class="form-group">
 	</div>
+
+
 	<br/><br/>
 	<h5>Algorithm Parameters</h5>
 	<hr/>
@@ -41,7 +41,24 @@
 		}).done(function(partial){
 			$('#annotation-select').html(partial);
 		})
+		$.get('<%=tilesize_form_runs_path%>',{
+                         'id': <%= @image.id %>,
+                         'flag': '0'
+                }).done(function(partial){
+                         $('#tilesize-select').html(partial);
+                });
 	});
+
+	$('#run_annotation_id').change(function(){
+		console.log("Im here");
+                $.get('<%=tilesize_form_runs_path%>',{
+                          'id': $(this).val(),
+                          'flag': '1'
+	        }).done(function(partial){
+                           $('#tilesize-select').html(partial);
+                });
+		
+	})
 
 	$('#run_algorithm_id').change(function(){
 		if($(this).find(":selected").text().includes('3D Algorithm')){
@@ -50,4 +67,5 @@
 			$('.twod-algorithm-slice-select').css('display', 'block');
 		}
 	})
+
 </script>

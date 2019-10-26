@@ -48,30 +48,5 @@ class Run < ActiveRecord::Base
     		h = self.image.annotations.new(:label=> 'Whole Slide')
     	end
     	h
-  	end
-
-	def tilesizes
-	t = []
-	if self.annotation_id == 0
-	 t = get_tilesizes(self.image.height, self.image.width)
-#	else
-#		@annotaion = self.image.annotation.find(:self.annotation_id)
-#		get_tilesizes(@annotation.height, @annotation.width)
-	end
-	t
-	end	
-
-	def get_tilesizes(height, width)
-           tilesizes = []
-	   minsize = 0	
-           minsize = height>width ? width:height
-           [128,256,512,1024,2048].each do |size|
-	        if minsize > size
-			tilesizes << size
-		end
-           end
-        tilesizes
-        end
-
-	
+  	end	
 end
