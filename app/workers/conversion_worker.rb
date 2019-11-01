@@ -22,9 +22,8 @@ class ConversionWorker
             File.open("jobs/#{image.id}/job.sh", 'w') do |file|
 		file.puts "#!/bin/bash"
                 file.puts "#SBATCH -N 1"
-                file.puts "#SBATCH -c 4"
+                file.puts "#SBATCH -c 1"
                 file.puts "#SBATCH -p qDPGPU" 
-		#file.puts "#SBATCH --gres=gpu:1"
                 file.puts "#SBATCH -t 1440"
                 file.puts "#SBATCH -J c#{image_id}_#{user_id}"
                 file.puts "#SBATCH -e error%A.err"

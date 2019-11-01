@@ -22,7 +22,7 @@ class AnalysisWorker
       File.open("#{@work_folder}/job.sh", 'w') do |file|
         	file.puts "#!/bin/bash"
                 file.puts "#SBATCH -N 1"
-                file.puts "#SBATCH -c 4"
+                file.puts "#SBATCH -c 1"
                 file.puts "#SBATCH -p qDPGPU"
 		if @algorithm.title.include? "GPU"
 		   file.puts "#SBATCH --gres=gpu:1"
