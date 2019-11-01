@@ -46,12 +46,18 @@ class TilingWorker
 
             tiles_file = File.read(File.join(@run.run_folder, '/tiles_to_analyze.json'))
             tiles = JSON.parse(tiles_file)
-	    num_tiles_counter = tiles.count
+	    tiles.each do |tile|
+                tile_x = tile.split(',')[0].to_i
+                tile_y = tile.split(',')[1].to_i
+                if tile_x != @image.width and tile_y != @image.height
+                        num_tiles_counter += 1
+		end
+	    end
+	    @run.update_attributes!(:total_tiles=>num_tiles_counter)
             tiles.each do |tile|
                 tile_x = tile.split(',')[0].to_i
                 tile_y = tile.split(',')[1].to_i
-		if tile_x != @image.width and tile_y != @image.height
-			#num_tiles_counter += 1
+		if tile_x != @image.width and tile_y != @image.height 
 		        if @algorithm.single_queue_flag
         	          Sidekiq::Client.push('queue' => 'single_analysis_queue', 'class' =>  AnalysisWorker, 'args' => [run_id, user_id,tile_x, tile_y])
                 	else
@@ -60,7 +66,6 @@ class TilingWorker
 		end
             end
         end
-        @run.update_attributes!(:total_tiles=>num_tiles_counter)
         @run.check_if_done
     end
   end
