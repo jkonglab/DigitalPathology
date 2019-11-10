@@ -125,10 +125,10 @@ class AnalysisWorker
     timer = 0
     until File.exist?(output_file)
       timer +=1
-      sleep 10
-      if timer > 1000
-          break
-      end
+      sleep 100
+      #if timer > 1000
+         #break
+      #end
     end
 
     if @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"]

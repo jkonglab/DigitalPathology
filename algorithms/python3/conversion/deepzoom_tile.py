@@ -257,6 +257,9 @@ if __name__ == '__main__':
     if opts.basename is None:
         opts.basename = os.path.splitext(os.path.basename(slidepath))[0]
 
-    DeepZoomStaticTiler(slidepath, opts.basename, opts.format,
+    try:
+        DeepZoomStaticTiler(slidepath, opts.basename, opts.format,
                 opts.tile_size, opts.overlap, opts.limit_bounds, opts.quality,
                 opts.workers, opts.with_viewer).run()
+    except:
+        return sys.exit(1)
