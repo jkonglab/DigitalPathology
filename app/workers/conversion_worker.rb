@@ -24,14 +24,14 @@ class ConversionWorker
                 file.puts "#SBATCH -N 1"
                 file.puts "#SBATCH -c 1"
                 file.puts "#SBATCH -p qDPGPU" 
-                file.puts "#SBATCH -t 1440"
+                file.puts "#SBATCH -t 60"
                 file.puts "#SBATCH -J c#{image_id}_#{user_id}"
                 file.puts "#SBATCH -e error%A.err"
                 file.puts "#SBATCH -o out%A.out"
                 file.puts "#SBATCH -A RS10272"
 		file.puts "#SBATCH --mem 8000"
                 file.puts "#SBATCH --oversubscribe"
-            	#file.puts "#SBATCH --uid #{user_name}"
+           	#file.puts "#SBATCH --uid #{user_name}"
 		file.puts "sleep 7s"
                 file.puts "export OMP_NUM_THREADS=4"
                 file.puts "export MODULEPATH=/apps/Compilers/modules-3.2.10/Debug-Build/Modules/3.2.10/modulefiles/"
@@ -45,7 +45,6 @@ class ConversionWorker
 	 end
 
             %x{
-		#chmod -R 775 jobs/#{image.id};
                 cd jobs/#{image.id};
                 sbatch job.sh
 	      }
