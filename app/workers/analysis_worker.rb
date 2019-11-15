@@ -25,7 +25,7 @@ class AnalysisWorker
                 file.puts "#SBATCH -c 1"
                 file.puts "#SBATCH -p qDPGPU"
 		if @algorithm.title.include? "GPU"
-		   file.puts "#SBATCH --gres=gpu:1"
+		   file.puts "#SBATCH --gres gpu:1"
 		end
 	        file.puts "#SBATCH -t 1440"
                 file.puts "#SBATCH -J a#{run_id}_#{userid}"
