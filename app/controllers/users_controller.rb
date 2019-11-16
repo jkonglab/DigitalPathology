@@ -1,6 +1,13 @@
 class UsersController < ApplicationController
     before_action :check_admin_user!
 
+  def approve
+    @user = User.find(params[:user_id])
+    @user.approved = true
+    @user.save
+    redirect_back(fallback_location:'/admin')
+  end
+
   def admin_panel
     query_params = params['q'] || {}
       query_builder = QueryBuilder.new(query_params)

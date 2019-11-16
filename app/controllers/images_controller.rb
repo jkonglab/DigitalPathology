@@ -57,7 +57,9 @@ class ImagesController < ApplicationController
     if @images.length == 1
       image = @images[0]
       project = image.project
+      file_folder = File.expand_path("..", File.dirname(image.file.path))
       image.destroy
+      FileUtils.rm_rf(file_folder)
       return redirect_to project, notice: "Image #{image.title} deleted"
     end
   end
@@ -73,7 +75,12 @@ class ImagesController < ApplicationController
   def delete
     length = @images.length
     project = @images.first.project
-    @images.destroy_all
+    @images.each do |image|
+	file_folder = File.expand_path("..", File.dirname(image.file.path))
+	image.destroy
+        FileUtils.rm_rf(file_folder)
+    end
+	#@images.destroy_all
     return redirect_to project, notice: "#{length} images deleted"
   end
 

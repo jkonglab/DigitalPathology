@@ -4,9 +4,10 @@
 <% end %>
 <script>
 	$('#run_annotation_id').change(function(){
-		console.log("here");	
+	
 		$.get('<%=tilesize_form_runs_path%>',{
                           'id': $(this).val(),
+			  'annotation_id':$(this).val(),
                           'flag': '1'
                 }).done(function(partial){
                            $('#tilesize-select').html(partial);

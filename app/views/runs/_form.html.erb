@@ -43,22 +43,12 @@
 		})
 		$.get('<%=tilesize_form_runs_path%>',{
                          'id': <%= @image.id %>,
+			 'annotation_id': 0,
                          'flag': '0'
                 }).done(function(partial){
                          $('#tilesize-select').html(partial);
                 });
 	});
-
-	$('#run_annotation_id').change(function(){
-		console.log("Im here");
-                $.get('<%=tilesize_form_runs_path%>',{
-                          'id': $(this).val(),
-                          'flag': '1'
-	        }).done(function(partial){
-                           $('#tilesize-select').html(partial);
-                });
-		
-	})
 
 	$('#run_algorithm_id').change(function(){
 		if($(this).find(":selected").text().includes('3D Algorithm')){

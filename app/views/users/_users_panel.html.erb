@@ -10,6 +10,7 @@
         <th>Email</th>
         <th>Signed Up</th>
         <th>Confirmed</th>
+	<th>Approved</th>
         <th>Last IP</th>
         <th>Role</th>
         <th></th>
@@ -21,6 +22,7 @@
           <td><%=user.email%></td>
           <td><%=time_ago_in_words user.created_at %> ago</td>
           <td><%=user.confirmed_at ? time_ago_in_words(user.confirmed_at) + ' ago' : "Unconfirmed" %></td>
+	  <td><%=user.approved%></td>
           <td><%=user.current_sign_in_ip%></td>
           <td><%=User::REVERSE_PERMISSION_LOOKUP[user.admin].capitalize%></td>
           <td>
@@ -44,6 +46,11 @@
                     Demote
                   <%end%>
                 <% end%>
+		<% if !user.approved? %>
+                   <%=link_to admin_users_approve_path(:user_id=>user.id), :class=> 'dropdown-item',:data => {:method => :put} do %>
+                    Approve
+                  <%end%>
+                <% end %>		
               </div>
             </div>
           </td>

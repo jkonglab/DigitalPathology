@@ -85,7 +85,7 @@ Rails.application.routes.draw do
     get '/admin/new_user' => 'users#admin_create_user'
     put '/admin/users/promote' => 'users#promote'
     put '/admin/users/demote' => 'users#demote'
-
+    put '/admin/users/approve' => 'users#approve' 
 
     post '/admin/users/create' => 'users#create'
     delete '/admin/users/delete' => 'users#delete'
