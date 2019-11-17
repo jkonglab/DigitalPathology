@@ -125,7 +125,7 @@ class AnalysisWorker
     timer = 0
     until File.exist?(output_file)
       timer +=1
-      sleep 100
+      sleep 1
       if timer > 36000
          break
       end
