@@ -15,7 +15,9 @@
 	<div id="annotation-select" class="form-group">
 	</div>
 
-	<div id="tilesize-select" class="form-group">
+	<div class="form-group">
+		<%= f.label :tile_size, "Tile Size (in pixels)" %>
+		<%= f.select :tile_size, @tilesizes, { :selected => 1024 }, {class: 'form-control', required: true, value: []} %>
 	</div>
 
 
@@ -41,13 +43,6 @@
 		}).done(function(partial){
 			$('#annotation-select').html(partial);
 		})
-		$.get('<%=tilesize_form_runs_path%>',{
-                         'id': <%= @image.id %>,
-			 'annotation_id': 0,
-                         'flag': '0'
-                }).done(function(partial){
-                         $('#tilesize-select').html(partial);
-                });
 	});
 
 	$('#run_algorithm_id').change(function(){

@@ -2,15 +2,4 @@
 	<%= f.label :annotation_id, 'Select Annotation ROI', {class: 'bmd-label-static'} %>
 	<%= f.collection_select :annotation_id, @annotations, :id, :label, {include_blank: 'Whole Slide'}, { class: 'form-control', required: false}%>
 <% end %>
-<script>
-	$('#run_annotation_id').change(function(){
-	
-		$.get('<%=tilesize_form_runs_path%>',{
-                          'id': $(this).val(),
-			  'annotation_id':$(this).val(),
-                          'flag': '1'
-                }).done(function(partial){
-                           $('#tilesize-select').html(partial);
-                });
-	})
-</script>
+

@@ -38,6 +38,13 @@ class ImagesController < ApplicationController
     @slices = Image.where(:parent_id => @image.id).order('slice_order asc')
     default_slice = (@slices.length.to_f/2).ceil(0)
     @image_shown = @image.threed? && @image.parent_id.blank? ? @slices[default_slice] : @image
+    @tilesizes = []
+    minsize = @image.height > @image.width ? @image.width : @image.height
+    [128,256,512,1024,2048].each do |size|
+    	if minsize > size
+        	@tilesizes << size
+        end
+    end	
   end
 
   def show_3d
