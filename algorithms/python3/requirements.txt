@@ -1,13 +1,13 @@
 matplotlib
 numpy
-keras
+keras==2.1.3
 Pillow
 scikit-build
 scikit-image
 scikit-learn
 scipy
 sklearn
-tensorflow-gpu
+tensorflow-gpu==1.14.0
 oauthlib
 opencv-python
 Lasagne==0.1

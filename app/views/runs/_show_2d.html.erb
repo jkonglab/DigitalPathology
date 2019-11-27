@@ -83,7 +83,8 @@
 	    id:            "openseadragon-container",
 	    prefixUrl:     "/openseadragon/images/",
 	    tileSources:   "/<%=@image.dzi_url%>",
-	    maxZoomPixelRatio: 5.0
+	    maxZoomPixelRatio: 2.0,
+	    minPixelRatio: 0.5
 	});
 	var exclude_indices = [];
 	var mouse_tracker = new OpenSeadragon.MouseTracker({

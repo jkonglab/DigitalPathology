@@ -39,9 +39,10 @@ class AnalysisWorker
                 file.puts "export OMP_NUM_THREADS=4"
 		file.puts "NODE=$(hostname)"
 		file.puts "export MODULEPATH=/apps/Compilers/modules-3.2.10/Debug-Build/Modules/3.2.10/modulefiles/"
-		file.puts "module load Compilers/Python3.7.4"
+		file.puts "module load Compilers/Python3.6"
 	        file.puts "module load Framework/Matlab2016b"
                 file.puts "module load Compilers/Julia0.6.2"	
+		file.puts "module load Compilers/Cudalib"
 		if @algorithm.title.include? "GPU"
 		   file.puts "module load Cuda7.0"
 		end
@@ -57,7 +58,7 @@ class AnalysisWorker
 
           ## FILTHY HACK
           if @algorithm.name == 'steatosis_neural_net'
-            file.puts "cp -r #{algorithm_path}/steatosis_neural_net/mrcnn env/lib/python3.7/site-packages"
+            file.puts "cp -r #{algorithm_path}/steatosis_neural_net/mrcnn env/lib/python3.6/site-packages"
           end
           
           file.puts "python -m main #{@image.tile_folder_path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}"
@@ -95,7 +96,7 @@ class AnalysisWorker
         if @algorithm.name == 'steatosis_neural_net'
           %x{cd #{algorithm_path};
             source env/bin/activate;
-            cp -r #{algorithm_path}/steatosis_neural_net/mrcnn env/lib/python3.7/site-packages;
+            cp -r #{algorithm_path}/steatosis_neural_net/mrcnn env/lib/python3.6/site-packages;
             python -m main #{@image.tile_folder_path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}
           }
         else

@@ -12,7 +12,7 @@ class Image < ActiveRecord::Base
     override_file_permissions: 755
   }
 
-  validates_attachment_content_type :file, :content_type => ["image/jpg", "image/jpeg", "image/png", "image/tiff","image/mrxs", "application/octet-stream", "application/dicom"]
+  validates_attachment_content_type :file, :content_type => ["image/jpg", "image/jpeg", "image/png", "image/tiff", "application/octet-stream", "application/dicom"]
 
   VISIBILITY_PRIVATE = 0
   VISIBILITY_PUBLIC = 1
