@@ -53,6 +53,7 @@ class AnalysisWorker
         elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["python3"] ||  @algorithm.language == Algorithm::LANGUAGE_LOOKUP["python"] 
           parameters = @run.parameters
 	 
+	  file.puts "cd #{algorithm_path}"
           ## FILTHY HACK
           if @algorithm.name == 'steatosis_neural_net'
 	    file.puts "module load Compilers/Python3.6"
@@ -63,7 +64,6 @@ class AnalysisWorker
             file.puts "source env3.7/bin/activate"
           end
           
-          file.puts "cd #{algorithm_path}"
           file.puts "python -m main #{@image.tile_folder_path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}"
         
         elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["julia"]
