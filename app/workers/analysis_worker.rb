@@ -40,7 +40,7 @@ class AnalysisWorker
 		file.puts "NODE=$(hostname)"
 		file.puts "export MODULEPATH=/apps/Compilers/modules-3.2.10/Debug-Build/Modules/3.2.10/modulefiles/"	
 		if @algorithm.title.include? "GPU"
-		   file.puts "module load Compilers/Cudalib"
+		   #file.puts "module load Compilers/Cudalib"
 		   file.puts "module load Cuda7.0"
 		end
         
