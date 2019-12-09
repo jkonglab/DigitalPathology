@@ -39,7 +39,7 @@ class ConversionWorker
                 file.puts "module load Compilers/Python3.7.4"
                 file.puts "module load Image_Analysis/Openslide3.4.1"
                 file.puts "cd #{python_virtualenv_path}"
-                file.puts "source env/bin/activate"
+                file.puts "source env3.7/bin/activate"
                 file.puts "cd #{file_path}"
                 file.puts "python3 #{conversion_file_path}/deepzoom_tile.py #{image.file.path}"
 	 end
@@ -51,7 +51,7 @@ class ConversionWorker
 
        else
             %x{ cd #{python_virtualenv_path}
-                source env/bin/activate 
+                source env3.7/bin/activate 
                 cd #{file_path}
                 python3 #{conversion_file_path}/deepzoom_tile.py #{image.file.path};
             }
@@ -84,7 +84,7 @@ class ConversionWorker
     matlab_path = File.join(Rails.root.to_s, 'algorithms', 'matlab')
     %x{
         cd #{matlab_path}; 
-        module load Framework/Matlab2016a;
+        module load Framework/Matlab2016b;
         matlab -nodisplay -r "dicom2jpg('#{image.file.path}', 2); exit;"
     }
     if File.extname(image.file_file_name) == '.dcm'

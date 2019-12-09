@@ -38,29 +38,32 @@ class AnalysisWorker
 	        file.puts "sleep 7s"
                 file.puts "export OMP_NUM_THREADS=4"
 		file.puts "NODE=$(hostname)"
-		file.puts "export MODULEPATH=/apps/Compilers/modules-3.2.10/Debug-Build/Modules/3.2.10/modulefiles/"
-		file.puts "module load Compilers/Python3.6"
-	        file.puts "module load Framework/Matlab2016b"
-                file.puts "module load Compilers/Julia0.6.2"	
-		file.puts "module load Compilers/Cudalib"
+		file.puts "export MODULEPATH=/apps/Compilers/modules-3.2.10/Debug-Build/Modules/3.2.10/modulefiles/"	
 		if @algorithm.title.include? "GPU"
+		   file.puts "module load Compilers/Cudalib"
 		   file.puts "module load Cuda7.0"
 		end
-                file.puts "cd #{algorithm_path}"
         
         if @algorithm.language == Algorithm::LANGUAGE_LOOKUP["matlab"]
           parameters = convert_parameters_cell_array_string(@run.parameters)
+          file.puts "module load Framework/Matlab2016b"
+	  file.puts "cd #{algorithm_path}"
           file.puts "matlab -nodisplay -r \"main('#{@image.tile_folder_path}','#{output_file}',#{parameters},'#{@algorithm.name}',#{@tile_x},#{@tile_y},#{@tile_width},#{@tile_height}); exit;\""
         
         elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["python3"] ||  @algorithm.language == Algorithm::LANGUAGE_LOOKUP["python"] 
           parameters = @run.parameters
-          file.puts "source env/bin/activate"
-
+	 
           ## FILTHY HACK
           if @algorithm.name == 'steatosis_neural_net'
-            file.puts "cp -r #{algorithm_path}/steatosis_neural_net/mrcnn env/lib/python3.6/site-packages"
+	    file.puts "module load Compilers/Python3.6"
+            file.puts "source env3.6/bin/activate"
+            file.puts "cp -r #{algorithm_path}/steatosis_neural_net/mrcnn env3.6/lib/python3.6/site-packages"
+	  else
+            file.puts "module load Compilers/Python3.7.4"
+            file.puts "source env3.7/bin/activate"
           end
           
+          file.puts "cd #{algorithm_path}"
           file.puts "python -m main #{@image.tile_folder_path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}"
         
         elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["julia"]
@@ -71,6 +74,8 @@ class AnalysisWorker
           @run.parameters.each do |parameter|
             parameters = parameters + parameter.to_json + ' '
           end
+	  file.puts "module load Compilers/Julia0.6.2"
+          file.puts "cd #{algorithm_path}"
           file.puts "julia julia-adapter.jl #{@image.file.path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}"
         end
       end
@@ -95,13 +100,13 @@ class AnalysisWorker
         ## FILTHY HACK
         if @algorithm.name == 'steatosis_neural_net'
           %x{cd #{algorithm_path};
-            source env/bin/activate;
+            source env3.6/bin/activate;
             cp -r #{algorithm_path}/steatosis_neural_net/mrcnn env/lib/python3.6/site-packages;
             python -m main #{@image.tile_folder_path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}
           }
         else
           %x{cd #{algorithm_path};
-            source env/bin/activate;
+            source env3.7/bin/activate;
             python -m main #{@image.tile_folder_path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}
           }
         end
