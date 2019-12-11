@@ -3,7 +3,7 @@ using Images
 using LinearAlgebra
 
 function mu_nmf(Y::Matrix{Float64}, A::Matrix{Float64}, X::Matrix{Float64};
-                ω=1, αsA=0 , αsX=0, maxiter=10, cost="euclidean", #maxiter = 1000
+                ω=1, αsA=0 , αsX=0, maxiter=1000, cost="euclidean",
                 normalization="LInf", tol=1e-8, verbose=false) 
     I,T = size(Y)
     J = size(A,2)

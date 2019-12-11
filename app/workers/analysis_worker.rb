@@ -74,7 +74,7 @@ class AnalysisWorker
           @run.parameters.each do |parameter|
             parameters = parameters + parameter.to_json + ' '
           end
-	  file.puts "module load Compilers/Julia0.6.2"
+	  file.puts "module load Compilers/Julia1.3.0"
           file.puts "cd #{algorithm_path}"
           file.puts "julia julia-adapter.jl #{@image.file.path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}"
         end
