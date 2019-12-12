@@ -4,7 +4,7 @@
 	<p>Slices from your 3D volume generation will appear below. <br/>Upon completion, you may review the slice stack to convert it to a 3D volume.</p>
 
 	<div style="padding:10px">
-		<p>Progress:<br/><b><%=@slices.length%>/40 (<%=100*@slices.length.to_f/40%>%)</b></p>
+		<p>Progress:<br/><b><%=@slices.length%></b></p>
 		<p>Image Title:<br/><b><%=@image.title%></b></p>
 		<p>Algorithm Ran:<br/><b><%=@algorithm.name%> (ID: <%=@algorithm.id%>)</b></p>
 		<% if @run.run_at %>
