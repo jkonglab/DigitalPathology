@@ -251,7 +251,7 @@ class AnalysisWorker
             new_image.generated_by_run_id = @run.id
             new_image.project_id = @run.image.project_id
             new_image.save!
-            Sidekiq::Client.push('queue' => 'user_conversion_queue_' + @run.users.first.id.to_s, 'class' =>  ConversionWorker, 'args' => [new_image.id])
+            Sidekiq::Client.push('queue' => 'user_conversion_queue_' + @run.users.first.id.to_s, 'class' =>  ConversionWorker, 'args' => [new_image.id, @run.users.first.id.to_s])
             i = i + 1
           rescue Vips::Error
             break
