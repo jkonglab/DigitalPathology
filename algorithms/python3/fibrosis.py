@@ -7,14 +7,20 @@ import cv2
 def preprocess(raw_input, output_file_path, parameters):
     print("convert")
     rgb = raw_input[:,:,:3]
-    bgr = rgb[...,::-1]
-    if bgr.shape[0] < 256 or bgr.shape[1] < 256:
+    #bgr = rgb[...,::-1]
+    img = rgb 
+    img = img.astype(np.float32)
+    img[:,:,0] -= 103.939
+    img[:,:,1] -= 116.779
+    img[:,:,2] -= 123.68
+    if img.shape[0] < 256 or img.shape[1] < 256:
         zeros = np.zeros((256,256,3), dtype=int)
-        zeros[:bgr.shape[0],:bgr.shape[1],:] = bgr
+        zeros[:img.shape[0],:img.shape[1],:] = img
         output = zeros
     else:
-        output = bgr
-    return output.T
+        output = img
+    #return output.T
+    return np.rollaxis(output, 2, 0)
 
 
 
