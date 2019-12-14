@@ -82,7 +82,8 @@
 	    tileSources:   "/<%=@image_shown.dzi_url%>",
 	    maxZoomPixelRatio: 2.0,
 	    minPixelRatio: 0.5,
-	    animationTime: 0.0
+	    timeout: 100000,
+	    imageLoaderLimit: 7
 	});
 
 	viewer.initializeAnnotations();
