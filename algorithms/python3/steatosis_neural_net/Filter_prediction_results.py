@@ -64,7 +64,7 @@ def filer(min_score, max_score,r,image):
         #score = result['scores'][inx]
         pred_mask = result['masks'][:, :, inx]
         pred_mask = np.array(pred_mask, dtype=np.uint8)   
-        temp,contour,hierarchy=cv2.findContours(pred_mask,1,2)
+        contour,hierarchy=cv2.findContours(pred_mask,1,2)
         area=cv2.contourArea(contour[0])
         if len(contour[0])<6:
             continue
