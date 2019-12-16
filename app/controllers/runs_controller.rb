@@ -104,7 +104,12 @@ class RunsController < ApplicationController
                 return
             end
           end
-        end
+	elsif algorithm_parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["file"]
+	  File.open(Rails.root.join('public','uploads',parameter_value),'w') do |file|
+		file.write(parameter_value)
+	  end
+	  parameter_value = Rails.root.join('public','uploads',parameter_value).to_s
+	end
       end
       run_parameters << parameter_value
     end

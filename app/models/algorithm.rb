@@ -8,7 +8,8 @@ class Algorithm < ActiveRecord::Base
 		"color" => 4,
 		"select" => 5,
 		"array" => 6,
-		"float" => 7
+		"float" => 7,
+		"file" => 8
 	}
 
 	LANGUAGE_LOOKUP={
@@ -30,7 +31,8 @@ class Algorithm < ActiveRecord::Base
 		"contour" => 1,
 		"scalar" => 2,
 		"points" => 3,
-		"percentage" => 4
+		"percentage" => 4,
+		"image" => 5
 	}
 
 	REVERSE_OUTPUT_TYPE_LOOKUP={
@@ -38,7 +40,8 @@ class Algorithm < ActiveRecord::Base
 		1 => 'contour',
 		2 => 'scalar',
 		3 => 'points',
-		4 => 'percentage'
+		4 => 'percentage',
+		5 => 'image'
 	}
 
 	INPUT_TYPE_LOOKUP={

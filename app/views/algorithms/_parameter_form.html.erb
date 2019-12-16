@@ -17,6 +17,8 @@
 				<%= parameter_fields.text_field parameter["key"].to_sym, { value: parameter["default_value"], required: true, placeholder: parameter["placeholder"]} %>
 			<% elsif parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["string"] %>
 				<%= parameter_fields.text_field parameter["key"].to_sym, { value: parameter["default_value"], required: true, placeholder: parameter["placeholder"]} %>
+			<% elsif parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["file"]%>
+				<%= parameter_fields.file_field parameter["key"].to_sym, { value: parameter["default_value"], placeholder: parameter["placeholder"]} %>
 			<% end %>
 		</div>
 		<% end %>
