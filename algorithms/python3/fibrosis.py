@@ -28,10 +28,12 @@ def postprocess(main_output, output_file_path):
     import numpy as np
     import json
 
-    for i in range(len(main_output)):
-        main_output[i] = [main_output[i]]
+    # comment the two lines to make sure the format of the output contours coordinates are correct
+    #for i in range(len(main_output)):
+    #    main_output[i] = [main_output[i]]
 
-    output = json.dumps(main_output)
+    contours, target_pixel_number = main_output
+    output = json.dumps(contours)
 
     with open(output_file_path, 'w') as outfile:
         outfile.write(output)
