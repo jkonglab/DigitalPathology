@@ -16,15 +16,16 @@ ENV['RAILS_ENV'] = "production"
 require '/DP_Share/imageviewer/config/environment.rb'
 
 files_reg_expression = '/DP_Share/Testing_WSIs/Temp/*.tif'
-user_id = 1
-project_id = 10
+user_id = 10
+project_id = 18
 files = Dir.glob(files_reg_expression)
 
 files.each do |image_path|
         @image = Image.create(:file => File.open(image_path, 'rb'))
 	@image.title = image_path.split('/')[-1]
 	@image.image_type = Image::IMAGE_TYPE_TWOD
- 	UserProjectOwnership.create!(:user_id=> user_id,:project_id=> project_id)
+	@image.project_id = project_id
+ 	#UserProjectOwnership.create!(:user_id=> user_id,:project_id=> project_id)
 	@image.save
 	ConversionWorker.perform_async(@image.id, user_id)
 end
