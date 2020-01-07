@@ -34,6 +34,7 @@ gem 'rails-jquery-autocomplete'
 gem 'victor'
 gem 'json'
 gem 'powder'
+gem 'rubyzip', require: 'zip'
 
 group :development, :test do
   # Access an IRB console on exception pages or by using <%= console %> in views
