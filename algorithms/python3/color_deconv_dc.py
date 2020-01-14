@@ -20,12 +20,9 @@ def main(img, params):
     rf_img = None
     sys.path.insert(0, './color_deconv_utils')
     algorithm_module = __import__('color_deconv_utils')
-    if params[0] == 'HE':
+    if params[0] == 'HE' or params[0] == 'IHC':
         function_handler = getattr(algorithm_module,'Ref')
-        ref = function_handler.get_he_ref()
-    if params[0] == 'IHC':
-        function_handler = getattr(algorithm_module,'Ref')
-        ref = function_handler.get_ihc_ref()
+        ref =  None
     elif params[0] == 'Customer':
         # reference image
         try:
