@@ -105,10 +105,15 @@ class RunsController < ApplicationController
             end
           end
 	elsif algorithm_parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["file"]
-	  File.open(Rails.root.join('public','uploads',parameter_value),'w') do |file|
-		file.write(parameter_value)
+
+	  if !parameter_value.blank?
+              file_path = Rails.root.join('public','uploads',parameter_value)
+              File.open(file_path,'w') do |file|
+                 file.write(parameter_value)
+                 File.chmod(0777, file_path)
+              end
+	      parameter_value = parameter_value.to_s
 	  end
-	  parameter_value = Rails.root.join('public','uploads',parameter_value).to_s
 	end
       end
       run_parameters << parameter_value
@@ -142,33 +147,45 @@ class RunsController < ApplicationController
     @results = @run.results.where('exclude IS NOT true').order('output_key asc, id asc')
     @algorithm = @run.algorithm
     output = []
+    if @algorithm.output_type != Algorithm::OUTPUT_TYPE_LOOKUP["image"]
+		@results.each do |result|
+		  result_hash = {}
+		  result_hash["output_key"] = result.output_key
+		  result_hash["tile_coordinate"] = [result.tile_x, result.tile_y]
+		  result_hash["local_coordinates"] = result.raw_data
+		  result_hash["tile_size"] = result.run.tile_size
+		  result_hash["raw_data"] = result.raw_data
+		  absolute_data = result.raw_data.deep_dup
+		  output_type = result.output_type || @algorithm.output_type
 
-    @results.each do |result|
-      result_hash = {}
-      result_hash["output_key"] = result.output_key
-      result_hash["tile_coordinate"] = [result.tile_x, result.tile_y]
-      result_hash["local_coordinates"] = result.raw_data
-      result_hash["tile_size"] = result.run.tile_size
-      result_hash["raw_data"] = result.raw_data
-      absolute_data = result.raw_data.deep_dup
-      output_type = result.output_type || @algorithm.output_type
+		  if output_type == Algorithm::OUTPUT_TYPE_LOOKUP["contour"]
+			absolute_data.map{ |data_item|
+			  data_item[0] += result.tile_x
+			  data_item[1] += result.tile_y
+			}
+			result_hash["absolute_coordinates"] = absolute_data
+		  elsif output_type == Algorithm::OUTPUT_TYPE_LOOKUP["points"]
+			absolute_data[0] += result.tile_x
+			absolute_data[1] += result.tile_y
+			result_hash["absolute_coordinates"] = absolute_data
+		  end
 
-      if output_type == Algorithm::OUTPUT_TYPE_LOOKUP["contour"]
-        absolute_data.map{ |data_item|
-          data_item[0] += result.tile_x
-          data_item[1] += result.tile_y
-        }
-        result_hash["absolute_coordinates"] = absolute_data
-      elsif output_type == Algorithm::OUTPUT_TYPE_LOOKUP["points"]
-        absolute_data[0] += result.tile_x
-        absolute_data[1] += result.tile_y
-        result_hash["absolute_coordinates"] = absolute_data
-      end
-
-      output << result_hash
-    end
-
-    send_data output.to_json, :type => 'application/json; header=present', :disposition => "attachment; filename=results.json"
+		  output << result_hash
+		end
+		send_data output.to_json, :type => 'application/json; header=present', :disposition => "attachment; filename=results.json"
+	else
+		::Zip::File.open(@run.run_folder+'/results.zip', Zip::File::CREATE) do |z|
+			@results.each do |result|
+				z.add(result.output_file, File.join(@run.run_folder ,result.output_file))
+			end
+		end
+		send_file  @run.run_folder+'/results.zip' , :type => "application/zip", :disposition => "attachment"
+		# output_file_path = []
+		# @results.each do |result|
+			# output_file_path << result.output_file
+		# end
+		# send_file  output_file_path , :type => "application/zip", :disposition => "attachment"
+	end
   end
 
   def annotation_form
@@ -181,7 +198,7 @@ class RunsController < ApplicationController
   private
     def run_params
     	params.require(:run).permit(:image_id, :algorithm_id, :parameters, :annotation_id, :tile_size)
-  	end
+    end
 
     def set_run_validated
       @run = Run.find(params[:id])
