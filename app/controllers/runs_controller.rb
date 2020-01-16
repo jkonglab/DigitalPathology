@@ -174,17 +174,14 @@ class RunsController < ApplicationController
 		end
 		send_data output.to_json, :type => 'application/json; header=present', :disposition => "attachment; filename=results.json"
 	else
+		if !File.exist?(@run.run_folder+'/results.zip')
 		::Zip::File.open(@run.run_folder+'/results.zip', Zip::File::CREATE) do |z|
 			@results.each do |result|
 				z.add(result.output_file, File.join(@run.run_folder ,result.output_file))
 			end
 		end
+		end
 		send_file  @run.run_folder+'/results.zip' , :type => "application/zip", :disposition => "attachment"
-		# output_file_path = []
-		# @results.each do |result|
-			# output_file_path << result.output_file
-		# end
-		# send_file  output_file_path , :type => "application/zip", :disposition => "attachment"
 	end
   end
 
