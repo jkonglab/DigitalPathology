@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200106181229) do
+ActiveRecord::Schema.define(version: 20200122192707) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -39,6 +39,7 @@ ActiveRecord::Schema.define(version: 20200106181229) do
     t.integer "height"
     t.integer "x_point"
     t.integer "y_point"
+    t.string "class"
     t.index ["user_id"], name: "index_annotations_on_user_id"
   end
 
