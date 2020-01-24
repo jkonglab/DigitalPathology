@@ -16,7 +16,11 @@ class TilingWorker
     if @image && @image.complete
         @run.update_attributes!(:run_at=>@run_time, :processing=>true, :tiles_processed=>0)
         
-        %x{mkdir #{@run.run_folder}}
+        %x{
+            mkdir #{@run.run_folder}
+            chmod -R ug+rwx #{run.run_folder};
+            chgrp webapp #{run.run_folder}
+        }
 
         if @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"]
             # Queuing tile_x, tile_y = (0,0) means that there is no ROI used in this analysis algorithm
@@ -28,13 +32,13 @@ class TilingWorker
             else
               x, y = convert_and_save_whole_slide_annotation
             end
-	 
+     
            %x{ 
-		module load Framework/Matlab2016b;
-		cd #{algorithm_path}; 
+                module load Framework/Matlab2016b;
+                cd #{algorithm_path}; 
                 matlab -nodisplay -r \"tiling('#{@image.file.path}','#{@run.run_folder}', #{tile_size}); exit;"
             }
-		         
+                 
             timer = 0
             until File.exist?(File.join(@run.run_folder,'/tiles_to_analyze.json'))
                 timer +=1
@@ -46,24 +50,34 @@ class TilingWorker
 
             tiles_file = File.read(File.join(@run.run_folder, '/tiles_to_analyze.json'))
             tiles = JSON.parse(tiles_file)
-	    tiles.each do |tile|
-                tile_x = tile.split(',')[0].to_i
-                tile_y = tile.split(',')[1].to_i
-                if tile_x != @image.width and tile_y != @image.height
-                        num_tiles_counter += 1
-		end
-	    end
-	    @run.update_attributes!(:total_tiles=>num_tiles_counter)
-            tiles.each do |tile|
-                tile_x = tile.split(',')[0].to_i
-                tile_y = tile.split(',')[1].to_i
-		if tile_x != @image.width and tile_y != @image.height 
-		        if @algorithm.single_queue_flag
-        	          Sidekiq::Client.push('queue' => 'single_analysis_queue', 'class' =>  AnalysisWorker, 'args' => [run_id, user_id,tile_x, tile_y])
-                	else
-                	  Sidekiq::Client.push('queue' => 'user_analysis_queue_' + @run.users.first.id.to_s, 'class' =>  AnalysisWorker, 'args' => [run_id, user_id,tile_x, tile_y])
-                	end
-		end
+            if @algorithm.output_type != Algorithm::OUTPUT_TYPE_LOOKUP["image"]
+                tiles.each do |tile|
+                    tile_x = tile.split(',')[0].to_i
+                    tile_y = tile.split(',')[1].to_i
+                    if tile_x != @image.width and tile_y != @image.height
+                            num_tiles_counter += 1
+                    end
+                end
+                @run.update_attributes!(:total_tiles=>num_tiles_counter)
+                tiles.each do |tile|
+                    tile_x = tile.split(',')[0].to_i
+                    tile_y = tile.split(',')[1].to_i
+                    if tile_x != @image.width and tile_y != @image.height 
+                        if @algorithm.single_queue_flag
+                          Sidekiq::Client.push('queue' => 'single_analysis_queue', 'class' =>  AnalysisWorker, 'args' => [run_id, user_id,tile_x, tile_y])
+                        else
+                          Sidekiq::Client.push('queue' => 'user_analysis_queue_' + @run.users.first.id.to_s, 'class' =>  AnalysisWorker, 'args' => [run_id, user_id,tile_x, tile_y])
+                        end
+                    end
+                end
+            else ## for algorithms that have image output, first tile is picked to analyze
+                @run.update_attributes!(:total_tiles=>1)
+                tiles.each do |tile|
+                    tile_x = tile.split(',')[0].to_i
+                    tile_y = tile.split(',')[1].to_i
+                    Sidekiq::Client.push('queue' => 'user_analysis_queue_' + @run.users.first.id.to_s, 'class' =>  AnalysisWorker, 'args' => [run_id, user_id,tile_x, tile_y])
+                    break
+                end
             end
         end
         @run.check_if_done
