@@ -36,7 +36,15 @@
     <%= f.label :visibility %><br />
     <%= f.select :visibility, [["Private", 'hidden'], ["Public", 'visible']] , { :selected => @project.visibility }, { class: 'form-control' }%>
   </div>
-
+  
+  <div class="field form-group">
+    <%= f.label 'Owner(s)' %><br />
+    <%= f.fields_for :user_project_ownerships do |u| %>
+      <% user = u.object.user %> <br />
+      <%= user.email %>
+      <%= u.check_box :_destroy, {checked: true} %>
+    <%end%>
+  </div>
 
   <div class="actions form-group float-right">
     <%= f.submit "Submit", class: 'btn btn-raised btn-success'%>

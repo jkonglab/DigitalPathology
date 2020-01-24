@@ -2,6 +2,7 @@ class Project < ActiveRecord::Base
   has_many :images
   has_many :user_project_ownerships
   has_many :users, :through => :user_project_ownerships
+  accepts_nested_attributes_for :user_project_ownerships, allow_destroy: true
   enum visibility: { hidden: 0, visible: 1 }
 
   before_destroy :destroy_children

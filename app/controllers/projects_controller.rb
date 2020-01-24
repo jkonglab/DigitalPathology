@@ -13,12 +13,12 @@ class ProjectsController < ApplicationController
 	  query_builder = QueryBuilder.new(query_params)
 	  @q = query_builder.to_ransack(current_user.projects)
 	  @projects= @q.result.reorder(query_builder.sort_order)
-	end
+  end
 
-	def rerun
+  def rerun
     all_reruns = Image.where(:complete=>false, :project_id=>@project.id)
     all_reruns.each do |image|
-      Sidekiq::Client.push('queue' => 'user_conversion_queue_' + current_user.id.to_s, 'class' =>  ConversionWorker, 'args' => [image.id])
+    Sidekiq::Client.push('queue' => 'user_conversion_queue_' + current_user.id.to_s, 'class' =>  ConversionWorker, 'args' => [image.id])
     end
     redirect_back(fallback_location: project_path(@project))
   end
@@ -79,7 +79,7 @@ class ProjectsController < ApplicationController
 
 	private
 	  def project_params
-	    params.require(:project).permit(:title, :modality, :tissue_type, :method, :visibility, :description)
+	    params.require(:project).permit(:title, :modality, :tissue_type, :method, :visibility, :description, user_project_ownerships_attributes: [:id, :_destroy])
 	  end
 
 	  def set_project_validated
