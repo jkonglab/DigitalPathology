@@ -11,6 +11,9 @@
 	<%= link_to rerun_project_path(:project=>@project) do %>
     	<button style="float:right" class="btn btn-success">Re-process Project Images</button>
  	<% end %>
+	<%= link_to download_all_annotations_project_path(:project=>@project) do %>
+    	<button style="float:right" class="btn btn-success">Download Annotations</button>
+ 	<% end %>
 	<br/><br/>
 	<div class="image-table">
 		<table class="table table-hover">

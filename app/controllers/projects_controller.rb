@@ -76,6 +76,33 @@ class ProjectsController < ApplicationController
 			redirect_to my_projects_path, alert: 'You cannot delete a non-empty project.  Please delete the images inside before deleting the project.' and return
 		end
 	end
+	
+	def download_all_annotations
+		output = []
+		@images = @project.images.where(:project_id=>params[:id])
+		@images.each do |image|
+			result_hash = {}
+			result_hash["image_title"] = [image.title]
+			@annotations = image.hidden? ? image.annotations.where(:user_id=>current_user.id).order('id desc') : image.annotations
+			@annotations.each do |annotation|
+				result_hash["annotation_name"] = annotation.label
+				result_hash["tile_coordinate"] = [annotation.x_point, annotation.y_point]
+				result_hash["width"] = annotation.width
+				result_hash["height"] = annotation.height
+				points = []
+				annotation_points = annotation.data[0][1]["d"].split("M")[1].split("Z")[0].split(" L")
+				annotation_points.each do |point|
+					puts point
+					point_array = point.split(' ')
+					points << [(((point_array[0].to_f)*image.width)/100).to_i, (((point_array[1].to_f)*image.height)/100).to_i]
+				end
+			result_hash["absolute_coordinates"] = points
+			result_hash["annotation_class"] = annotation.annotation_class
+			end
+			output << result_hash
+		end
+		send_data output.to_json, :type => 'application/json; header=present', :disposition => "attachment; filename=#{@project.title.split('.')[0]}_annotations.json"
+	end
 
 	private
 	  def project_params

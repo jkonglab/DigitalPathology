@@ -14,6 +14,7 @@ Rails.application.routes.draw do
 
     member do      
       get 'rerun' => 'projects#rerun'
+      get 'download_all_annotations' => 'projects#download_all_annotations' 
     end
   end
 

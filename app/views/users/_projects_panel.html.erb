@@ -9,7 +9,6 @@
     <button style="float:right" class="btn btn-success">+ Create New Project</button>
   <% end %>
   <br/><br/>
-  <div class="image-table">
     <table class="table table-hover">
       <thead>
         <tr>
@@ -35,7 +34,7 @@
               <td><%= check_box_tag "project_ids[]", project.id, false, class: 'project-check-box'%></td>
               <td class="d-none d-md-table-cell"><%=project.id%></td>
               <td class="d-none d-md-table-cell"><a href="<%=project_path(project.id)%>"><%=project.title%></a></td>
-              <td><%=project.created_at%></td>
+              <td><%=project.created_at.strftime("%m/%d/%Y")%></td>
               <td><%=project.tissue_type%></td>
               <td><%=project.modality%></td>
               <td><%=project.method%></td>
@@ -61,7 +60,6 @@
       <% end %>
     </table>
   </div>
-</div>
 
 <script>
 $("#select_all").click( function() {
