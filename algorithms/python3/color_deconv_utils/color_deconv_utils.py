@@ -133,7 +133,6 @@ def custom_ref(img, Io=240):
         A method for normalizing histology slides for quantitative analysis. M.
         Macenko et al., ISBI 2009
     '''
-
     # reshape image
     img = img.reshape((-1,3))
 

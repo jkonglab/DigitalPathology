@@ -66,12 +66,12 @@ class AnalysisWorker
 	        if @algorithm.title.include? "GPU"
                    file.puts "module load Cuda7.0"
             end
-	        if @algorithm.name.include? "color_deconv"
+	        if @algorithm.name.include? "color_deconv" or "crop_roi"
 		        output_file = @run.run_folder
 	        end
             file.puts "source env3.7/bin/activate"
           end          
-          file.puts "#{parameters}"
+          
           file.puts "python -m main #{@image.tile_folder_path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}"
 
 		elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["julia"]
@@ -82,7 +82,7 @@ class AnalysisWorker
           @run.parameters.each do |parameter|
             parameters = parameters + parameter.to_json + ' '
           end
-	      file.puts "module load Compilers/Julia1.3.0"
+          file.puts "module load Compilers/Julia1.3.0"
           file.puts "cd #{algorithm_path}"
           file.puts "julia julia-adapter.jl #{@image.file.path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}"
         end
@@ -113,7 +113,7 @@ class AnalysisWorker
             ## cp -r #{algorithm_path}/steatosis_neural_net/mrcnn env_3.6/lib/python3.6/site-packages;
             python -m main #{@image.tile_folder_path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}
           }
-        elsif @algorithm.name.include? "color_deconv"
+        elsif @algorithm.name.include? "color_deconv"  or "crop_roi"
 				%x{cd #{algorithm_path};
 				source env3.7/bin/activate;
 				python -m main #{@image.tile_folder_path} #{@run.run_folder} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}
