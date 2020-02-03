@@ -167,7 +167,9 @@ class ImagesController < ApplicationController
         annotation.user_id = current_user.id
         annotation.update_attributes({
           :data=>[contour_svg],
-          :label=>annotation_hash["name"]
+          :label=>annotation_hash["name"],
+          :annotation_class=>annotation_hash["annotation_class"]
+          :annotation_type=>annotation_hash["annotation_type"]
           })
         annotation.save!
       end
@@ -196,7 +198,8 @@ class ImagesController < ApplicationController
       end
 
       result_hash["absolute_coordinates"] = points
-
+      result_hash["annotation_class"] = annotation.annotation_class
+      result_hash["annotation_type"] = annotation.annotation_type
       output << result_hash
     end
 
