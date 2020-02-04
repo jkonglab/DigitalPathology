@@ -168,7 +168,7 @@ class ImagesController < ApplicationController
         annotation.update_attributes({
           :data=>[contour_svg],
           :label=>annotation_hash["name"],
-          :annotation_class=>annotation_hash["annotation_class"]
+          :annotation_class=>annotation_hash["annotation_class"],
           :annotation_type=>annotation_hash["annotation_type"]
           })
         annotation.save!
