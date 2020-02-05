@@ -36,7 +36,7 @@
 					<p><%=key.to_s.gsub('_', ' ').titleize%>: <%=@numerical_result_hash[key.to_sym]%></p>
 				<%end%>
 			<% end %>
-			<%=link_to download_results_run_path(@run.id) do%><span>Download All Results</span><% end %>
+			<%=link_to_if @run.complete?, "<span>Download All Results</span>".html_safe, download_results_run_path(@run.id) do%><% end %>
 			<header>
   				<span style="white-space:pre-wrap;" class="navbar-brand">Parameters</span>
 			</header>
@@ -223,6 +223,5 @@
 		key = $(this).attr('key');
 		retrieveAndSetResults(null);
 	});
-
 
 </script>
