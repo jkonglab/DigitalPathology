@@ -15,66 +15,71 @@ class AnalysisWorker
     @work_folder = "#{@run.run_folder}/#{tile_x.to_s}_#{tile_y.to_s}"
     %x{mkdir #{@work_folder};
       chmod -R ug+rwx #{@work_folder};
-	  chgrp webapp #{@work_folder}
+      chgrp webapp #{@work_folder}
     }
 
     if !Rails.application.config.local_processing
       
       File.open("#{@work_folder}/job.sh", 'w') do |file|
-        	file.puts "#!/bin/bash"
+            file.puts "#!/bin/bash"
             file.puts "#SBATCH -N 1"
             file.puts "#SBATCH -c 1"
             file.puts "#SBATCH -p qDPGPU"
-			if @algorithm.title.include? "GPU"
-				file.puts "#SBATCH --gres gpu:1"
-			end
-			file.puts "#SBATCH -t 1440"
+            if @algorithm.title.include? "GPU"
+                file.puts "#SBATCH --gres gpu:1"
+            end
+            file.puts "#SBATCH -t 1440"
             file.puts "#SBATCH -J a#{run_id}_#{userid}"
             file.puts "#SBATCH -e error%A.err"
             file.puts "#SBATCH -o out%A.out"
             file.puts "#SBATCH -A RS10272"
             file.puts "#SBATCH --oversubscribe"
-			#file.puts "#SBATCH --uid #{user_name}"
-			file.puts "#SBATCH --mem 4000"
-			file.puts "sleep 7s"
+            #file.puts "#SBATCH --uid #{user_name}"
+            file.puts "#SBATCH --mem 4000"
+            file.puts "sleep 7s"
             file.puts "export OMP_NUM_THREADS=4"
-			file.puts "NODE=$(hostname)"
-			file.puts "export MODULEPATH=/apps/Compilers/modules-3.2.10/Debug-Build/Modules/3.2.10/modulefiles/"
+            file.puts "NODE=$(hostname)"
+            file.puts "export MODULEPATH=/apps/Compilers/modules-3.2.10/Debug-Build/Modules/3.2.10/modulefiles/"
 
-        
+
         if @algorithm.language == Algorithm::LANGUAGE_LOOKUP["matlab"]
           parameters = convert_parameters_cell_array_string(@run.parameters)
           file.puts "module load Framework/Matlab2016b"
-		  file.puts "cd #{algorithm_path}"
+          file.puts "cd #{algorithm_path}"
           file.puts "matlab -nodisplay -r \"main('#{@image.tile_folder_path}','#{output_file}',#{parameters},'#{@algorithm.name}',#{@tile_x},#{@tile_y},#{@tile_width},#{@tile_height}); exit;\""
         
         elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["python3"] ||  @algorithm.language == Algorithm::LANGUAGE_LOOKUP["python"] 
           parameters =  ""
 
-		  @run.parameters.each do |parameter|
+          @run.parameters.each do |parameter|
             parameters = parameters + parameter.to_json + ' '
           end
-		  file.puts "cd #{algorithm_path}"
+          file.puts "cd #{algorithm_path}"
           ## FILTHY HACK
           if @algorithm.name == 'steatosis_neural_net'
-			file.puts "module load Compilers/Python3.6"
+            file.puts "module load Compilers/Python3.6"
             file.puts "module load Compiler/Cudalib"
-			file.puts "source env_3.6/bin/activate"
+            file.puts "source env_3.6/bin/activate"
             #file.puts "cp -r #{algorithm_path}/steatosis_neural_net/mrcnn env3.6/lib/python3.6/site-packages"
-	      else
+            file.puts "python -m main #{@image.tile_folder_path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}"
+          else
             file.puts "module load Compilers/Python3.7.4"
-	        if @algorithm.title.include? "GPU"
-                   file.puts "module load Cuda7.0"
+            if @algorithm.title.include? "GPU"
+                file.puts "module load Cuda7.0"
             end
-	        if @algorithm.name.include? "color_deconv" or "crop_roi"
-		        output_file = @run.run_folder
-	        end
+            if @algorithm.name.include? "color_deconv" 
+                output_file = @run.run_folder
+            end
             file.puts "source env3.7/bin/activate"
-          end          
-          
-          file.puts "python -m main #{@image.tile_folder_path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}"
-
-		elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["julia"]
+            file.puts "temp"
+            if @algorithm.name == 'extract_roi'
+              output_file = @run.run_folder
+              file.puts "extract_roi"
+            else
+              file.puts "python -m main #{@image.tile_folder_path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}"
+            end
+          end
+        elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["julia"]
           ## NEEDS MAJOR REFACTORING!
           ## PRETTY MUCH BUILT ONLY TO RUN COLOR DECONV
           parameters = ""
@@ -95,13 +100,12 @@ class AnalysisWorker
 
     else
       if @algorithm.language == Algorithm::LANGUAGE_LOOKUP["matlab"]
-        
         parameters = convert_parameters_cell_array_string(@run.parameters)
-        
+
         %x{cd #{algorithm_path};
           matlab -nodisplay -r "main('#{@image.tile_folder_path}','#{output_file}',#{parameters},'#{@algorithm.name}',#{@tile_x},#{@tile_y},#{@tile_width},#{@tile_height}); exit;"
         }
-        
+
       elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["python3"] ||  @algorithm.language == Algorithm::LANGUAGE_LOOKUP["python"] 
         parameters = @run.parameters
 
@@ -113,16 +117,21 @@ class AnalysisWorker
             ## cp -r #{algorithm_path}/steatosis_neural_net/mrcnn env_3.6/lib/python3.6/site-packages;
             python -m main #{@image.tile_folder_path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}
           }
-        elsif @algorithm.name.include? "color_deconv"  or "crop_roi"
-				%x{cd #{algorithm_path};
-				source env3.7/bin/activate;
-				python -m main #{@image.tile_folder_path} #{@run.run_folder} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}
-				}
-		else
-			  %x{cd #{algorithm_path};
-				source env3.7/bin/activate;
-				python -m main #{@image.tile_folder_path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}
-			  }
+        elsif @algorithm.name.include? "color_deconv"  
+                %x{cd #{algorithm_path};
+                source env3.7/bin/activate;
+                python -m main #{@image.tile_folder_path} #{@run.run_folder} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}
+                }
+        elsif @algorithm.name.include? "extract_roi"  
+                %x{cd #{algorithm_path};
+                source env3.7/bin/activate;
+                file.puts python -m extract_roi #{@image.file_folder_path} #{@image.file_file_path} #{output_file} #{@tile_x} #{@tile_y} #{parameters}
+                }
+        else
+              %x{cd #{algorithm_path};
+                source env3.7/bin/activate;
+                python -m main #{@image.tile_folder_path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}
+              }
         end
     
       elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["julia"]
@@ -142,19 +151,19 @@ class AnalysisWorker
       end
     end
 
-		timer = 0
-		until File.exist?(output_file)
-			timer +=1
-			sleep 1
-			if timer > 36000
-			  break
-			end
-		end
+        timer = 0
+        until File.exist?(output_file)
+            timer +=1
+            sleep 1
+            if timer > 36000
+              break
+            end
+        end
 
     if @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"]
       handle_3d_volume_output_generation
-	elsif @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["image"]
-	  handle_image_output_generation
+    elsif @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["image"]
+      handle_image_output_generation
     else
       sleep 10
       raw = File.read(output_file)
@@ -250,23 +259,23 @@ class AnalysisWorker
   end
   
   def handle_image_output_generation  
-		timer = 0
-		until !Dir.glob(@run.run_folder+'/output*').empty?
-			timer +=1
-			sleep 1
-			if timer > 36000
-			  break
-			end
-		end
-		Dir.entries(@run.run_folder + '/').each do |file_name|
-			if file_name.include?('output') && file_name.include?('.png')
+        timer = 0
+        until !Dir.glob(@run.run_folder+'/output*').empty?
+            timer +=1
+            sleep 1
+            if timer > 36000
+              break
+            end
+        end
+        Dir.entries(@run.run_folder + '/').each do |file_name|
+            if file_name.include?('output') && file_name.include?('.png')
 
-				new_result = @run.results.create!(
-						:run_at => @run.run_at,
-					    :output_file => file_name)
-				new_result.save!
-			end
-		end
+                new_result = @run.results.create!(
+                        :run_at => @run.run_at,
+                        :output_file => file_name)
+                new_result.save!
+            end
+        end
   end
 
   def handle_3d_volume_output_generation
