@@ -121,7 +121,10 @@
 	});
 
 	$('.start-draw').click(startDrawing);
-	$('.stop-draw').click(stopDrawing);
+	$('.stop-draw').click(function(){
+		promptAndSaveAnnotation();
+		stopDrawing();
+	});
 
 	function stopDrawing(){
 		<% if @image.threed? %>
@@ -143,9 +146,52 @@
 		$('.stop-draw').show();
 	}
 
+	var annotation_type = "";
+	$('.annotation-analysis').click(function(){
+			annotation_type =  "Analysis";
+			console.log("analysis");
+		});
+
+	$('.annotation-training').click(function(){
+			annotation_type =  "Training";
+			console.log("training");
+		});
+
+	var annotation_class = "";
+	var i = 0;
+	$(".add-annotation-class").click(function(){
+		i = i+1;
+		var el = document.getElementById("annotation-class-field");
+		var x = document.createElement("input");
+		x.setAttribute("type", "text");
+		x.setAttribute("id", "annotation-class-"+i);
+		var br = document.createElement("br");
+		el.appendChild(x);
+		el.appendChild(br);
+	});
+
+	var all_annotations = []
+
 	function bindAnnotationPrompt(){
 		$( ".openseadragon-canvas svg" ).mouseup(function() {
-				promptAndSaveAnnotation();
+			//promptAndSaveAnnotation();
+			var annotations_arr = viewer.annotations.get();
+	   		var new_annotation = annotations_arr.slice(-1)[0];
+	   		var bbox = $('.openseadragon-canvas svg path').slice(-1)[0].getBBox();
+			new_annotation[1]["d"] = new_annotation[1]["d"] + 'Z';
+			var current_class_element = document.getElementById("annotation-class-"+i);
+			annotation_class = $(current_class_element).val();
+			var annotation_data_dict = {
+				'data': [new_annotation],
+			  	'x': bbox.x,
+			  	'y': bbox.y,
+			  	'width':bbox.width,
+			  	'height':bbox.height,
+				'annotation_class': annotation_class,
+				'annotation_type': annotation_type
+			};
+			all_annotations.push(annotation_data_dict);
+			console.log(all_annotations);
 		});
 	}
 
@@ -159,26 +205,24 @@
 	function promptAndSaveAnnotation(){
 		var annotation_label = prompt("Please label your annotation", "");
 	    if (annotation_label != null) {
-	    	var all_annotations = viewer.annotations.get();
-	   		var new_annotation = all_annotations.slice(-1)[0];
-	   		var bbox = $('.openseadragon-canvas svg path').slice(-1)[0].getBBox();
-
-	    	// Must act on the original array in order to change the existing annotation display
-	    	all_annotations[all_annotations.length-1][1]["d"] = all_annotations[all_annotations.length-1][1]["d"] + 'Z';
-	    	viewer.annotations.set(all_annotations);
-	        $.post( '<%= annotations_path %>.json', {
-			  	'image_id': <%= @image.id %>,
-			  	'label': annotation_label,
-			  	'data': JSON.stringify([new_annotation]),
-			  	'x': bbox.x,
-			  	'y': bbox.y,
-			  	'width':bbox.width,
-			  	'height':bbox.height
-			})
-	        .done(function(partial_data){
-	        	$( ".annotations-table" ).prepend(partial_data);
-	        	bindAnnotationRows();
-	        });
+			for(i=0; i<all_annotations.length; i++)
+			{
+				$.post( '<%= annotations_path %>.json', {
+					'image_id': <%= @image.id %>,
+					'label': annotation_label,
+					'data': JSON.stringify(all_annotations[i]["data"]),
+					'x': all_annotations[i]["x"],
+					'y': all_annotations[i]["y"],
+					'width': all_annotations[i]["width"],
+					'height': all_annotations[i]["height"],
+					'annotation_class': all_annotations[i]["annotation_class"],
+					'annotation_type': all_annotations[i]["annotation_type"],
+				})
+				.done(function(partial_data){
+					$( ".annotations-table" ).prepend(partial_data);
+					bindAnnotationRows();
+				});
+			}
 	    }else{
 	    	viewer.annotations.clean();
 	    }
@@ -220,9 +264,9 @@
 		$("#sliceNavigator").slider({
 			tooltip: 'always'
 		});
-                $("#sliceNavigator").on("slide", function(slideEvt) {
-                        $("#sliderVal").text(slideEvt.value);
-                });		
+        $("#sliceNavigator").on("slide", function(slideEvt) {
+            $("#sliderVal").text(slideEvt.value);
+        });
 		$('#slideUp').bind('click', function(){
 			var currentSlide = slice_slider.bootstrapSlider('getValue');
 			if(currentSlide < <%=@slices.length%>){

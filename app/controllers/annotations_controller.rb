@@ -15,6 +15,7 @@ class AnnotationsController < ApplicationController
     x_point = (params[:x].to_f / 100) * image.width
     y_point = (params[:y].to_f / 100) * image.height
     annotation_class  = params[:annotation_class]
+    annotation_type  = params[:annotation_type]
     @annotation.update_attributes({
       :user_id=>current_user.id,
       :data=> data, 
@@ -23,7 +24,8 @@ class AnnotationsController < ApplicationController
       :y_point=>y_point,
       :width=>width,
       :height=>height,
-      :annotation_class=>annotation_class
+      :annotation_class=>annotation_class,
+      :annotation_type=>annotation_type
       })
 
     render :partial => 'images/annotation_row.html.erb', :locals => { :annotation=>@annotation }
