@@ -19,7 +19,11 @@ class RunsController < ApplicationController
     @results = @algorithm.multioutput ? @run.results.where(:output_key=>@algorithm.multioutput_options[0]["output_key"]).order('id asc') : @run.results.order('id asc')
 
     if @results.count < 10000
-      @results_data = @results.pluck(:svg_data, :id, :exclude)
+      if @algorithm.name.include? "color_deconv" 
+		@results_data = @results.pluck(:svg_data, :id, :exclude, :tile_x, :tile_y)
+      else
+        @results_data = @results.pluck(:svg_data, :id, :exclude)
+	  end
     else
       @results = [0]
       @results_data = [0]

@@ -71,10 +71,9 @@ class AnalysisWorker
                 output_file = @run.run_folder
             end
             file.puts "source env3.7/bin/activate"
-            file.puts "temp"
-            if @algorithm.name == 'extract_roi'
+            if @algorithm.name == "extract_roi"
               output_file = @run.run_folder
-              file.puts "extract_roi"
+              file.puts "python -m extract_roi #{@image.file_folder_path} #{@image.file_file_path} #{output_file} #{@tile_x} #{@tile_y} #{parameters}"
             else
               file.puts "python -m main #{@image.tile_folder_path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}"
             end
@@ -272,6 +271,8 @@ class AnalysisWorker
 
                 new_result = @run.results.create!(
                         :run_at => @run.run_at,
+                        :tile_x => @tile_x,
+                        :tile_y => @tile_y,
                         :output_file => file_name)
                 new_result.save!
             end
