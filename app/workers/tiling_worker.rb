@@ -28,14 +28,14 @@ class TilingWorker
         elsif @algorithm.name == "extract_roi"
             if run.annotation_id != 0
               @annotation = run.annotation
-			  tile_x = @annotation.x_point
-			  tile_y = @annotation.y_point
-			  params = []
-			  params << @annotation.width
-			  params << @annotation.height
-			  @run.update_attributes!(:total_tiles=>num_tiles_counter, :parameters=>params)
+              tile_x = @annotation.x_point
+              tile_y = @annotation.y_point
+              params = []
+              params << @annotation.width
+              params << @annotation.height
+              @run.update_attributes!(:total_tiles=>1, :parameters=>params)
               Sidekiq::Client.push('queue' => 'user_analysis_queue_' + @run.users.first.id.to_s, 'class' =>  AnalysisWorker, 'args' => [run_id, user_id, tile_x, tile_y])
-			end
+            end
         else
             if run.annotation_id != 0
               @annotation = run.annotation
