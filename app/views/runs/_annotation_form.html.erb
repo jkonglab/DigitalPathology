@@ -1,5 +1,5 @@
 <%= form_for(@run) do |f| %>
 	<%= f.label :annotation_id, 'Select Annotation ROI', {class: 'bmd-label-static'} %>
-	<%= f.collection_select :annotation_id, @annotations, :id, :label, {include_blank: 'Whole Slide'}, { class: 'form-control', required: false}%>
+	<%= f.collection_select :annotation_id, @annotations.where(:annotation_type=>'Analysis'), :id, :label, {include_blank: 'Whole Slide'}, { class: 'form-control', required: false}%>
 <% end %>
 

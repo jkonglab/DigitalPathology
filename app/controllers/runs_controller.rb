@@ -19,11 +19,7 @@ class RunsController < ApplicationController
     @results = @algorithm.multioutput ? @run.results.where(:output_key=>@algorithm.multioutput_options[0]["output_key"]).order('id asc') : @run.results.order('id asc')
 
     if @results.count < 10000
-      if @algorithm.name.include? "color_deconv" 
-		@results_data = @results.pluck(:svg_data, :id, :exclude, :tile_x, :tile_y)
-      else
         @results_data = @results.pluck(:svg_data, :id, :exclude)
-	  end
     else
       @results = [0]
       @results_data = [0]
@@ -136,13 +132,18 @@ class RunsController < ApplicationController
     if @runs.length == 1
       run = @runs[0]
       run.destroy
+      FileUtils.rm_rf(run.run_folder)
       return redirect_to runs_path, notice: "Analysis #{run.id} deleted"
     end
   end
 
   def delete
     length = @runs.length
-    @runs.destroy_all
+    @runs.each do |run|
+      run.destroy
+      FileUtils.rm_rf(run.run_folder)
+    end
+    #@runs.destroy_all
     return redirect_to runs_path, notice: "#{length} analyses deleted"
   end
 

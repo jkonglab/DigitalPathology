@@ -41,8 +41,8 @@ class ImagesController < ApplicationController
     @tilesizes = []
     minsize = @image.height > @image.width ? @image.width : @image.height
     [128,256,512,1024,2048].each do |size|
-    	if minsize > size
-        	@tilesizes << size
+        if minsize > size
+            @tilesizes << size
         end
     end	
   end
@@ -83,11 +83,11 @@ class ImagesController < ApplicationController
     length = @images.length
     project = @images.first.project
     @images.each do |image|
-	file_folder = File.expand_path("..", File.dirname(image.file.path))
-	image.destroy
+    file_folder = File.expand_path("..", File.dirname(image.file.path))
+    image.destroy
         FileUtils.rm_rf(file_folder)
     end
-	#@images.destroy_all
+    #@images.destroy_all
     return redirect_to project, notice: "#{length} images deleted"
   end
 
@@ -183,23 +183,33 @@ class ImagesController < ApplicationController
     @annotations = @image.hidden? ? @image.annotations.where(:user_id=>current_user.id).order('id desc') : @image.annotations
     output = []
 
-    @annotations.each do |annotation|
+    @annotations.group_by(&:label).each_pair do |label, data|
       result_hash = {}
-      result_hash["name"] = annotation.label
-      result_hash["tile_coordinate"] = [annotation.x_point, annotation.y_point]
-      result_hash["width"] = annotation.width
-      result_hash["height"] = annotation.height
-      points = []
-      annotation_points = annotation.data[0][1]["d"].split("M")[1].split("Z")[0].split(" L")
-      annotation_points.each do |point|
-        puts point
-        point_array = point.split(' ')
-        points << [(((point_array[0].to_f)*@image.width)/100).to_i, (((point_array[1].to_f)*@image.height)/100).to_i]
+      result_hash["name"] = label
+      result_classes_arr = []
+      @annotations.group_by(&:annotation_class).each_pair do |annotation_class, annotation|
+            result_class = {}
+            result_class["class_label"] = annotation_class
+            result_annotations_arr = []
+            annotation.each do |a|
+                annotation_data = {}
+                annotation_data["tile_coordinate"] = [a.x_point, a.y_point]
+                annotation_data["width"] = a.width
+                annotation_data["height"] = a.height
+                points = []
+                annotation_points = a.data[0][1]["d"].split("M")[1].split("Z")[0].split(" L")
+                annotation_points.each do |point|
+                    puts point
+                    point_array = point.split(' ')
+                    points << [(((point_array[0].to_f)*@image.width)/100).to_i, (((point_array[1].to_f)*@image.height)/100).to_i]
+                end
+                annotation_data["absolute_coordinates"] = points
+                result_annotations_arr << annotation_data
+            end
+            result_class["annotation_data"] = result_annotations_arr
+            result_classes_arr <<  result_class
       end
-
-      result_hash["absolute_coordinates"] = points
-      result_hash["annotation_class"] = annotation.annotation_class
-      result_hash["annotation_type"] = annotation.annotation_type
+      result_hash["annotations"] = result_classes_arr
       output << result_hash
     end
 
