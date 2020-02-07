@@ -40,6 +40,7 @@ class AnalysisWorker
             file.puts "export OMP_NUM_THREADS=4"
             file.puts "NODE=$(hostname)"
             file.puts "export MODULEPATH=/apps/Compilers/modules-3.2.10/Debug-Build/Modules/3.2.10/modulefiles/"
+            file.puts "module load Image_Analysis/Openslide3.4.1"
 
 
         if @algorithm.language == Algorithm::LANGUAGE_LOOKUP["matlab"]
@@ -58,7 +59,7 @@ class AnalysisWorker
           ## FILTHY HACK
           if @algorithm.name == 'steatosis_neural_net'
             file.puts "module load Compilers/Python3.6"
-            file.puts "module load Compiler/Cudalib"
+            file.puts "module load Compilers/Cudalib"
             file.puts "source env_3.6/bin/activate"
             #file.puts "cp -r #{algorithm_path}/steatosis_neural_net/mrcnn env3.6/lib/python3.6/site-packages"
             file.puts "python -m main #{@image.tile_folder_path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}"
@@ -72,10 +73,10 @@ class AnalysisWorker
             end
             file.puts "source env3.7/bin/activate"
             if @algorithm.name == "extract_roi"
-              output_file = @run.run_folder
-              file.puts "python -m extract_roi #{@image.file_folder_path} #{@image.file_file_path} #{output_file} #{@tile_x} #{@tile_y} #{parameters}"
+                output_file = @run.run_folder
+                file.puts "python -m extract_roi #{@image.file_folder_path} #{@image.title} #{output_file} #{@tile_x} #{@tile_y} #{parameters}"
             else
-              file.puts "python -m main #{@image.tile_folder_path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}"
+                file.puts "python -m main #{@image.tile_folder_path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}"
             end
           end
         elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["julia"]
@@ -124,7 +125,7 @@ class AnalysisWorker
         elsif @algorithm.name.include? "extract_roi"  
                 %x{cd #{algorithm_path};
                 source env3.7/bin/activate;
-                file.puts python -m extract_roi #{@image.file_folder_path} #{@image.file_file_path} #{output_file} #{@tile_x} #{@tile_y} #{parameters}
+                python -m extract_roi #{@image.file_folder_path} #{@image.file_file_path} #{output_file} #{@tile_x} #{@tile_y} #{parameters}
                 }
         else
               %x{cd #{algorithm_path};
