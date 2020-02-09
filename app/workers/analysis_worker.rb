@@ -6,17 +6,28 @@ class AnalysisWorker
   def perform(run_id, userid,tile_x, tile_y)
     @run = Run.find(run_id)
     @algorithm = @run.algorithm
+    @annotation = @run.annotation
     @image = @run.image
     @tile_x = tile_x.to_i
     @tile_y = tile_y.to_i
     @tile_width = @run.tile_size
     @tile_height = @run.tile_size
     output_file = File.join(@run.run_folder, "/output_#{tile_x.to_s}_#{tile_y.to_s}.json")
+    roi_type = "dzi"
+    input_folder_path = @image.tile_folder_path
     @work_folder = "#{@run.run_folder}/#{tile_x.to_s}_#{tile_y.to_s}"
     %x{mkdir #{@work_folder};
       chmod -R ug+rwx #{@work_folder};
       chgrp webapp #{@work_folder}
     }
+
+	if @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["image"]
+		@tile_width = @tile_width > 4096 ? 4096 : @tile_width
+		@tile_height = @tile_height > 4096 ? 4096 : @tile_height
+		roi_type = "wholeslide"
+		output_file = @run.run_folder
+		input_folder_path = @image.file_folder_path
+	end
 
     if !Rails.application.config.local_processing
       
@@ -62,22 +73,14 @@ class AnalysisWorker
             file.puts "module load Compilers/Cudalib"
             file.puts "source env_3.6/bin/activate"
             #file.puts "cp -r #{algorithm_path}/steatosis_neural_net/mrcnn env3.6/lib/python3.6/site-packages"
-            file.puts "python -m main #{@image.tile_folder_path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}"
           else
             file.puts "module load Compilers/Python3.7.4"
             if @algorithm.title.include? "GPU"
                 file.puts "module load Cuda7.0"
             end
-            if @algorithm.name.include? "color_deconv" 
-                output_file = @run.run_folder
-            end
             file.puts "source env3.7/bin/activate"
-            if @algorithm.name == "extract_roi"
-                output_file = @run.run_folder
-                file.puts "python -m extract_roi #{@image.file_folder_path} #{@image.title} #{output_file} #{@tile_x} #{@tile_y} #{parameters}"
-            else
-                file.puts "python -m main #{@image.tile_folder_path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}"
-            end
+            file.puts "python -m main #{input_folder_path} #{@image.title} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{roi_type} #{parameters}"
+
           end
         elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["julia"]
           ## NEEDS MAJOR REFACTORING!
@@ -111,26 +114,15 @@ class AnalysisWorker
 
         ## FILTHY HACK
         if @algorithm.name == 'steatosis_neural_net'
-
-          %x{cd #{algorithm_path};
-            source env_3.6/bin/activate;
-            ## cp -r #{algorithm_path}/steatosis_neural_net/mrcnn env_3.6/lib/python3.6/site-packages;
-            python -m main #{@image.tile_folder_path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}
-          }
-        elsif @algorithm.name.include? "color_deconv"  
-                %x{cd #{algorithm_path};
-                source env3.7/bin/activate;
-                python -m main #{@image.tile_folder_path} #{@run.run_folder} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}
-                }
-        elsif @algorithm.name.include? "extract_roi"  
-                %x{cd #{algorithm_path};
-                source env3.7/bin/activate;
-                python -m extract_roi #{@image.file_folder_path} #{@image.file_file_path} #{output_file} #{@tile_x} #{@tile_y} #{parameters}
-                }
+            %x{cd #{algorithm_path};
+                source env_3.6/bin/activate;
+                ## cp -r #{algorithm_path}/steatosis_neural_net/mrcnn env_3.6/lib/python3.6/site-packages;
+                python -m main #{input_folder_path} #{@image.title} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{roi_type} #{parameters}
+              }
         else
-              %x{cd #{algorithm_path};
+            %x{cd #{algorithm_path};
                 source env3.7/bin/activate;
-                python -m main #{@image.tile_folder_path} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{parameters}
+                python -m main #{input_folder_path} #{@image.title} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{roi_type} #{parameters}
               }
         end
     
@@ -151,14 +143,14 @@ class AnalysisWorker
       end
     end
 
-        timer = 0
-        until File.exist?(output_file)
-            timer +=1
-            sleep 1
-            if timer > 36000
-              break
-            end
+    timer = 0
+    until File.exist?(output_file)
+        timer +=1
+        sleep 1
+        if timer > 36000
+            break
         end
+    end
 
     if @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"]
       handle_3d_volume_output_generation
