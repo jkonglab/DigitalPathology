@@ -14,7 +14,7 @@ def main(argv):
     tile_y = int(argv[5])
     tile_width = int(argv[6])
     tile_height = int(argv[7])
-    roi_type = int(argv[8])
+    roi_type = argv[8]
     parameters = argv[9:]
 
     if roi_type == "dzi":
