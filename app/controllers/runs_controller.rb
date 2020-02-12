@@ -107,12 +107,12 @@ class RunsController < ApplicationController
 	elsif algorithm_parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["file"]
 
 	  if !parameter_value.blank?
-              file_path = Rails.root.join('public','uploads',parameter_value)
-              File.open(file_path,'w') do |file|
-                 file.write(parameter_value)
+              file_path = Rails.root.join('public','uploads',parameter_value.original_filename)
+              File.open(file_path,'wb') do |file|
+                 file.write(parameter_value.read)
                  File.chmod(0777, file_path)
               end
-	      parameter_value = parameter_value.to_s
+	      parameter_value = parameter_value.original_filename.to_s
 	  end
 	end
       end
