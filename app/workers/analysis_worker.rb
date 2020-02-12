@@ -22,8 +22,8 @@ class AnalysisWorker
     }
 
 	if @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["image"]
-		@tile_width = @tile_width > 4096 ? 4096 : @tile_width
-		@tile_height = @tile_height > 4096 ? 4096 : @tile_height
+		@tile_width = @annotation.width > 4096 ? 4096 : @annotation.width
+		@tile_height = @annotation.height > 4096 ? 4096 : @annotation.height
 		roi_type = "wholeslide"
 		output_file = @run.run_folder
 		input_folder_path = @image.file_folder_path
@@ -252,7 +252,7 @@ class AnalysisWorker
   
   def handle_image_output_generation  
         timer = 0
-        until !Dir.glob(@run.run_folder+'/output*').empty?
+        until File.exist?(@run.run_folder+'/output.txt')
             timer +=1
             sleep 1
             if timer > 36000

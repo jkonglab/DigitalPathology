@@ -8,6 +8,8 @@ def preprocess(raw_input, output_file_path, parameters):
 def postprocess(main_output, output_file_path):
     roi = main_output
     roi.save(os.path.join(output_file_path, 'output_roi.png'))
+    f = open(os.path.join(output_file_path, 'output.txt'), 'w')
+    f.close()
 
 def main(img, params):
     return img #return ROI from wholeslide

@@ -1,10 +1,12 @@
 import sys
 from time import time, localtime
 import os
-
+import numpy as np
+import cv2
 
 def preprocess(raw_input, output_file_path, parameters):
-    return raw_input
+    img = cv2.cvtColor(np.array(raw_input), cv2.COLOR_RGB2BGR)
+    return img
 
 def postprocess(main_output, output_file_path):
     sys.path.insert(0, './color_deconv_utils')
@@ -14,13 +16,14 @@ def postprocess(main_output, output_file_path):
     function_handler(os.path.join(output_file_path, 'output_H.png'), H)
     function_handler(os.path.join(output_file_path, 'output_E.png'), E)
     function_handler(os.path.join(output_file_path, 'output_input_tile.png'), img)
+    f = open(os.path.join(output_file_path, 'output.txt'), 'w')
+    f.close()
 
 def main(img, params):
     ref = None
     rf_img = None
     sys.path.insert(0, './color_deconv_utils')
     algorithm_module = __import__('color_deconv_utils')
-
     if params[0] == 'HE':
         function_handler = getattr(algorithm_module,'Ref')
         ref = function_handler.get_he_ref()
