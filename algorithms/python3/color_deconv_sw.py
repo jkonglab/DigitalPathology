@@ -3,9 +3,11 @@ import os
 import sys
 import numpy as np
 import cv2
+from PIL import Image
 
 def preprocess(raw_input, output_file_path, parameters):
-    img = cv2.cvtColor(np.array(raw_input), cv2.COLOR_RGB2BGR)
+    img = raw_input.convert('RGB')
+    img = np.array(img)
     return img
 
 

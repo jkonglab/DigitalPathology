@@ -206,8 +206,10 @@ def save_im(fname, arr):
     im_dim = len(arr.shape)
     if USE_CV:
         if im_dim == 3:
+            #cv2.imwrite(fname, cv2.cvtColor(arr[:,:,::-1], cv2.COLOR_BGR2RGB))
             cv2.imwrite(fname, arr[:,:,::-1])
         else:
+            #cv2.imwrite(fname, cv2.cvtColor(arr, cv2.COLOR_BGR2RGB)
             cv2.imwrite(fname, arr)
     else:
         imsave(fname, arr)
