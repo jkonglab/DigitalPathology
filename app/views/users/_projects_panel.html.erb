@@ -9,6 +9,7 @@
     <button style="float:right" class="btn btn-success">+ Create New Project</button>
   <% end %>
   <br/><br/>
+  <div class="image-table table-responsive">
     <table class="table table-hover">
       <thead>
         <tr>
@@ -19,6 +20,7 @@
           <th><%= sort_link @q, :tissue_type, "Tissue Type"%></th>
           <th><%= sort_link @q, :modality, "Modality"%></th>
           <th><%= sort_link @q, :method, "Method"%></th>
+          <th>Images Available</th>
           <th>Privacy</th>
           <th>Owner(s)</th>
           <th></th>
@@ -38,6 +40,7 @@
               <td><%=project.tissue_type%></td>
               <td><%=project.modality%></td>
               <td><%=project.method%></td>
+              <td><%=project.images.count%></td>
               <td><%=project.hidden? ? 'Private' : 'Public' %></td>
               <td>
                 <%=project.users.pluck(:email)%>
@@ -59,6 +62,7 @@
         </tbody>
       <% end %>
     </table>
+  </div>
   </div>
 
 <script>

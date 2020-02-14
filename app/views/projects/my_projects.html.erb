@@ -20,6 +20,7 @@
 			  	<th><%= sort_link @q, :tissue_type, "Location"%></th>
 			  	<th><%= sort_link @q, :modality, "Modality"%></th>
 			  	<th><%= sort_link @q, :method, "Dimension"%></th>
+				<th>Images Available</th>
 			  	<th>Privacy</th>
 			  	<th></th>
 		  	</tr>
@@ -40,6 +41,7 @@
 			  			<td><%=project.tissue_type%></td>
 			  			<td><%=project.modality%></td>
 			  			<td><%=project.method%></td>
+						<td><%=project.images.count%></td>
 			  			<td><%=project.hidden? ? 'Private' : 'Public' %></td>
 			  			 <td>
 		            <div class="dropdown">
