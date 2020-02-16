@@ -21,6 +21,13 @@
 				<p>Completed:<br/><%=@run.updated_at.in_time_zone.to_formatted_s(:db) %> (Took <%=distance_of_time_in_words(Time.at(@run.run_at), @run.updated_at)%>)</p>
 			<% end %>
 
+			<div id="opacity-slider">
+			<header>
+  				<span style="white-space:pre-wrap;" class="navbar-brand">Adjust Opacity</span>
+			</header>
+				<input id="opacity-range" class="border-0" type="range" min="0" max="1" step="0.1" value="1"/>
+			</div>
+
 			<header>
   				<span style="white-space:pre-wrap;" class="navbar-brand">Results</span>
 			</header>
@@ -57,6 +64,13 @@
 			</button>
 	  		<strong>Too many results (>10,000) to show</strong> <br/>Please zoom in to a smaller section of the image to view results.
     	</div>
+		
+		<div style="position: absolute;z-index: 1; right: 0px;" class="roi-too-large-alert alert alert-warning alert-dismissible fade" role="alert">
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+	  		<strong>ROI selected is too large. Analyzed smaller region of selected ROI.</strong> 
+    	</div>
 
 		<div style="height:100%" class="row">
 			<div class="col-12">
@@ -78,6 +92,7 @@
  	var timeout;
  	var currentRequest = null;  
 	var annotation = '<%=raw(@annotation.data.to_json) %>';
+	var stroke_opacity = 1;
 	var viewer = OpenSeadragon({
 		preserveViewport: true,
 	    id:            "openseadragon-container",
@@ -93,6 +108,56 @@
 		element: viewer.element,
 		moveHandler: trackPointer
 	});
+	
+	
+	var overlay = (function setOverlay(){
+	if (<%= @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["image"]%>)
+	{
+		point = new OpenSeadragon.Point (<%= @annotation.x_point %>, <%= @annotation.y_point %>);
+		//viewportPoint = viewer.viewport.imageToViewerElementCoordinates(point);
+		viewportPoint = viewer.viewport.pointFromPixel(point);
+		width = <%= @annotation.width %> > 4096 ? 4096 : <%= @annotation.width %>
+		height = <%= @annotation.height %> > 4096 ? 4096 : <%= @annotation.height %> 
+		viewer.addHandler('open', function(){
+		var elt = document.createElement("div");
+        elt.id = "runtime-overlay";
+        elt.className = "highlight";
+        viewer.addOverlay({
+            element: elt,
+			location: viewer.viewport.imageToViewportRectangle(point.x, point.y, width, height)
+        });
+		});
+		if(<%= @annotation.width %> > 4096 || <%= @annotation.height %> >4096){
+			$('.roi-too-large-alert').addClass('show');
+		}
+		else{
+			$('.roi-too-large-alert').removeClass('show');
+		}
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+	})();
+
+	var opacity = (function initializeOpacitySlider(){
+		if (<%= @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["contour"]%>)
+		{
+			$("#opacity-slider").show();
+		}
+		else
+		{
+			$("#opacity-slider").hide();
+		}
+	})();
+
+	const opacity_range = document.querySelector('#opacity-range')
+	opacity_range.addEventListener('input', function(e){
+		stroke_opacity = e.target.value;
+		//viewer.raiseEvent('open', function(e){retrieveAndSetResults(e, stroke_opacity);});
+		viewer.forceRedraw();
+	});
 
 	function trackPointer(event){
 		var imagePoint = viewer.viewport.viewerElementToImageCoordinates(event.position);
@@ -107,7 +172,7 @@
 
 	viewer.initializeAnnotations();
 	waitForAnnotationInitialize();
-	viewer.addHandler('animation-finish', function(e){retrieveAndSetResults(e);});
+	viewer.addHandler('animation-finish', function(e){retrieveAndSetResults(e, stroke_opacity);});
 
 	function clickEvent(e){
 		if($(e.originalEvent.target).is('circle') || $(e.originalEvent.target).is('path')){
@@ -120,7 +185,7 @@
 	function waitForAnnotationInitialize(){
 	    if(viewer.areAnnotationsActive()){
 	    	clearTimeout(timeout);
-	        retrieveAndSetResults(null);
+	        retrieveAndSetResults(null, stroke_opacity);
 	        viewer.addHandler('canvas-click', clickEvent);
 	    }
 	    else{
@@ -129,7 +194,7 @@
 
 	}
 
-    function generateSVGs(results_data, annotation){
+    function generateSVGs(results_data, annotation, stroke_opacity){
 		var svgs = [];
 		_.each(results_data, function(element, index){
 			try {
@@ -141,6 +206,7 @@
 				element[0][1]["fill-opacity"] = 0.1;
 				element[0][1]["stroke"] = "lime";
 				element[0][1]["stroke-width"] = 8.0;
+				element[0][1]["stroke-opacity"] = stroke_opacity;
 				if(element[2] === true){
 					element[0][1]["fill"] = "red";
 					element[0][1]["stroke"] = "red";
@@ -187,7 +253,7 @@
 		}
     }
 
-    function retrieveAndSetResults(event){
+    function retrieveAndSetResults(event, stroke_opacity){
     	var bounds = viewer.viewport.viewportToImageRectangle(viewer.viewport.getBounds());
 		currentRequest = $.ajax({
 			method: "GET",
@@ -209,11 +275,11 @@
 
 				if(results_data[0] == 0){
 					$('.too-many-results-alert').addClass('show');
-					viewer.annotations.set(generateSVGs([], annotation));
+					viewer.annotations.set(generateSVGs([], annotation, stroke_opacity));
 
 				}else{
 					$('.too-many-results-alert').removeClass('show');
-					viewer.annotations.set(generateSVGs(results_data, annotation));
+					viewer.annotations.set(generateSVGs(results_data, annotation, stroke_opacity));
 				}
     		}
 		});
@@ -221,7 +287,7 @@
 
 	$('.retrieve-results').off('click').click(function(){
 		key = $(this).attr('key');
-		retrieveAndSetResults(null);
+		retrieveAndSetResults(null, stroke_opacity);
 	});
 
 </script>
