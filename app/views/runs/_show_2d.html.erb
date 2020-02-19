@@ -155,8 +155,12 @@
 	const opacity_range = document.querySelector('#opacity-range')
 	opacity_range.addEventListener('input', function(e){
 		stroke_opacity = e.target.value;
-		//viewer.raiseEvent('open', function(e){retrieveAndSetResults(e, stroke_opacity);});
-		viewer.forceRedraw();
+		var current_annotations = viewer.annotations.get();
+		var i;
+		for(i = 0; i < current_annotations.length; i++) {
+			current_annotations[i][1]["stroke-opacity"] = stroke_opacity;
+		}
+		viewer.annotations.set(current_annotations);
 	});
 
 	function trackPointer(event){
@@ -172,7 +176,7 @@
 
 	viewer.initializeAnnotations();
 	waitForAnnotationInitialize();
-	viewer.addHandler('animation-finish', function(e){retrieveAndSetResults(e, stroke_opacity);});
+	viewer.addHandler('animation-finish', function(e){retrieveAndSetResults(e);});
 
 	function clickEvent(e){
 		if($(e.originalEvent.target).is('circle') || $(e.originalEvent.target).is('path')){
@@ -185,16 +189,15 @@
 	function waitForAnnotationInitialize(){
 	    if(viewer.areAnnotationsActive()){
 	    	clearTimeout(timeout);
-	        retrieveAndSetResults(null, stroke_opacity);
+	        retrieveAndSetResults(null);
 	        viewer.addHandler('canvas-click', clickEvent);
 	    }
 	    else{
 	        timeout = setTimeout(waitForAnnotationInitialize, 250);
 	    }
-
 	}
 
-    function generateSVGs(results_data, annotation, stroke_opacity){
+    function generateSVGs(results_data, annotation){
 		var svgs = [];
 		_.each(results_data, function(element, index){
 			try {
@@ -206,7 +209,6 @@
 				element[0][1]["fill-opacity"] = 0.1;
 				element[0][1]["stroke"] = "lime";
 				element[0][1]["stroke-width"] = 8.0;
-				element[0][1]["stroke-opacity"] = stroke_opacity;
 				if(element[2] === true){
 					element[0][1]["fill"] = "red";
 					element[0][1]["stroke"] = "red";
@@ -275,11 +277,11 @@
 
 				if(results_data[0] == 0){
 					$('.too-many-results-alert').addClass('show');
-					viewer.annotations.set(generateSVGs([], annotation, stroke_opacity));
+					viewer.annotations.set(generateSVGs([], annotation));
 
 				}else{
 					$('.too-many-results-alert').removeClass('show');
-					viewer.annotations.set(generateSVGs(results_data, annotation, stroke_opacity));
+					viewer.annotations.set(generateSVGs(results_data, annotation));
 				}
     		}
 		});
@@ -287,7 +289,7 @@
 
 	$('.retrieve-results').off('click').click(function(){
 		key = $(this).attr('key');
-		retrieveAndSetResults(null, stroke_opacity);
+		retrieveAndSetResults(null);
 	});
 
 </script>
