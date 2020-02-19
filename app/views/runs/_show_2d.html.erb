@@ -92,7 +92,6 @@
  	var timeout;
  	var currentRequest = null;  
 	var annotation = '<%=raw(@annotation.data.to_json) %>';
-	var stroke_opacity = 1;
 	var viewer = OpenSeadragon({
 		preserveViewport: true,
 	    id:            "openseadragon-container",
@@ -152,6 +151,7 @@
 		}
 	})();
 
+	var stroke_opacity = 1;
 	const opacity_range = document.querySelector('#opacity-range')
 	opacity_range.addEventListener('input', function(e){
 		stroke_opacity = e.target.value;
@@ -209,6 +209,7 @@
 				element[0][1]["fill-opacity"] = 0.1;
 				element[0][1]["stroke"] = "lime";
 				element[0][1]["stroke-width"] = 8.0;
+				element[0][1]["stroke-opacity"] = stroke_opacity;
 				if(element[2] === true){
 					element[0][1]["fill"] = "red";
 					element[0][1]["stroke"] = "red";
@@ -255,7 +256,7 @@
 		}
     }
 
-    function retrieveAndSetResults(event, stroke_opacity){
+    function retrieveAndSetResults(event){
     	var bounds = viewer.viewport.viewportToImageRectangle(viewer.viewport.getBounds());
 		currentRequest = $.ajax({
 			method: "GET",
