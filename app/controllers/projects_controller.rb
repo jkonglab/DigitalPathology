@@ -81,25 +81,42 @@ class ProjectsController < ApplicationController
 		output = []
 		@images = @project.images.where(:project_id=>params[:id])
 		@images.each do |image|
-			result_hash = {}
-			result_hash["image_title"] = [image.title]
-			@annotations = image.hidden? ? image.annotations.where(:user_id=>current_user.id).order('id desc') : image.annotations
-			@annotations.each do |annotation|
-				result_hash["annotation_name"] = annotation.label
-				result_hash["tile_coordinate"] = [annotation.x_point, annotation.y_point]
-				result_hash["width"] = annotation.width
-				result_hash["height"] = annotation.height
-				points = []
-				annotation_points = annotation.data[0][1]["d"].split("M")[1].split("Z")[0].split(" L")
-				annotation_points.each do |point|
-					puts point
-					point_array = point.split(' ')
-					points << [(((point_array[0].to_f)*image.width)/100).to_i, (((point_array[1].to_f)*image.height)/100).to_i]
+			all_annotations_hash = {}
+			all_annotations_hash["image_title"] = image.title
+			annotations = image.hidden? ? image.annotations.where(:user_id=>current_user.id).order('id desc') : image.annotations
+			image_annotations_arr = []
+			labels = annotations.group_by(&:label)
+			labels.each_pair do |label, data|
+			  image_annotations_hash = {}
+			  image_annotations_hash["name"] = label
+			  result_classes_arr = []
+			  classes = data.group_by(&:annotation_class)
+			  classes.each_pair do |a_class, a_data|
+				classes = {}
+				classes["annotation_class"] = a_class
+				annotation_data_arr = []
+				a_data.each do |a|
+					annotation_data = {}
+					annotation_data["tile_coordinate"] = [a.x_point, a.y_point]
+					annotation_data["width"] = a.width
+					annotation_data["height"] = a.height
+					points = []
+					annotation_points = a.data[0][1]["d"].split("M")[1].split("Z")[0].split(" L")
+					annotation_points.each do |point|
+						point_array = point.split(' ')
+						points << [(((point_array[0].to_f)*image.width)/100).to_i, (((point_array[1].to_f)*image.height)/100).to_i]
+					end
+					annotation_data["absolute_coordinates"] = points
+					annotation_data_arr << annotation_data
 				end
-			result_hash["absolute_coordinates"] = points
-			result_hash["annotation_class"] = annotation.annotation_class
+				classes["annotation_data"] = annotation_data_arr
+				result_classes_arr << classes
+			  end
+			  image_annotations_hash["annotations"] = result_classes_arr
+			  image_annotations_arr << image_annotations_hash
 			end
-			output << result_hash
+			all_annotations_hash["image_annotations"] = image_annotations_arr
+			output << all_annotations_hash
 		end
 		send_data output.to_json, :type => 'application/json; header=present', :disposition => "attachment; filename=#{@project.title.split('.')[0]}_annotations.json"
 	end
