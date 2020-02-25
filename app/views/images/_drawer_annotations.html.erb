@@ -8,15 +8,6 @@
 </header>
 <ul class="list-group">
   <%if current_user %>
-    <button  class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Select Annotation Type<span class="caret"></span></button>
-    <ul class="dropdown-menu">
-      <li><a class="annotation-analysis list-group-item">Analysis</a>
-      </li>
-      <li><a class="annotation-training list-group-item">Training</a>
-      </li>
-    </ul>
-    <button class="add-annotation-class btn-raised btn btn-Primary">Add Class</button>
-	<div id="annotation-class-field"></div>
     <a class="start-draw list-group-item">
       <i class="material-icons" role="presentation">edit</i>Draw
     </a>
@@ -63,9 +54,3 @@
     </tbody>
   </table>
 </ul>
-<script>
-$(".dropdown-menu li a").click(function() {
-  $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
-  $(this).parents(".dropdown").find('.btn').val($(this).data('value'));
-});
-</script>
