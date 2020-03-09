@@ -14,6 +14,7 @@ class AnnotationsController < ApplicationController
     height = (params[:height].to_f / 100) * image.height
     x_point = (params[:x].to_f / 100) * image.width
     y_point = (params[:y].to_f / 100) * image.height
+    
     annotation_class  = params[:annotation_class]
     annotation_type  = params[:annotation_type]
     @annotation.update_attributes({
@@ -35,7 +36,9 @@ class AnnotationsController < ApplicationController
     @annotation = current_user.annotations.where(:id=>params[:id])
     if @annotation.count > 0
       image_id = @annotation.first.image_id
-      @annotation.first.delete
+      label = @annotation.first.label
+      @annotations = current_user.annotations.where(:image_id=>image_id, :label=>label)
+      @annotations.destroy_all
 
       respond_to do |format|
         format.html { redirect_to Image.find(image_id), notice: "Annotation Deleted" }

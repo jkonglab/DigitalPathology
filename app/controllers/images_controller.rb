@@ -160,18 +160,43 @@ class ImagesController < ApplicationController
     json_file = params[:image][:upload].read
     begin
       json = JSON.parse(json_file)
-      json.each do |annotation_hash|
-        annotation = @image.annotations.new
-        contour = annotation_hash["absolute_coordinates"]
-        contour_svg = convert_to_svg_contour(contour, @image)
-        annotation.user_id = current_user.id
-        annotation.update_attributes({
-          :data=>[contour_svg],
-          :label=>annotation_hash["name"],
-          :annotation_class=>annotation_hash["annotation_class"],
-          :annotation_type=>annotation_hash["annotation_type"]
-          })
-        annotation.save!
+      json.each do |annotation_hash|  
+        annotations = annotation_hash["annotations"] 
+        annotations.each do |data|
+            annotation_data = data["annotation_data"]
+            annotation_data.each do |a|
+                annotation = @image.annotations.new
+                annotation.user_id = current_user.id
+                if a["annotation_object"] == "contour"
+                    points = a["absolute_coordinates"]
+                    svg = convert_to_svg_contour(points, @image)
+                elsif a["annotation_object"] == "rectangle"
+                    points = a["rect_coordinates"]
+                    width = a["width"]
+                    height = a["height"]
+                    svg = convert_to_svg_rect(points, width, height, @image)
+                elsif a["annotation_object"] == "circle"
+                    points = a["center_coordinates"]
+                    radius = a["radius"]
+                    svg = convert_to_svg_circle(points, radius, @image)
+                elsif a["annotation_object"] == "point"
+                    points = a["absolute_coordinates"]
+                    svg = convert_to_svg_contour(points, @image)
+                end
+                bbox_coordinates = a["bbox_coordinates"]
+                annotation.update_attributes({
+                  :data=>[svg],
+                  :label=>annotation_hash["name"],
+                  :annotation_class=>data["annotation_class"],
+                  :annotation_type=>a["annotation_type"],
+                  :x_point=>bbox_coordinates[0],
+                  :y_point=>bbox_coordinates[1],
+                  :width=>a["bbox_width"],
+                  :height=>a["bbox_height"]
+                  })
+                annotation.save!
+            end
+        end
       end
       redirect_to @image, notice: "#{json.length} annotations added successfully."
     rescue JSON::ParserError
@@ -194,16 +219,42 @@ class ImagesController < ApplicationController
         annotation_data_arr = []
         a_data.each do |a|
             annotation_data = {}
-            annotation_data["tile_coordinate"] = [a.x_point, a.y_point]
-            annotation_data["width"] = a.width
-            annotation_data["height"] = a.height
-            points = []
-            annotation_points = a.data[0][1]["d"].split("M")[1].split("Z")[0].split(" L")
-            annotation_points.each do |point|
-                point_array = point.split(' ')
-                points << [(((point_array[0].to_f)*@image.width)/100).to_i, (((point_array[1].to_f)*@image.height)/100).to_i]
+            if a.data[0][0] == "path"
+                points = []
+                if a.data[0][1]["d"].include?"L"
+                    annotation_data["annotation_object"] = "contour"
+                    annotation_points = a.data[0][1]["d"].split("M")[1].split("Z")[0].split(" L")
+                    annotation_points.each do |point|
+                        point_array = point.split(' ')
+                        points << [(((point_array[0].to_f)*@image.width)/100).to_i, (((point_array[1].to_f)*@image.height)/100).to_i]
+                    end
+                else
+                    annotation_data["annotation_object"] = "point"
+                    annotation_points = a.data[0][1]["d"].split("M")[1].split("Z")[0]
+                    point_array = annotation_points.split(' ')
+                    points << [(((point_array[0].to_f)*@image.width)/100).to_i, (((point_array[1].to_f)*@image.height)/100).to_i]
+                end
+                annotation_data["bbox_coordinates"] = [a.x_point, a.y_point]
+                annotation_data["bbox_width"] = a.width
+                annotation_data["bbox_height"] = a.height
+                annotation_data["absolute_coordinates"] = points
+            elsif a.data[0][0] == "rect"
+                annotation_data["annotation_object"] = "rectangle"
+                annotation_data["bbox_coordinates"] = [a.x_point, a.y_point]
+                annotation_data["bbox_width"] = a.width
+                annotation_data["bbox_height"] = a.height
+                annotation_data["rect_coordinates"] = [(((a.data[0][1]["x"].to_f)*@image.width)/100).to_i , (((a.data[0][1]["y"].to_f)*@image.height)/100).to_i]
+                annotation_data["width"] = (((a.data[0][1]["width"].to_f)*@image.width)/100).to_i 
+                annotation_data["height"] = (((a.data[0][1]["height"].to_f)*@image.height)/100).to_i 
+            elsif a.data[0][0] == "circle"
+                annotation_data["annotation_object"] = "circle"
+                annotation_data["bbox_coordinates"] = [a.x_point, a.y_point]
+                annotation_data["bbox_width"] = a.width
+                annotation_data["bbox_height"] = a.height
+                annotation_data["center_coordinates"] = [(((a.data[0][1]["cx"].to_f)*@image.width)/100).to_i , (((a.data[0][1]["cy"].to_f)*@image.height)/100).to_i]
+                annotation_data["radius"] = (((a.data[0][1]["r"].to_f)*@image.width)/100).to_i 
             end
-            annotation_data["absolute_coordinates"] = points
+            annotation_data["annotation_type"] = a.annotation_type
             annotation_data_arr << annotation_data
         end
         classes["annotation_data"] = annotation_data_arr

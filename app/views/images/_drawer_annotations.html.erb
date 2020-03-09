@@ -1,5 +1,5 @@
 <span data-tab="drawer-home" class="drawer-link" style="padding:15px;">
-  <i onclick="viewer.annotations.clean()" style="vertical-align:bottom;" class="material-icons" role="presentation">arrow_back</i>
+  <i onclick = "goToDrawerHome();" style="vertical-align:bottom;" class="material-icons" role="presentation">arrow_back</i>
   <span>Back</span>
 </span>
 
@@ -11,10 +11,13 @@
     <a class="start-draw list-group-item">
       <i class="material-icons" role="presentation">edit</i>Draw
     </a>
+    <div class="annotation-tools-form list-group-item" style="display:none;">
+        <%= render partial: "annotation_tools"%>
+    </div>
     <a style="display:none;" class="stop-draw list-group-item">
       <i class="material-icons" role="presentation">cancel</i>Stop Drawing
     </a>
-    <a onclick="viewer.annotations.clean()" class="list-group-item">
+    <a  class="clear-canvas list-group-item">
       <i class="material-icons" role="presentation">delete</i>Clear
     </a>
   <header>

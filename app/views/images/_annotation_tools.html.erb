@@ -1,0 +1,41 @@
+<div class='annotation-type'>
+Select Annotation Type:
+<%= select_tag(:annotation_type, options_for_select([['Analysis',1],['Training',2]]), {:class=>'form-control', :id=>'annotation-type', :prompt=>'Select Annotation Type', :required => true, :onchange=> 'annotationTypeChangeEvent()'}) %>
+</div>
+
+<br>
+
+<div class='annotation-class-text'>
+Annotation Class:
+<%= text_field_tag(:ann_class, value = nil, {:class=>'form-control', :id=>'annotation-class-txt' , :required => true}) %>
+</div>
+
+
+<br>
+<br>
+<div class='annotation-class-button'  style="display:none;" >
+<%= button_tag(:type=>'button', :onclick => 'addAnnotationClass()', :id => 'add-annotation-class') do
+  content_tag(:strong, 'Add Class')
+end %>
+</div>
+<br>
+<br>
+
+<div class='annotation-class-select' style="display:none;" >
+Select Annotation Class:
+<%= select_tag(:annotation_class, options_for_select([]), {:class=>'form-control', :id=>'annotation-class', :prompt=>'Select Annotation Class', :required => true, :onchange=> 'annotationClassChangeEvent()'}) %>
+</div>
+
+<br>
+
+<div class='analysis-annotation-tools' style="display:none;" >
+Select Annotation Tool:
+<%= select_tag(:annotation_tool, options_for_select([['Free Hand',1],['Rectangle',2]]), {:class=>'form-control', :id=>'analysis-annotation-tool', :prompt=>'Select Annotation Tool', :required => true, :onchange=> 'annotationToolChangeEvent()'}) %>
+</div>
+
+<br>
+
+<div class='training-annotation-tools' style="display:none;" >
+Select Annotation Tool:
+<%= select_tag(:annotation_tool, options_for_select([['Free Hand',1],['Rectangle',2],['Circle',3],['Point',4]]), {:class=>'form-control', :id=>'training-annotation-tool', :prompt=>'Select Annotation Tool', :required => true, :onchange=> 'annotationToolChangeEvent()'}) %>
+</div>
