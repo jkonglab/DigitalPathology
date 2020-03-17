@@ -40,7 +40,11 @@ Rails.application.routes.draw do
       get 'download_annotations' => 'images#download_annotations'
     end
   end
-  resources :annotations
+  resources :annotations do
+    collection do
+      post 'delete_selected' => 'annotations#delete_selected'
+    end
+  end
   resources :runs do
     collection do
       get 'annotation_form' => 'runs#annotation_form'

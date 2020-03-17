@@ -87,33 +87,59 @@ class ProjectsController < ApplicationController
 			image_annotations_arr = []
 			labels = annotations.group_by(&:label)
 			labels.each_pair do |label, data|
-			  image_annotations_hash = {}
-			  image_annotations_hash["name"] = label
-			  result_classes_arr = []
-			  classes = data.group_by(&:annotation_class)
-			  classes.each_pair do |a_class, a_data|
-				classes = {}
-				classes["annotation_class"] = a_class
-				annotation_data_arr = []
-				a_data.each do |a|
+				image_annotations_hash = {}
+				image_annotations_hash["name"] = label
+				result_classes_arr = []
+				classes = data.group_by(&:annotation_class)
+				classes.each_pair do |a_class, a_data|
+					classes = {}
+					classes["annotation_class"] = a_class
+					annotation_data_arr = []
+					a_data.each do |a|
 					annotation_data = {}
-					annotation_data["tile_coordinate"] = [a.x_point, a.y_point]
-					annotation_data["width"] = a.width
-					annotation_data["height"] = a.height
-					points = []
-					annotation_points = a.data[0][1]["d"].split("M")[1].split("Z")[0].split(" L")
-					annotation_points.each do |point|
-						point_array = point.split(' ')
-						points << [(((point_array[0].to_f)*image.width)/100).to_i, (((point_array[1].to_f)*image.height)/100).to_i]
+					if a.data[0][0] == "path"
+						points = []
+						if a.data[0][1]["d"].include?"L"
+							annotation_data["annotation_object"] = "contour"
+							annotation_points = a.data[0][1]["d"].split("M")[1].split("Z")[0].split(" L")
+							annotation_points.each do |point|
+								point_array = point.split(' ')
+								points << [(((point_array[0].to_f)*image.width)/100).to_i, (((point_array[1].to_f)*image.height)/100).to_i]
+							end
+						else
+							annotation_data["annotation_object"] = "point"
+							annotation_points = a.data[0][1]["d"].split("M")[1].split("Z")[0]
+							point_array = annotation_points.split(' ')
+							points << [(((point_array[0].to_f)*image.width)/100).to_i, (((point_array[1].to_f)*image.height)/100).to_i]
+						end
+						annotation_data["bbox_coordinates"] = [a.x_point, a.y_point]
+						annotation_data["bbox_width"] = a.width
+						annotation_data["bbox_height"] = a.height
+						annotation_data["absolute_coordinates"] = points
+					elsif a.data[0][0] == "rect"
+						annotation_data["annotation_object"] = "rectangle"
+						annotation_data["bbox_coordinates"] = [a.x_point, a.y_point]
+						annotation_data["bbox_width"] = a.width
+						annotation_data["bbox_height"] = a.height
+						annotation_data["rect_coordinates"] = [(((a.data[0][1]["x"].to_f)*image.width)/100).to_i , (((a.data[0][1]["y"].to_f)*image.height)/100).to_i]
+						annotation_data["width"] = (((a.data[0][1]["width"].to_f)*image.width)/100).to_i 
+						annotation_data["height"] = (((a.data[0][1]["height"].to_f)*image.height)/100).to_i 
+					elsif a.data[0][0] == "circle"
+						annotation_data["annotation_object"] = "circle"
+						annotation_data["bbox_coordinates"] = [a.x_point, a.y_point]
+						annotation_data["bbox_width"] = a.width
+						annotation_data["bbox_height"] = a.height
+						annotation_data["center_coordinates"] = [(((a.data[0][1]["cx"].to_f)*image.width)/100).to_i , (((a.data[0][1]["cy"].to_f)*image.height)/100).to_i]
+						annotation_data["radius"] = (((a.data[0][1]["r"].to_f)*image.width)/100).to_i 
 					end
-					annotation_data["absolute_coordinates"] = points
+					annotation_data["annotation_type"] = a.annotation_type
 					annotation_data_arr << annotation_data
 				end
 				classes["annotation_data"] = annotation_data_arr
 				result_classes_arr << classes
-			  end
-			  image_annotations_hash["annotations"] = result_classes_arr
-			  image_annotations_arr << image_annotations_hash
+			end
+			image_annotations_hash["annotations"] = result_classes_arr
+			image_annotations_arr << image_annotations_hash
 			end
 			all_annotations_hash["image_annotations"] = image_annotations_arr
 			output << all_annotations_hash

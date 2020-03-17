@@ -36,15 +36,29 @@ class AnnotationsController < ApplicationController
     @annotation = current_user.annotations.where(:id=>params[:id])
     if @annotation.count > 0
       image_id = @annotation.first.image_id
-      label = @annotation.first.label
-      @annotations = current_user.annotations.where(:image_id=>image_id, :label=>label)
-      @annotations.destroy_all
+      @annotation.first.delete
 
       respond_to do |format|
         format.html { redirect_to Image.find(image_id), notice: "Annotation Deleted" }
       end
     else
       redirect_back fallback_location: root_path, notice: "You cannot delete those annotations because you lack permissions to do so."
+    end
+  end
+
+  def delete_selected
+    annotation_ids = params[:annotation_ids]
+    unless annotation_ids.nil?
+        length = annotation_ids.length
+        image_id = 0
+        annotation_ids.each do |annotation_id|
+            annotation = current_user.annotations.where(:id=>annotation_id)
+            image_id = annotation.first.image_id
+            annotation.first.delete
+        end
+        respond_to do |format|
+            format.html { redirect_to Image.find(image_id), notice: "#{length} Annotations Deleted" }
+        end
     end
   end
 

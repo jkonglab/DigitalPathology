@@ -38,18 +38,18 @@
 <div id="general-modal" class="modal fade" role="dialog">
     <div class="modal-dialog" style="margin-top:100px;">
            <div class="modal-content">
-             <div class="modal-header">
-                  <h4 id="general-modal-title" class="modal-title"></h4>
-                  <button type="button" class="close" data-dismiss="modal">&times;</button>
-             </div>
+                <div class="modal-header">
+                    <h4 id="general-modal-title" class="modal-title"></h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
             <div class="modal-body">
                 <div class="md-form" style="margin-right: 0">
                     <input type="hidden" id="quick_input_field_key" class="form-control">
-                       <input type="text" id="quick_input_field" class="form-control">
+                    <input type="text" id="quick_input_field" class="form-control">
                 </div>
             </div>
             <div class="modal-footer">
-                   <button onclick="submitData()" class="btn btn-primary">Submit</button>
+                    <button onclick="submitData()" class="btn btn-primary">Submit</button>
             </div>
         </div>
     </div>
@@ -60,7 +60,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                  <h4 id="general-modal-title" class="modal-title">Run Analysis on ROI</h4>
+                <h4 id="general-modal-title" class="modal-title">Run Analysis on ROI</h4>
             </div>
             <div class="modal-body">
                 <%= render partial: "runs/form", locals: { slices: @slices } %>
@@ -134,7 +134,7 @@
         if(clicked_tab == 'drawer-annotations'){
             startDrawing();
         }
-        else if(clicked_tab == 'drawer-home'){
+        else if( clicked_tab == 'drawer-home'){
             goToDrawerHome();
         }
         else{
@@ -174,7 +174,7 @@
 
     function startDrawing(){
         <% if @image.threed? %>
-            slice_slider.bootstrapSlider('setValue', <%=@slices.length/2%>, true, true);
+            slice_slider.bootstrapSlider('setValue', <%=(@slices.length.to_f/2).ceil(0)%>, true, true);
             $('.slider-container').css('opacity', 0);
         <% end %>
         resetAnnotationToolsForm();
@@ -189,6 +189,7 @@
     }
 
     function resetAnnotationToolsForm(){
+        current_class_element = "";
         $('#annotation-class-txt').val("");
         $('.annotation-class-button').hide();
         $('.training-annotation-tools').hide();
@@ -221,6 +222,11 @@
                 $('.analysis-annotation-tools').hide();
                 $('.training-annotation-tools').show();
             }
+        else if(annotation_type == "Select Annotation Type" )
+            {
+                alert("Please Select Annotation Type");
+                stopDrawing();
+            }
     }
 
     function annotationToolChangeEvent(){
@@ -228,45 +234,58 @@
         {
             annotation_tool = $( "#analysis-annotation-tool option:selected" ).text();
             current_class_element = $("#annotation-class-txt").val();
-            if(annotation_tool == 'Free Hand')
+            if(current_class_element == "")
             {
-                viewer.startDrawingFreehand(); 
+                alert("Annotation Class cannot be null !!");
+                stopDrawing();
             }
-            else if(annotation_tool == 'Rectangle')
+            else
             {
-                //TO-DO prompt appears before rect is visible
-                viewer.startDrawingRectangle(); 
+                if(annotation_tool == 'Free Hand')
+                {
+                    viewer.startDrawingFreehand(); 
+                }
+                else if(annotation_tool == 'Rectangle')
+                {
+                    //TO-DO prompt appears before rect is visible
+                    viewer.startDrawingRectangle(); 
+                }
+                bindAnnotation();
             }
-            bindAnnotation();
         }
         else if(annotation_type == 'Training')
         {
             annotation_tool = $( "#training-annotation-tool option:selected" ).text();
-            console.log(annotation_type);
-            console.log(annotation_tool);
-            if(annotation_tool == 'Free Hand')
+            if(current_class_element == "" || current_class_element == "Select Annotation Class" )
             {
-                viewer.startDrawingFreehand(); 
+                alert("Annotation class cannot be null !!");
+                stopDrawing();
             }
-            else if(annotation_tool == 'Rectangle')
+            else
             {
-                viewer.startDrawingRectangle(); 
+                if(annotation_tool == 'Free Hand')
+                {
+                    viewer.startDrawingFreehand(); 
+                }
+                else if(annotation_tool == 'Rectangle')
+                {
+                    viewer.startDrawingRectangle(); 
+                }
+                else if(annotation_tool == 'Circle')
+                {
+                    viewer.startDrawingCircle(); 
+                }
+                else if(annotation_tool == 'Point')
+                {
+                    viewer.startDrawingPoint();
+                }
+                bindAnnotation();
             }
-            else if(annotation_tool == 'Circle')
-            {
-                viewer.startDrawingCircle(); 
-            }
-            else if(annotation_tool == 'Point')
-            {
-                viewer.startDrawingPoint();
-            }
-            bindAnnotation();
         }
     }
 
     var i = 0;
     function addAnnotationClass(){
-        console.log("add button");
         i = i+1;
         var class_text = $("#annotation-class-txt").val();
         var exists = false;
@@ -290,12 +309,10 @@
     }
 
     function bindAnnotation(){
-      console.log("bind new annotation");
       $( ".openseadragon-canvas svg" ).unbind().mouseup(function(e) {
         e.stopPropagation();
         var annotation = viewer.annotations.get();
         var new_annotation = annotation.slice(-1)[0];
-        console.log(new_annotation);
         if(annotation_tool == 'Free Hand' || annotation_tool == 'Point')
         {
             bbox = $('.openseadragon-canvas svg path').slice(-1)[0].getBBox(); 
@@ -311,7 +328,7 @@
         update_all_annotations(new_annotation, bbox);
         if(annotation_type == 'Analysis')
         {
-            stopDrawing();
+          stopDrawing();
         }
       });
     }
@@ -324,19 +341,10 @@
     }
 
     function promptAndSaveAnnotation(){
-        console.log("prompt");
-        console.log(all_annotations);
         annotation_rows = []
-        if(current_class_element == "")
-        {
-            alert("Annotation Class cannot be null !!");
-            //clearCanvas();
-        }
-        else
-        {
-            var annotation_label = prompt("Please label your annotation", "");
-            if (annotation_label != null) {
-                for(i=0; i<all_annotations.length; i++)
+        var annotation_label = prompt("Please label your annotation", "");
+        if (annotation_label != null) {
+            for(i=0; i<all_annotations.length; i++)
                 {
                     $.post( '<%= annotations_path %>.json', {
                         'image_id': <%= @image.id %>,
@@ -350,29 +358,26 @@
                         'annotation_type': all_annotations[i]["annotation_type"]
                     })
                     .done(function(partial_data){
-                        console.log(partial_data);
                         //TO-DO group annotations by label
                         $( ".annotations-table" ).prepend(partial_data);
                         bindAnnotationRows();
                     });
                 }
                 //TO-DO set annotations
-            }
-            else{
-                clearCanvas();
-            }
+        }
+        else{
+            clearCanvas();
         }
     }
 
     function update_all_annotations(annotation_data, bbox){
-        console.log("update_all_annotations");
         //TO-DO update stroke-color
         annotation_data_dict = {
                 'data': [annotation_data],
                 'x': bbox.x,
-                  'y': bbox.y,
-                  'width':bbox.width,
-                  'height':bbox.height,
+                'y': bbox.y,
+                'width':bbox.width,
+                'height':bbox.height,
                 'annotation_class': current_class_element,
                 'annotation_type': annotation_type
             };
@@ -384,7 +389,7 @@
         var changeSlide = function() {
             var slice_num = slice_slider.bootstrapSlider('getValue');
             var current_bounds = viewer.viewport.getBounds();
-            var saved_annotations = viewer.annotations.get();
+            //var saved_annotations = viewer.annotations.get();
             var is_drawing_mode = $('.drawer-annotations').hasClass('active');
 
             $.ajax({
@@ -393,26 +398,16 @@
                   viewer.open('/'+data.dzi_url);
                   image_width = data.width;
                   image_height = data.height;
-                viewer.viewport.fitBounds(current_bounds);
-                stopDrawing();
-                viewer.shutdownAnnotations();
-                viewer.initializeAnnotations();
-                var checkAnnotationsActive = setInterval(function(){
-                    if(viewer.areAnnotationsActive()){
-                        viewer.annotations.set(saved_annotations);
-                        if(is_drawing_mode){
-                            startDrawing();
-                        }else{
-                            stopDrawing();
-                        }
-                        clearInterval(checkAnnotationsActive);
-                    }
-                }, 1)
-                bindAnnotationRows();
+                  viewer.viewport.fitBounds(current_bounds);
+                  if(is_drawing_mode && !viewer.areAnnotationsActive())
+                  {
+                      viewer.initializeAnnotations();
+                  }
             });
         };
 
         var slice_slider = $("#sliceNavigator").bootstrapSlider({reversed : true}).on('change', changeSlide);
+
         $("#sliceNavigator").slider({
             tooltip: 'always'
         });
