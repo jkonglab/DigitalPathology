@@ -1,296 +1,296 @@
 <div class="bmd-layout-container bmd-drawer-f-l bmd-drawer-in">
-	<div id="viewer-sidebar" class="bmd-layout-drawer bg-faded" aria-expanded="false" aria-hidden="false">
-		<span data-tab="drawer-home" class="drawer-link" style="padding:15px;">
-		  <a href="/runs"><i style="vertical-align:bottom;" class="material-icons" role="presentation">arrow_back</i>
-		  <span>Back to All Analyses</span></a>
-		</span>
-		
-		<div class="run-description" style="padding:10px">
-			<header>
-  				<span style="white-space:pre-wrap;" class="navbar-brand">Analysis #<%=@run.id%></span>
-			</header>
-			<p>Status:<br/><%=@run.status_words%></p>
-			<p>Image Title:<br/><%=@image.title%>
-			<% if !@image.parent_id.blank? %>(Slice #: <%=@image.slice_order%>)<% end %></p>
-			<p>Algorithm Ran:<br/><%=@algorithm.title%> (ID: <%=@algorithm.id%>)</p>
-			<% if @run.tile_size && @run.tile_size > 0 %><p>Tile Size:<br/><%=@run.tile_size%> px</p><% end %>
-			<% if @run.run_at %>
-				<p>Started:<br/><%=Time.at(@run.run_at).in_time_zone.to_formatted_s(:db) %></p>
-			<% end %>
-			<%if @run.complete %>
-				<p>Completed:<br/><%=@run.updated_at.in_time_zone.to_formatted_s(:db) %> (Took <%=distance_of_time_in_words(Time.at(@run.run_at), @run.updated_at)%>)</p>
-			<% end %>
+    <div id="viewer-sidebar" class="bmd-layout-drawer bg-faded" aria-expanded="false" aria-hidden="false">
+        <span data-tab="drawer-home" class="drawer-link" style="padding:15px;">
+          <a href="/runs"><i style="vertical-align:bottom;" class="material-icons" role="presentation">arrow_back</i>
+          <span>Back to All Analyses</span></a>
+        </span>
+        
+        <div class="run-description" style="padding:10px">
+            <header>
+                  <span style="white-space:pre-wrap;" class="navbar-brand">Analysis #<%=@run.id%></span>
+            </header>
+            <p>Status:<br/><%=@run.status_words%></p>
+            <p>Image Title:<br/><%=@image.title%>
+            <% if !@image.parent_id.blank? %>(Slice #: <%=@image.slice_order%>)<% end %></p>
+            <p>Algorithm Ran:<br/><%=@algorithm.title%> (ID: <%=@algorithm.id%>)</p>
+            <% if @run.tile_size && @run.tile_size > 0 %><p>Tile Size:<br/><%=@run.tile_size%> px</p><% end %>
+            <% if @run.run_at %>
+                <p>Started:<br/><%=Time.at(@run.run_at).in_time_zone.to_formatted_s(:db) %></p>
+            <% end %>
+            <%if @run.complete %>
+                <p>Completed:<br/><%=@run.updated_at.in_time_zone.to_formatted_s(:db) %> (Took <%=distance_of_time_in_words(Time.at(@run.run_at), @run.updated_at)%>)</p>
+            <% end %>
 
-			<div id="opacity-slider">
-			<header>
-  				<span style="white-space:pre-wrap;" class="navbar-brand">Adjust Opacity</span>
-			</header>
-				<input id="opacity-range" class="border-0" type="range" min="0" max="1" step="0.1" value="1"/>
-			</div>
+            <div id="opacity-slider">
+            <header>
+                  <span style="white-space:pre-wrap;" class="navbar-brand">Adjust Opacity</span>
+            </header>
+                <input id="opacity-range" class="border-0" type="range" min="0" max="1" step="0.1" value="1"/>
+            </div>
 
-			<header>
-  				<span style="white-space:pre-wrap;" class="navbar-brand">Results</span>
-			</header>
-			<% if @algorithm.multioutput %>
-				<% @algorithm.multioutput_options.each do |option| %>
-					<% if [Algorithm::OUTPUT_TYPE_LOOKUP["points"], Algorithm::OUTPUT_TYPE_LOOKUP["contour"]].include?(option["output_type"])%>
-						<a href="#" class="retrieve-results" key="<%=option["output_key"]%>">
-							<p>Display <%=option["output_key"].gsub('_', ' ').titleize.pluralize%></p>
-						</a>
-					<%end %>
-				<% end %>
-				<% @numerical_result_hash.keys.each do |key|%>
-					<p><%=key.to_s.gsub('_', ' ').titleize%>: <%=@numerical_result_hash[key.to_sym]%></p>
-				<%end%>
-			<% end %>
-			<%=link_to_if @run.complete?, "<span>Download All Results</span>".html_safe, download_results_run_path(@run.id) do%><% end %>
-			<header>
-  				<span style="white-space:pre-wrap;" class="navbar-brand">Parameters</span>
-			</header>
-		</div>
-		<ul>
-		<% i = 0 %>
-		<% @algorithm.parameters.sort_by { |k| k["order"] }.each do |parameter|%> 
-	 		<li><%=parameter["title"]%> <b><%=@run.parameters[i]%></b></li>
-	 		<% i += 1 %>
-		<% end %>
-		</ul>
+            <header>
+                  <span style="white-space:pre-wrap;" class="navbar-brand">Results</span>
+            </header>
+            <% if @algorithm.multioutput %>
+                <% @algorithm.multioutput_options.each do |option| %>
+                    <% if [Algorithm::OUTPUT_TYPE_LOOKUP["points"], Algorithm::OUTPUT_TYPE_LOOKUP["contour"]].include?(option["output_type"])%>
+                        <a href="#" class="retrieve-results" key="<%=option["output_key"]%>">
+                            <p>Display <%=option["output_key"].gsub('_', ' ').titleize.pluralize%></p>
+                        </a>
+                    <%end %>
+                <% end %>
+                <% @numerical_result_hash.keys.each do |key|%>
+                    <p><%=key.to_s.gsub('_', ' ').titleize%>: <%=@numerical_result_hash[key.to_sym]%></p>
+                <%end%>
+            <% end %>
+            <%=link_to_if @run.complete?, "<span>Download All Results</span>".html_safe, download_results_run_path(@run.id) do%><% end %>
+            <header>
+                  <span style="white-space:pre-wrap;" class="navbar-brand">Parameters</span>
+            </header>
+        </div>
+        <ul>
+        <% i = 0 %>
+        <% @algorithm.parameters.sort_by { |k| k["order"] }.each do |parameter|%> 
+             <li><%=parameter["title"]%> <b><%=@run.parameters[i]%></b></li>
+             <% i += 1 %>
+        <% end %>
+        </ul>
     </div>
 
     <div class="bmd-layout-content">
-    	<div style="position: absolute;z-index: 1; right: 0px;" class="too-many-results-alert alert alert-warning alert-dismissible fade" role="alert">
-			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-				<span aria-hidden="true">&times;</span>
-			</button>
-	  		<strong>Too many results (>10,000) to show</strong> <br/>Please zoom in to a smaller section of the image to view results.
-    	</div>
-		
-		<div style="position: absolute;z-index: 1; right: 0px;" class="roi-too-large-alert alert alert-warning alert-dismissible fade" role="alert">
-			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-				<span aria-hidden="true">&times;</span>
-			</button>
-	  		<strong>ROI selected is too large. Analyzed smaller region of selected ROI.</strong> 
-    	</div>
+        <div style="position: absolute;z-index: 1; right: 0px;" class="too-many-results-alert alert alert-warning alert-dismissible fade" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+              <strong>Too many results (>10,000) to show</strong> <br/>Please zoom in to a smaller section of the image to view results.
+        </div>
+        
+        <div style="position: absolute;z-index: 1; right: 0px;" class="roi-too-large-alert alert alert-warning alert-dismissible fade" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+              <strong>ROI selected is too large. Analyzed smaller region of selected ROI.</strong> 
+        </div>
 
-		<div style="height:100%" class="row">
-			<div class="col-12">
-				<div style="height:100%" id="openseadragon-container" class="openseadragon">
-				</div>
-			</div>
-		</div>
-	</div>
-	<div style="position: fixed; bottom: 0; width: 150; right: 0; z-index: 100; color:white; background: rgba(0,0,0,.5); padding: 5px; text-align: center;" class="position-box">
-		x: <span id="position-text-x"></span><br/>
-		y: <span id="position-text-y"></span>
+        <div style="height:100%" class="row">
+            <div class="col-12">
+                <div style="height:100%" id="openseadragon-container" class="openseadragon">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="position: fixed; bottom: 0; width: 150; right: 0; z-index: 100; color:white; background: rgba(0,0,0,.5); padding: 5px; text-align: center;" class="position-box">
+        x: <span id="position-text-x"></span><br/>
+        y: <span id="position-text-y"></span>
 
-	</div>
+    </div>
 </div>
 
 <script>
- 	var results_data = JSON.parse('<%= raw(@results_data.to_json) %>');
- 	var key;
- 	var timeout;
- 	var currentRequest = null;  
-	var annotation = '<%=raw(@annotation.data.to_json) %>';
-	var viewer = OpenSeadragon({
-		preserveViewport: true,
-	    id:            "openseadragon-container",
-	    prefixUrl:     "/openseadragon/images/",
-	    tileSources:   "/<%=@image.dzi_url%>",
-	    maxZoomPixelRatio: 2.0,
-	    minPixelRatio: 0.5,
-	    timeout: 100000,
-	    imageLoaderLimit: 7
-	});
-	var exclude_indices = [];
-	var mouse_tracker = new OpenSeadragon.MouseTracker({
-		element: viewer.element,
-		moveHandler: trackPointer
-	});
-	
-	
-	var overlay = (function setOverlay(){
-	if (<%= @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["image"]%>)
-	{
-		point = new OpenSeadragon.Point (<%= @annotation.x_point %>, <%= @annotation.y_point %>);
-		//viewportPoint = viewer.viewport.imageToViewerElementCoordinates(point);
-		viewportPoint = viewer.viewport.pointFromPixel(point);
-		width = <%= @annotation.width %> > 4096 ? 4096 : <%= @annotation.width %>
-		height = <%= @annotation.height %> > 4096 ? 4096 : <%= @annotation.height %> 
-		viewer.addHandler('open', function(){
-		var elt = document.createElement("div");
+     var results_data = JSON.parse('<%= raw(@results_data.to_json) %>');
+     var key;
+     var timeout;
+     var currentRequest = null;  
+    var annotation = '<%=raw(@annotation.data.to_json) %>';
+    var viewer = OpenSeadragon({
+        preserveViewport: true,
+        id:            "openseadragon-container",
+        prefixUrl:     "/openseadragon/images/",
+        tileSources:   "/<%=@image.dzi_url%>",
+        maxZoomPixelRatio: 2.0,
+        minPixelRatio: 0.5,
+        timeout: 100000,
+        imageLoaderLimit: 7
+    });
+    var exclude_indices = [];
+    var mouse_tracker = new OpenSeadragon.MouseTracker({
+        element: viewer.element,
+        moveHandler: trackPointer
+    });
+    
+    
+    var overlay = (function setOverlay(){
+    if (<%= @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["image"]%>)
+    {
+        point = new OpenSeadragon.Point (<%= @annotation.x_point.blank? ? 0 : @annotation.x_point %>, <%= @annotation.y_point.blank? ? 0 : @annotation.y_point %>);
+        //viewportPoint = viewer.viewport.imageToViewerElementCoordinates(point);
+        viewportPoint = viewer.viewport.pointFromPixel(point);
+        width = <%= @annotation.width.blank? ? 0 :  @image.width %> > 4096 ? 4096 : <%= @annotation.width.blank? ? 0 :  @image.width %>
+        height = <%= @annotation.height.blank? ? 0 :  @image.height %> > 4096 ? 4096 : <%= @annotation.height.blank? ? 0 :  @image.height %> 
+        viewer.addHandler('open', function(){
+        var elt = document.createElement("div");
         elt.id = "runtime-overlay";
         elt.className = "highlight";
         viewer.addOverlay({
             element: elt,
-			location: viewer.viewport.imageToViewportRectangle(point.x, point.y, width, height)
+            location: viewer.viewport.imageToViewportRectangle(point.x, point.y, width, height)
         });
-		});
-		if(<%= @annotation.width %> > 4096 || <%= @annotation.height %> >4096){
-			$('.roi-too-large-alert').addClass('show');
-		}
-		else{
-			$('.roi-too-large-alert').removeClass('show');
-		}
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-	})();
+        });
+        if(<%= @annotation.width.blank? ? 0 :  @image.width %> > 4096 || <%= @annotation.height.blank? ? 0 :  @image.height %> >4096){
+            $('.roi-too-large-alert').addClass('show');
+        }
+        else{
+            $('.roi-too-large-alert').removeClass('show');
+        }
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+    })();
 
-	var opacity = (function initializeOpacitySlider(){
-		if (<%= @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["contour"]%>)
-		{
-			$("#opacity-slider").show();
-		}
-		else
-		{
-			$("#opacity-slider").hide();
-		}
-	})();
+    var opacity = (function initializeOpacitySlider(){
+        if (<%= @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["contour"]%>)
+        {
+            $("#opacity-slider").show();
+        }
+        else
+        {
+            $("#opacity-slider").hide();
+        }
+    })();
 
-	var stroke_opacity = 1;
-	const opacity_range = document.querySelector('#opacity-range')
-	opacity_range.addEventListener('input', function(e){
-		stroke_opacity = e.target.value;
-		var current_annotations = viewer.annotations.get();
-		var i;
-		for(i = 0; i < current_annotations.length; i++) {
-			current_annotations[i][1]["stroke-opacity"] = stroke_opacity;
-		}
-		viewer.annotations.set(current_annotations);
-	});
+    var stroke_opacity = 1;
+    const opacity_range = document.querySelector('#opacity-range')
+    opacity_range.addEventListener('input', function(e){
+        stroke_opacity = e.target.value;
+        var current_annotations = viewer.annotations.get();
+        var i;
+        for(i = 0; i < current_annotations.length; i++) {
+            current_annotations[i][1]["stroke-opacity"] = stroke_opacity;
+        }
+        viewer.annotations.set(current_annotations);
+    });
 
-	function trackPointer(event){
-		var imagePoint = viewer.viewport.viewerElementToImageCoordinates(event.position);
-		if(imagePoint.x >=0 && imagePoint.x <= <%=@image.width%> && imagePoint.y >=0 && imagePoint.y <= <%=@image.height%>){
-			$('#position-text-x').html(String(imagePoint.x.toFixed(2)));
-			$('#position-text-y').html(String(imagePoint.y.toFixed(2)));
-		}else{
-			$('#position-text-x').html("");
-			$('#position-text-y').html("");
-		}
-	}
+    function trackPointer(event){
+        var imagePoint = viewer.viewport.viewerElementToImageCoordinates(event.position);
+        if(imagePoint.x >=0 && imagePoint.x <= <%=@image.width%> && imagePoint.y >=0 && imagePoint.y <= <%=@image.height%>){
+            $('#position-text-x').html(String(imagePoint.x.toFixed(2)));
+            $('#position-text-y').html(String(imagePoint.y.toFixed(2)));
+        }else{
+            $('#position-text-x').html("");
+            $('#position-text-y').html("");
+        }
+    }
 
-	viewer.initializeAnnotations();
-	waitForAnnotationInitialize();
-	viewer.addHandler('animation-finish', function(e){retrieveAndSetResults(e);});
+    viewer.initializeAnnotations();
+    waitForAnnotationInitialize();
+    viewer.addHandler('animation-finish', function(e){retrieveAndSetResults(e);});
 
-	function clickEvent(e){
-		if($(e.originalEvent.target).is('circle') || $(e.originalEvent.target).is('path')){
-			var index = $(e.originalEvent.target).attr('index');
-			e.preventDefaultAction = true;
-			excludeResult(index);
-		}
-	}
+    function clickEvent(e){
+        if($(e.originalEvent.target).is('circle') || $(e.originalEvent.target).is('path')){
+            var index = $(e.originalEvent.target).attr('index');
+            e.preventDefaultAction = true;
+            excludeResult(index);
+        }
+    }
 
-	function waitForAnnotationInitialize(){
-	    if(viewer.areAnnotationsActive()){
-	    	clearTimeout(timeout);
-	        retrieveAndSetResults(null);
-	        viewer.addHandler('canvas-click', clickEvent);
-	    }
-	    else{
-	        timeout = setTimeout(waitForAnnotationInitialize, 250);
-	    }
-	}
+    function waitForAnnotationInitialize(){
+        if(viewer.areAnnotationsActive()){
+            clearTimeout(timeout);
+            retrieveAndSetResults(null);
+            viewer.addHandler('canvas-click', clickEvent);
+        }
+        else{
+            timeout = setTimeout(waitForAnnotationInitialize, 250);
+        }
+    }
 
     function generateSVGs(results_data, annotation){
-		var svgs = [];
-		_.each(results_data, function(element, index){
-			try {
-			if(element[0][0] == "circle" || element[0][0] == "path"){
-				element[0][1]["index"] = index;
-				element[0][1]["r"] = 0.02;
-				element[0][1]["data-id"] = element[1];
-				element[0][1]["fill"] = "lime"
-				element[0][1]["fill-opacity"] = 0.1;
-				element[0][1]["stroke"] = "lime";
-				element[0][1]["stroke-width"] = 8.0;
-				element[0][1]["stroke-opacity"] = stroke_opacity;
-				if(element[2] === true){
-					element[0][1]["fill"] = "red";
-					element[0][1]["stroke"] = "red";
-					element[0][1]["exclude"] = true;
-				}
-			}
-			svgs.push(element[0]);
-			}
-			catch(error){
-			}
-		});
+        var svgs = [];
+        _.each(results_data, function(element, index){
+            try {
+            if(element[0][0] == "circle" || element[0][0] == "path"){
+                element[0][1]["index"] = index;
+                element[0][1]["r"] = 0.02;
+                element[0][1]["data-id"] = element[1];
+                element[0][1]["fill"] = "lime"
+                element[0][1]["fill-opacity"] = 0.1;
+                element[0][1]["stroke"] = "lime";
+                element[0][1]["stroke-width"] = 8.0;
+                element[0][1]["stroke-opacity"] = stroke_opacity;
+                if(element[2] === true){
+                    element[0][1]["fill"] = "red";
+                    element[0][1]["stroke"] = "red";
+                    element[0][1]["exclude"] = true;
+                }
+            }
+            svgs.push(element[0]);
+            }
+            catch(error){
+            }
+        });
 
-		if(annotation && annotation != 'null'){
-			var annotation_data = JSON.parse(annotation)[0];
-			svgs.push(annotation_data);
-		}
-		return svgs;
-	}
+        if(annotation && annotation != 'null'){
+            var annotation_data = JSON.parse(annotation)[0];
+            svgs.push(annotation_data);
+        }
+        return svgs;
+    }
 
     function excludeResult(index){
-	   	var current_annotations = viewer.annotations.get();
+           var current_annotations = viewer.annotations.get();
 
-		if (index > -1) {
-			var id = current_annotations[index][1]["data-id"];
-			var action = current_annotations[index][1]["exclude"] === true ? 'include' : 'exclude';
+        if (index > -1) {
+            var id = current_annotations[index][1]["data-id"];
+            var action = current_annotations[index][1]["exclude"] === true ? 'include' : 'exclude';
 
-			$.ajax({
-  				method: "PUT",
-  				url: "/results/"+id+"/"+action+".json"
-			})
-	  		.done(function() {
-	  			if(action == 'exclude'){
-    				current_annotations[index][1]["fill"] = "red";
-    				current_annotations[index][1]["stroke"] = "red";
-    				current_annotations[index][1]["exclude"] = true;
-    			}else{
-    				current_annotations[index][1]["fill"] = "lime";
-    				current_annotations[index][1]["stroke"] = "lime";
-    				current_annotations[index][1]["exclude"] = false;
+            $.ajax({
+                  method: "PUT",
+                  url: "/results/"+id+"/"+action+".json"
+            })
+              .done(function() {
+                  if(action == 'exclude'){
+                    current_annotations[index][1]["fill"] = "red";
+                    current_annotations[index][1]["stroke"] = "red";
+                    current_annotations[index][1]["exclude"] = true;
+                }else{
+                    current_annotations[index][1]["fill"] = "lime";
+                    current_annotations[index][1]["stroke"] = "lime";
+                    current_annotations[index][1]["exclude"] = false;
 
-    			}
-				viewer.annotations.set(current_annotations);
-	  		});
-		}
+                }
+                viewer.annotations.set(current_annotations);
+              });
+        }
     }
 
     function retrieveAndSetResults(event){
-    	var bounds = viewer.viewport.viewportToImageRectangle(viewer.viewport.getBounds());
-		currentRequest = $.ajax({
-			method: "GET",
-			url: "/runs/<%=@run.id%>/get_results.json?",
-			data: { 
-    			key: key, 
-    			x: bounds.x,
-    			y: bounds.y, 
-    			width: bounds.width,
-    			height: bounds.height
-  			},
-  			beforeSend : function()    {           
-        		if(currentRequest != null) {
-            		currentRequest.abort();
-        		}
-    		},
-    		success: function(results_data) {
-				viewer.annotations.clean();
+        var bounds = viewer.viewport.viewportToImageRectangle(viewer.viewport.getBounds());
+        currentRequest = $.ajax({
+            method: "GET",
+            url: "/runs/<%=@run.id%>/get_results.json?",
+            data: { 
+                key: key, 
+                x: bounds.x,
+                y: bounds.y, 
+                width: bounds.width,
+                height: bounds.height
+              },
+              beforeSend : function()    {           
+                if(currentRequest != null) {
+                    currentRequest.abort();
+                }
+            },
+            success: function(results_data) {
+                viewer.annotations.clean();
 
-				if(results_data[0] == 0){
-					$('.too-many-results-alert').addClass('show');
-					viewer.annotations.set(generateSVGs([], annotation));
+                if(results_data[0] == 0){
+                    $('.too-many-results-alert').addClass('show');
+                    viewer.annotations.set(generateSVGs([], annotation));
 
-				}else{
-					$('.too-many-results-alert').removeClass('show');
-					viewer.annotations.set(generateSVGs(results_data, annotation));
-				}
-    		}
-		});
+                }else{
+                    $('.too-many-results-alert').removeClass('show');
+                    viewer.annotations.set(generateSVGs(results_data, annotation));
+                }
+            }
+        });
     }
 
-	$('.retrieve-results').off('click').click(function(){
-		key = $(this).attr('key');
-		retrieveAndSetResults(null);
-	});
+    $('.retrieve-results').off('click').click(function(){
+        key = $(this).attr('key');
+        retrieveAndSetResults(null);
+    });
 
 </script>

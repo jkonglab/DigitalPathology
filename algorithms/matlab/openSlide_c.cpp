@@ -44,7 +44,7 @@
 #include <string>
 
 using namespace std;
-#define PRId64 "lld"
+#define PRId64_2 "lld"
 
 //mex -I/opt/local/include/openslide/ -L/opt/local/lib -lopenslide openSlide_c.cpp
 
@@ -109,7 +109,7 @@ int getRegionImage(char *inputNDPI, unsigned char *ROI, long SX, long SY, long w
     //openslide_read_region(osr, buf, SX, SY, 0, width, height);
     openslide_read_region(osr, buf, SX, SY, level, width, height);
     
-    //printf("%s_%" PRId64 "_%" PRId64 "_%" PRId64 "_%" PRId64 "\n", inputNDPI, SX, SY, width,height);
+    //printf("%s_%" PRId64_2 "_%" PRId64_2 "_%" PRId64_2 "_%" PRId64_2 "\n", inputNDPI, SX, SY, width,height);
     printf("%s_%ld_%ld_%ld_%ld\n", inputNDPI, SX, SY, width,height);
     
     //printf("%s_%lld_%lld_%lld_%lld\n", inputNDPI, SX, SY, width,height);
@@ -158,7 +158,7 @@ int getThumbnailWSI_getSize(char *inputNDPI, int length, int64_t *thumb_width, i
         temp = width<height?width:height;//make sure that even the smaller one is larger than length
         if(temp>=length)//this layer can be used for extracting thumbnail
             break;
-        printf("%" PRId64 " layer is not valide\n",i);
+        printf("%" PRId64_2 " layer is not valide\n",i);
 		//printf("%lld layer is not valide\n",i);
 
     }
@@ -167,7 +167,7 @@ int getThumbnailWSI_getSize(char *inputNDPI, int length, int64_t *thumb_width, i
     
     openslide_close(osr);
     
-    //printf("Layer:%d for %s is %" PRId64 "x%" PRId64 " pixels\n", validlayer, inputNDPI, width, height);
+    //printf("Layer:%d for %s is %" PRId64_2 "x%" PRId64_2 " pixels\n", validlayer, inputNDPI, width, height);
     
 	*w = width;
     *h = height;
@@ -176,7 +176,7 @@ int getThumbnailWSI_getSize(char *inputNDPI, int length, int64_t *thumb_width, i
     width /= temp;
     height /= temp;
     
-	//printf("The generating thumbnail for %s is %" PRId64 "x%" PRId64 " pixels\n", inputNDPI, width, height);
+	//printf("The generating thumbnail for %s is %" PRId64_2 "x%" PRId64_2 " pixels\n", inputNDPI, width, height);
 
     *thumb_width = width;
     *thumb_height = height;
@@ -298,6 +298,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
     mexUnlock();
     
     type = mxGetScalar(prhs[nrhs-1]);
+
     switch (type) {
         case 1:
             number_dims=3;
@@ -337,18 +338,17 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
             }
             else {mexErrMsgTxt("input parameters are wrong for type==1.");}
             
-            plhs[0] = mxCreateNumericArray(0,0,mxUINT8_CLASS,mxREAL);
-            mxSetData(plhs[0], mxMalloc(sizeof(unsigned char)*width*height*3));
-            mxSetDimensions(plhs[0], (const mwSize*) dim_array, number_dims);
+            plhs[0] = mxCreateNumericArray(number_dims,(const mwSize*) dim_array, mxUINT8_CLASS, mxREAL);
+            //mxSetData(plhs[0], mxMalloc(sizeof(unsigned char)*width*height*3));
+            //mxSetDimensions(plhs[0], (const mwSize*) dim_array, number_dims);
             image = (unsigned char *) mxGetData(plhs[0]);
-            
             getRegionImage(inputNDPI, image, x, y, width, height, level);
 //             
 //             for(int i=0; i<height; i++)
 //                for(int j=0; j<width; j++)
 //                    printf("row:%d \t col:%d \tR=%d,G=%d,B=%d\n", i,j,image[height*j+i], image[height*width+height*j+i], image[height*width*2+height*j+i]);
 //             
-            
+            //mxFree(image);
             break;
 
         case 2:
@@ -360,7 +360,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
             plhs[1] = mxCreateDoubleScalar(dim_array[1]);
             
             break;
-        
+
         case 3:
             number_dims=3;
             length = mxGetScalar(prhs[1]);
@@ -389,11 +389,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
             plhs[2] = mxCreateNumericMatrix(1, 1, mxINT64_CLASS, mxREAL);
             temp = (int64_t *) mxGetData(plhs[2]);
             *temp = thumb_width;
-            
+
             break;
-        
+
         case 4:
-            
             getProperties(inputNDPI, validlayer, property);
             
             plhs[0] = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);

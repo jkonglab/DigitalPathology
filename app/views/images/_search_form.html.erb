@@ -1,59 +1,62 @@
 <div style='text-align:center'>
-	 <button class="btn btn-primary btn-raised" type="button" data-toggle="collapse" data-target="#searchForm" aria-expanded="false" aria-controls="searchForm">
-	    Search & Filter
-	 </button>
-	 </div>
+     <button class="btn btn-primary btn-raised" type="button" data-toggle="collapse" data-target="#searchForm" aria-expanded="false" aria-controls="searchForm">
+        Search & Filter
+     </button>
+     </div>
 <div class="collapse" id="searchForm">
   <div id="searchFormCard" class="card card-body">
-		<div id="searchFormCardContent">
-		</div>
-	</div>
+        <div id="searchFormCardContent">
+        </div>
+    </div>
 </div>
 
 <script>
-	var SearchForm = Backbone.Model.extend({
-		data: {
-			'processing': 'Complete'
-		},
-	    schema: {
-	  		title:
-	  			{ title: 'Image Title', 
-	  				type: 'Text', 
-	  				editorClass: 'form-control',
-	  				editorAttrs: { name: 'q[title]' }
-	  			},
-	      processing:
-	      	{ title: 'Upload Status', 
-	      		type: 'Select', 
-	      		options: ['Complete', 'Processing'], 
-	      		editorClass: 'form-control',
-	      		editorAttrs: { name: 'q[processing]'}
-	  			},
-	  	   image_type:
-	  	   	{
-	  	   		title: 'Image Type',
-	  	   		type: 'Select',
-	  	   		options: ['2D', '3D'],
-	  	   		editorClass: 'form-control',
-	  	   		editorAttrs: { name: 'q[image_type]'}
-	  	   	},
-	  	   	annotation_label:
-	  	   	{
-	  	   		title: 'Has Annotation(s) with Label:',
-	  	   		type: 'Text',
-	  	   		editorClass: 'form-control',
-	  	   		editorAttrs: { name: 'q[annotation_label]s'}
+    var SearchForm = Backbone.Model.extend({
+        data: {
+            'processing': 'Complete'
+        },
+        schema: {
+              title: {
+                  title: 'Image Title', 
+                  type: 'Text', 
+                  editorClass: 'form-control',
+                  editorAttrs: { name: 'q[title]' }
+                  },
+              processing: { 
+                  title: 'Upload Status', 
+                  type: 'Select', 
+                  options: ['Complete', 'Processing'],
+                  editorClass: 'form-control',
+                  editorAttrs: { name: 'q[processing]'}
+                  },
+              image_type: {
+                  title: 'Image Type',
+                  type: 'Select',
+                  options: ['2D', '3D', '4D'],
+                  editorClass: 'form-control',
+                  editorAttrs: { name: 'q[image_type]'}
+                 },
+              annotation_label: {
+                  title: 'Has Annotation(s) with Label:',
+                  type: 'Text',
+                  editorClass: 'form-control',
+                  editorAttrs: { name: 'q[annotation_label]s'}
+                 },
+              annotation_class: {
+                  title: 'Has Annotation(s) with Class:',
+                  type: 'Text',
+                  editorClass: 'form-control',
+                  editorAttrs: { name: 'q[annotation_class]s'}
+                 }
+        }
+    });
 
-	  	   	}
-	    }
-	});
+    var searchform = new SearchForm();
 
-	var searchform = new SearchForm();
+    var form = new Backbone.Form({
+        model: searchform
+    }).render();
 
-	var form = new Backbone.Form({
-	    model: searchform
-	}).render();
-
-	$('#searchFormCardContent').html(form.el);
-	$('#searchFormCardContent form').append('<button class="btn btn-raised btn-success" type="buttoon">Search</button>');
+    $('#searchFormCardContent').html(form.el);
+    $('#searchFormCardContent form').append('<button class="btn btn-raised btn-success" type="buttoon">Search</button>');
 </script>

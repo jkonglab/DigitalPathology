@@ -18,13 +18,16 @@ class TilingWorker
         
         %x{
             mkdir #{@run.run_folder}
-            chmod -R ug+rwx #{run.run_folder};
-            chgrp webapp #{run.run_folder}
+            chmod -R ug+rwx #{@run.run_folder};
+            chgrp webapp #{@run.run_folder}
         }
 
         if @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"]
-            # Queuing tile_x, tile_y = (0,0) means that there is no ROI used in this analysis algorithm
-            Sidekiq::Client.push('queue' => 'user_analysis_queue_' + @run.users.first.id.to_s, 'class' =>  AnalysisWorker, 'args' => [run_id, user_id,0, 0])
+            # Queuing tile_x, tile_y = (0,0) means that there is no tiling required in this algorithm
+            # set tilesize to 0
+            @run.update_attributes(:tile_size=>0)
+            @run.update_attributes!(:total_tiles=>1)
+            Sidekiq::Client.push('queue' => 'user_analysis_queue_' + @run.users.first.id.to_s, 'class' =>  AnalysisWorker, 'args' => [run_id, user_id, 0, 0])
         elsif @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["image"]
             if run.annotation_id != 0
               @annotation = run.annotation
@@ -89,11 +92,20 @@ class TilingWorker
   def convert_and_save_annotation_points
     x_coordinates = []
     y_coordinates = []
-    annotation_points = @annotation.data[0][1]["d"].split("M")[1].split("Z")[0].split(" L")
-    annotation_points.each do |point|
-      point_array = point.split(' ')
-      x_coordinates << point_array[0]
-      y_coordinates << point_array[1]
+    if @annotation.data[0][0] == "path"
+        annotation_points = @annotation.data[0][1]["d"].split("M")[1].split("Z")[0].split(" L")
+        annotation_points.each do |point|
+          point_array = point.split(' ')
+          x_coordinates << point_array[0]
+          y_coordinates << point_array[1]
+        end
+    else #rectangle annotation
+        x_point = @annotation.data[0][1]["x"]
+        y_point = @annotation.data[0][1]["y"]
+        width = @annotation.data[0][1]["width"]
+        height = @annotation.data[0][1]["height"]
+        x_coordinates = [x_point, x_point, x_point+width, x_point+width]
+        y_coordinates = [y_point, y_point+height, y_point+height, y_point]
     end
 
     CSV.open(File.join(@run.run_folder, "/x_coordinates.csv"), "w") do |csv|

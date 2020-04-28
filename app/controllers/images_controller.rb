@@ -36,7 +36,7 @@ class ImagesController < ApplicationController
     @annotations = @image.hidden? ? @image.annotations.where(:user_id=>current_user.id).order('id desc') : @image.annotations
     @clinical_data = @image.clinical_data || {}
     @slices = Image.where(:parent_id => @image.id).order('slice_order asc')
-    default_slice = (@slices.length.to_f/2).ceil(0)
+    default_slice = (@slices.length.to_f/2).ceil(0) - 1
     @image_shown = @image.threed? && @image.parent_id.blank? ? @slices[default_slice] : @image
     @tilesizes = []
     minsize = @image.height > @image.width ? @image.width : @image.height
@@ -56,7 +56,7 @@ class ImagesController < ApplicationController
   end
 
   def get_slice
-    @slice = Image.where(:parent_id => @image.id).order('slice_order asc')[params[:slice].to_i]
+    @slice = Image.where(:parent_id => @image.id).order('slice_order asc')[params[:slice].to_i - 1]
     respond_with @slice
   end
 

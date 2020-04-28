@@ -3,7 +3,7 @@ class AnalysisWorker
   attr_accessor :run, :tile_x, :tile_y
   sidekiq_options :retry => 3
 
-  def perform(run_id, userid,tile_x, tile_y)
+  def perform(run_id, userid, tile_x, tile_y)
     @run = Run.find(run_id)
     @algorithm = @run.algorithm
     @annotation = @run.annotation
@@ -12,22 +12,29 @@ class AnalysisWorker
     @tile_y = tile_y.to_i
     @tile_width = @run.tile_size
     @tile_height = @run.tile_size
-    output_file = File.join(@run.run_folder, "/output_#{tile_x.to_s}_#{tile_y.to_s}.json")
-    roi_type = "dzi"
-    input_folder_path = @image.tile_folder_path
-    @work_folder = "#{@run.run_folder}/#{tile_x.to_s}_#{tile_y.to_s}"
-    %x{mkdir #{@work_folder};
-      chmod -R ug+rwx #{@work_folder};
-      chgrp webapp #{@work_folder}
-    }
 
-	if @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["image"]
-		@tile_width = @annotation.width > 4096 ? 4096 : @annotation.width
-		@tile_height = @annotation.height > 4096 ? 4096 : @annotation.height
-		roi_type = "wholeslide"
-		output_file = @run.run_folder
-		input_folder_path = @image.file_folder_path
-	end
+    if @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["image"]
+        @tile_width = @annotation.width > 4096 ? 4096 : @annotation.width
+        @tile_height = @annotation.height > 4096 ? 4096 : @annotation.height
+        roi_type = "wholeslide"
+        @work_folder = @run.run_folder
+        input_folder_path = @image.file_folder_path
+    elsif @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"]
+        input_folder_path = @image.file_folder_path
+        roi_type = "wholeslide"
+        @work_folder = @run.run_folder
+        output_file = File.join(@run.run_folder, "/output.json")
+    else
+        input_folder_path = @image.tile_folder_path
+        output_file = File.join(@run.run_folder, "/output_#{tile_x.to_s}_#{tile_y.to_s}.json")
+        roi_type = "dzi"
+        @work_folder = "#{@run.run_folder}/#{tile_x.to_s}_#{tile_y.to_s}"
+        %x{
+          mkdir #{@work_folder};
+          chmod -R ug+rwx #{@work_folder};
+          chgrp webapp #{@work_folder}
+        }
+    end
 
     if !Rails.application.config.local_processing
       
@@ -55,10 +62,12 @@ class AnalysisWorker
 
 
         if @algorithm.language == Algorithm::LANGUAGE_LOOKUP["matlab"]
-          parameters = convert_parameters_cell_array_string(@run.parameters)
-          file.puts "module load Framework/Matlab2016b"
+          parameters = fix_params_for_matlab(convert_parameters_cell_array_string(@run.parameters))
+          file.puts "module load Framework/Matlab2019a"
+          file.puts "module load Compilers/gcc-6.3.0"
+          file.puts "mex -setup C++"
           file.puts "cd #{algorithm_path}"
-          file.puts "matlab -nodisplay -r \"main('#{@image.tile_folder_path}','#{output_file}',#{parameters},'#{@algorithm.name}',#{@tile_x},#{@tile_y},#{@tile_width},#{@tile_height}); exit;\""
+          file.puts "matlab -nodisplay -r \"main('#{input_folder_path}','#{output_file}',#{parameters},'#{@algorithm.name}',#{@tile_x},#{@tile_y},#{@tile_width},#{@tile_height}); exit;\""
         
         elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["python3"] ||  @algorithm.language == Algorithm::LANGUAGE_LOOKUP["python"] 
           parameters =  ""
@@ -105,7 +114,8 @@ class AnalysisWorker
       if @algorithm.language == Algorithm::LANGUAGE_LOOKUP["matlab"]
         parameters = convert_parameters_cell_array_string(@run.parameters)
 
-        %x{cd #{algorithm_path};
+        %x{
+          cd #{algorithm_path};
           matlab -nodisplay -r "main('#{@image.tile_folder_path}','#{output_file}',#{parameters},'#{@algorithm.name}',#{@tile_x},#{@tile_y},#{@tile_width},#{@tile_height}); exit;"
         }
 
@@ -301,9 +311,22 @@ class AnalysisWorker
   end
 
   def convert_parameters_cell_array_string(parameters)
-    converted_parameters = parameters.to_json.gsub('"', "'")
+    new_parameters = []
+    parameters.each do |p|
+        if p.kind_of?(Array)
+            p = convert_parameters_cell_array_string(p)
+        end
+        new_parameters << p
+    end
+    converted_parameters = new_parameters.to_json.gsub('"', "'")
     converted_parameters[0] = '{'
     converted_parameters[-1] = '}'
+    return converted_parameters
+  end
+
+  def fix_params_for_matlab(parameters)
+    converted_parameters = parameters.to_s.gsub('\'{', "{")
+    converted_parameters = converted_parameters.to_s.gsub('}\'', "}")
     return converted_parameters
   end
 

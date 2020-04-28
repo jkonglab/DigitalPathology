@@ -388,6 +388,7 @@
     <% if @image.threed? %>
         var changeSlide = function() {
             var slice_num = slice_slider.bootstrapSlider('getValue');
+                console.log(slice_num);
             var current_bounds = viewer.viewport.getBounds();
             //var saved_annotations = viewer.annotations.get();
             var is_drawing_mode = $('.drawer-annotations').hasClass('active');

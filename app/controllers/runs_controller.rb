@@ -65,67 +65,71 @@ class RunsController < ApplicationController
     algorithm = Algorithm.find(@run.algorithm_id)
     temp_idx = current_user.email.index('@')
     user_name = current_user.email[0..temp_idx-1]
-    if image.threed? && image.parent_id.blank?
-      @run.image_id = Image.where(:parent_id => image.id).order('slice_order asc')[0].id
-    end
 
     if algorithm.tile_size
-      @run.tile_size = algorithm.tile_size
+        @run.tile_size = algorithm.tile_size
     end
 
     if @run.annotation_id.blank?
-      @run.annotation_id = 0  # Denotes this as a whole slide annotation
-      annotation = image.annotations.new(:label=> 'Whole Slide') # Make a dummy blank annotation
+        @run.annotation_id = 0  # Denotes this as a whole slide annotation
+        annotation = image.annotations.new(:label=> 'Whole Slide') # Make a dummy blank annotation
     else
-      annotation = Annotation.find(@run.annotation_id)
+        annotation = Annotation.find(@run.annotation_id)
     end
 
     run_parameters = []
     algorithm_parameters = algorithm.parameters.sort_by { |k| k["order"] }
     algorithm_parameters.each do |algorithm_parameter|
-      if algorithm_parameter["hard_coded"]
-        parameter_value = algorithm_parameter["default_value"]
-      elsif algorithm_parameter["annotation_derived"]
-        parameter_value = annotation[algorithm_parameter["annotation_key"]]
-      else
-        parameter_value = params["parameters"][algorithm_parameter["key"]]
-        if algorithm_parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["integer"]
-          parameter_value = parameter_value.to_i
-        elsif algorithm_parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["float"]
-          parameter_value = parameter_value.to_f
-        elsif algorithm_parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["boolean"]
-          parameter_value = parameter_value == "1"
-        elsif algorithm_parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["array"]
-          if !parameter_value.blank?
-            begin
-              parameter_value = JSON.parse(parameter_value)
-            rescue JSON::ParserError
-                redirect_to image, alert: 'Could not parse your inputted array in analysis parameters.  Please make sure your arrays are comma separated and contained within square brackets [like, this]'
-                return
+        if algorithm_parameter["hard_coded"]
+            parameter_value = algorithm_parameter["default_value"]
+        elsif algorithm_parameter["annotation_derived"]
+            parameter_value = annotation[algorithm_parameter["annotation_key"]]
+        elsif algorithm_parameter["images_array"]
+            input_images_array = []
+            if algorithm.name == "high_low_registration"
+                Image.where(:parent_id => image.id).order('slice_order asc').each do |i|
+                    input_images_array << File.join(i.file_folder_path, i.file_file_name)
+                end
             end
-          end
-	elsif algorithm_parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["file"]
-
-	  if !parameter_value.blank?
-              file_path = Rails.root.join('public','uploads',parameter_value.original_filename)
-              File.open(file_path,'wb') do |file|
-                 file.write(parameter_value.read)
-                 File.chmod(0777, file_path)
+            parameter_value = input_images_array
+        else
+            parameter_value = params["parameters"][algorithm_parameter["key"]]
+            if algorithm_parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["integer"]
+                parameter_value = parameter_value.to_i
+            elsif algorithm_parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["float"]
+                parameter_value = parameter_value.to_f
+            elsif algorithm_parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["boolean"]
+                parameter_value = parameter_value == "1"
+            elsif algorithm_parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["array"]
+                if !parameter_value.blank?
+                    begin
+                        parameter_value = JSON.parse(parameter_value)
+                    rescue JSON::ParserError
+                        redirect_to image, alert: 'Could not parse your input array in analysis parameters.  Please make sure your arrays are comma separated and contained within square brackets [like, this]'
+                        return
+                    end
               end
-	      parameter_value = parameter_value.original_filename.to_s
-	  end
-	end
-      end
-      run_parameters << parameter_value
+            elsif algorithm_parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["file"]
+                if !parameter_value.blank?
+                    file_path = Rails.root.join('public','uploads',parameter_value.original_filename)
+                    File.open(file_path,'wb') do |file|
+                        file.write(parameter_value.read)
+                        File.chmod(0777, file_path)
+                    end
+                    parameter_value = parameter_value.original_filename.to_s
+                end
+            end
+        end
+        run_parameters << parameter_value
     end
 
-  	@run.parameters = run_parameters
+    @run.parameters = run_parameters
 
-  	if @run.save
-      UserRunOwnership.create!(:user_id=> current_user.id,:run_id=> @run.id)
-      Sidekiq::Client.push('queue' => 'user_tiling_queue_' + current_user.id.to_s, 'class' =>  TilingWorker, 'args' => [@run.id, current_user.id])
-      redirect_to @run, notice: 'New analysis created, please wait for it to finish running.'
-  	end
+    if @run.save
+        UserRunOwnership.create!(:user_id=> current_user.id,:run_id=> @run.id)
+        Sidekiq::Client.push('queue' => 'user_tiling_queue_' + current_user.id.to_s, 'class' =>  TilingWorker, 'args' => [@run.id, current_user.id])
+        redirect_to @run, notice: 'New analysis created, please wait for it to finish running.'
+    end
   end
 
   def confirm_delete
@@ -153,41 +157,41 @@ class RunsController < ApplicationController
     @algorithm = @run.algorithm
     output = []
     if @algorithm.output_type != Algorithm::OUTPUT_TYPE_LOOKUP["image"]
-		@results.each do |result|
-		  result_hash = {}
-		  result_hash["output_key"] = result.output_key
-		  result_hash["tile_coordinate"] = [result.tile_x, result.tile_y]
-		  result_hash["local_coordinates"] = result.raw_data
-		  result_hash["tile_size"] = result.run.tile_size
-		  result_hash["raw_data"] = result.raw_data
-		  absolute_data = result.raw_data.deep_dup
-		  output_type = result.output_type || @algorithm.output_type
+        @results.each do |result|
+          result_hash = {}
+          result_hash["output_key"] = result.output_key
+          result_hash["tile_coordinate"] = [result.tile_x, result.tile_y]
+          result_hash["local_coordinates"] = result.raw_data
+          result_hash["tile_size"] = result.run.tile_size
+          result_hash["raw_data"] = result.raw_data
+          absolute_data = result.raw_data.deep_dup
+          output_type = result.output_type || @algorithm.output_type
 
-		  if output_type == Algorithm::OUTPUT_TYPE_LOOKUP["contour"]
-			absolute_data.map{ |data_item|
-			  data_item[0] += result.tile_x
-			  data_item[1] += result.tile_y
-			}
-			result_hash["absolute_coordinates"] = absolute_data
-		  elsif output_type == Algorithm::OUTPUT_TYPE_LOOKUP["points"]
-			absolute_data[0] += result.tile_x
-			absolute_data[1] += result.tile_y
-			result_hash["absolute_coordinates"] = absolute_data
-		  end
+          if output_type == Algorithm::OUTPUT_TYPE_LOOKUP["contour"]
+            absolute_data.map{ |data_item|
+              data_item[0] += result.tile_x
+              data_item[1] += result.tile_y
+            }
+            result_hash["absolute_coordinates"] = absolute_data
+          elsif output_type == Algorithm::OUTPUT_TYPE_LOOKUP["points"]
+            absolute_data[0] += result.tile_x
+            absolute_data[1] += result.tile_y
+            result_hash["absolute_coordinates"] = absolute_data
+          end
 
-		  output << result_hash
-		end
-		send_data output.to_json, :type => 'application/json; header=present', :disposition => "attachment; filename=results.json"
-	else
-		if !File.exist?(@run.run_folder+'/results.zip')
-		::Zip::File.open(@run.run_folder+'/results.zip', Zip::File::CREATE) do |z|
-			@results.each do |result|
-				z.add(result.output_file, File.join(@run.run_folder ,result.output_file))
-			end
-		end
-		end
-		send_file  @run.run_folder+'/results.zip' , :type => "application/zip", :disposition => "attachment"
-	end
+          output << result_hash
+        end
+        send_data output.to_json, :type => 'application/json; header=present', :disposition => "attachment; filename=results.json"
+    else
+        if !File.exist?(@run.run_folder+'/results.zip')
+        ::Zip::File.open(@run.run_folder+'/results.zip', Zip::File::CREATE) do |z|
+            @results.each do |result|
+                z.add(result.output_file, File.join(@run.run_folder ,result.output_file))
+            end
+        end
+        end
+        send_file  @run.run_folder+'/results.zip' , :type => "application/zip", :disposition => "attachment"
+    end
   end
 
   def annotation_form
@@ -199,7 +203,7 @@ class RunsController < ApplicationController
 
   private
     def run_params
-    	params.require(:run).permit(:image_id, :algorithm_id, :parameters, :annotation_id, :tile_size)
+        params.require(:run).permit(:image_id, :algorithm_id, :parameters, :annotation_id, :tile_size)
     end
 
     def set_run_validated

@@ -1,6 +1,6 @@
 <%= fields_for :parameters, @run.parameters do |parameter_fields| %>
  	<% @algorithm.parameters.each do |parameter|%>
- 		<% if !parameter["hard_coded"] && !parameter["annotation_derived"] %>
+ 		<% if !parameter["hard_coded"] && !parameter["annotation_derived"] && !parameter["images_array"] %>
  		<div class="form-group">
  			<%= parameter_fields.label parameter["key"].to_sym, parameter["title"] %>
  			<% if parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["integer"] %> 
