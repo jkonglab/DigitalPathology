@@ -1,4 +1,5 @@
 #!bin/env ruby
+require 'fileutils'
 # How to use
 # 1. Set orig_files_reg_expression to the folder and wildcard needed to 
 #    pick up all the files you want to convert & attach
@@ -23,12 +24,12 @@
 ENV['RAILS_ENV'] = "production"
 require '/DP_Share/imageviewer/config/environment.rb'
 
-orig_files_reg_expression = '/DP_Share/Testing_WSIs/Temp/*.tif'
+orig_files_reg_expression = '/DP_Share/hli35/datasets/temp_data/*.svs'
 user_id = 10
 project_id = 31
 files = Dir.glob(orig_files_reg_expression)
-temp_file_path = '/DP_Share/Testing_WSIs/Test/'
-temp_file = '/DP_Share/Testing_WSIs/Test/03.tif'
+temp_file_path = '/DP_Share/Testing_WSIs/Temp/'
+temp_file = '/DP_Share/Testing_WSIs/Temp/04.tif'
 output_file = '/DP_Share/imageviewer/scripts/output.csv'
 copy_script_file = '/DP_Share/imageviewer/scripts/copy.sh'
 conversion_script_file = '/DP_Share/imageviewer/scripts/conversion.sh'
@@ -36,7 +37,7 @@ conversion_script_file = '/DP_Share/imageviewer/scripts/conversion.sh'
 files.each do |image_path|
 	title = image_path.split('/')[-1]
 	new_file = File.join(temp_file_path, title)
-	File.rename(temp_file, new_file)
+	FileUtils.cp(temp_file, new_file)
 	@image = Image.create(:file => File.open(new_file, 'rb'))
 	@image.title = title
 	@image.image_type = Image::IMAGE_TYPE_TWOD
