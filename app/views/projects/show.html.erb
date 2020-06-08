@@ -30,7 +30,7 @@
 		  <%= form_tag confirm_3d_images_path do %>
 		  	<%= submit_tag "Combine in 3D Volume", :style=> 'float:right; margin-left:10px;', :class=> 'btn btn-success btn-raised'%>
 		  	<%= submit_tag "Move", :style=> 'float:right; margin-left:10px;', :class=> 'btn btn-primary btn-raised', :formaction=> confirm_move_images_path%>
-		  	<%= submit_tag "Delete", :style=>"float:right; margin-left:10px;", :class=>"btn-raised btn btn-danger", :formaction=> confirm_delete_images_path %>
+		  	<%= submit_tag "Delete", :style=>"float:right; margin-left:10px;", :class=>"btn-raised btn btn-danger", :formaction=> confirm_delete_images_path, :disabled=> @current_user.reviewer? %>
 			  <tbody>
 			  	<% @images.each do |image| %>
 			  		<tr>
