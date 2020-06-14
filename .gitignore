@@ -24,6 +24,8 @@
 /algorithms/steatosis_neural_net/mask*
 /algorithms/run_data/*
 /algorithms/python3/color_deconv_utils/*.png
+/algorithms/matlab/*
+/algoriths/julia/*
 /python/env/*
 npm-debug.log
 /public/data/*
