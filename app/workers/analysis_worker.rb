@@ -80,15 +80,16 @@ class AnalysisWorker
           if @algorithm.name == 'steatosis_neural_net'
             file.puts "module load Compilers/Python3.6"
             file.puts "module load Compilers/Cudalib"
-            file.puts "source env_3.6/bin/activate"
+            file.puts "source env3.6/bin/activate"
             #file.puts "cp -r #{algorithm_path}/steatosis_neural_net/mrcnn env3.6/lib/python3.6/site-packages"
+            file.puts "python -m main #{input_folder_path} '#{@image.title}' #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{roi_type} #{parameters}"
           else
             file.puts "module load Compilers/Python3.7.4"
             if @algorithm.title.include? "GPU"
                 file.puts "module load Cuda7.0"
             end
             file.puts "source env3.7/bin/activate"
-            file.puts "python -m main #{input_folder_path} #{@image.title} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{roi_type} #{parameters}"
+            file.puts "python -m main #{input_folder_path} '#{@image.title}' #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{roi_type} #{parameters}"
 
           end
         elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["julia"]
@@ -125,14 +126,14 @@ class AnalysisWorker
         ## FILTHY HACK
         if @algorithm.name == 'steatosis_neural_net'
             %x{cd #{algorithm_path};
-                source env_3.6/bin/activate;
+                source env3.6/bin/activate;
                 ## cp -r #{algorithm_path}/steatosis_neural_net/mrcnn env_3.6/lib/python3.6/site-packages;
-                python -m main #{input_folder_path} #{@image.title} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{roi_type} #{parameters}
+                python -m main #{input_folder_path} '#{@image.title}' #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{roi_type} #{parameters}
               }
         else
             %x{cd #{algorithm_path};
                 source env3.7/bin/activate;
-                python -m main #{input_folder_path} #{@image.title} #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{roi_type} #{parameters}
+                python -m main #{input_folder_path} '#{@image.title}' #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{roi_type} #{parameters}
               }
         end
     

@@ -42,7 +42,7 @@
     <%= f.fields_for :user_project_ownerships do |u| %>
       <% user = u.object.user %> <br />
       <%= user.email %>
-      <%= u.check_box :_destroy, {checked: true} %>
+      <%= u.check_box :_destroy, {checked: false} %>
     <%end%>
   </div>
 
