@@ -18,6 +18,7 @@ class AnalysisWorker
         @tile_height = @annotation.height > 4096 ? 4096 : @annotation.height
         roi_type = "wholeslide"
         @work_folder = @run.run_folder
+	output_file = @work_folder
         input_folder_path = @image.file_folder_path
     elsif @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"]
         input_folder_path = @image.file_folder_path

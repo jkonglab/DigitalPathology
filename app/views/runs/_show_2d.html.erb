@@ -115,8 +115,21 @@
         point = new OpenSeadragon.Point (<%= @annotation.x_point.blank? ? 0 : @annotation.x_point %>, <%= @annotation.y_point.blank? ? 0 : @annotation.y_point %>);
         //viewportPoint = viewer.viewport.imageToViewerElementCoordinates(point);
         viewportPoint = viewer.viewport.pointFromPixel(point);
-        width = <%= @annotation.width.blank? ? 0 :  @image.width %> > 4096 ? 4096 : <%= @annotation.width.blank? ? 0 :  @image.width %>
-        height = <%= @annotation.height.blank? ? 0 :  @image.height %> > 4096 ? 4096 : <%= @annotation.height.blank? ? 0 :  @image.height %> 
+
+        //width = <%= @annotation.width.blank? ? @image.width  : @annotation.width%> > 4096 ? 4096 : <%= @annotation.width.blank? ? 0 :  @image.width %>
+
+		if(<%= @annotation.width.blank? %>) // if annotation doesnot exists
+			width = <%= @image.width %> > 4096 ? 4096 : <%= @image.height %>
+		else
+			width = <%= @annotation.width %> > 4096 ? 4096 : <%= @annotation.width %>
+
+        //height = <%= @annotation.height.blank? ? 0 :  @image.height %> > 4096 ? 4096 : <%= @annotation.height.blank? ? 0 :  @image.height %> 
+
+		if(<%= @annotation.height.blank? %>) // if annotation doesnot exists
+			height = <%= @image.height %> > 4096 ? 4096 : <%= @image.height %>
+		else
+			height = <%= @annotation.height %> > 4096 ? 4096 : <%= @annotation.height %>
+
         viewer.addHandler('open', function(){
         var elt = document.createElement("div");
         elt.id = "runtime-overlay";
@@ -126,7 +139,7 @@
             location: viewer.viewport.imageToViewportRectangle(point.x, point.y, width, height)
         });
         });
-        if(<%= @annotation.width.blank? ? 0 :  @image.width %> > 4096 || <%= @annotation.height.blank? ? 0 :  @image.height %> >4096){
+        if(<%= @annotation.width.blank? ? @image.width : @annotation.width  %> > 4096 || <%= @annotation.height.blank? ? @image.height : @annotation.height %> >4096){
             $('.roi-too-large-alert').addClass('show');
         }
         else{
