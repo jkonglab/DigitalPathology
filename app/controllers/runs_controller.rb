@@ -86,7 +86,7 @@ class RunsController < ApplicationController
             parameter_value = annotation[algorithm_parameter["annotation_key"]]
         elsif algorithm_parameter["images_array"]
             input_images_array = []
-            if algorithm.name == "high_low_registration"
+            if algorithm.name == "high_low_registration" or "get_level_image"
                 Image.where(:parent_id => image.id).order('slice_order asc').each do |i|
                     input_images_array << File.join(i.file_folder_path, i.file_file_name)
                 end

@@ -36,8 +36,11 @@ Rails.application.routes.draw do
       post 'upload_data' => 'images#add_upload_clinical_data'
       get 'get_slice' => 'images#get_slice'
       get 'show_3d' => 'images#show_3d'
+      get 'show_landmark_points_3d' => 'images#show_landmark_points_3d'
       post 'import_annotations' => 'images#import_annotations'
       get 'download_annotations' => 'images#download_annotations'
+      get 'download_annotations_xml' => 'images#download_annotations_xml'
+      get 'download_landmarks' => 'images#download_landmarks'
     end
   end
   resources :annotations do
@@ -45,6 +48,10 @@ Rails.application.routes.draw do
       post 'delete_selected' => 'annotations#delete_selected'
     end
   end
+
+  resources :landmarks do
+  end
+
   resources :runs do
     collection do
       get 'annotation_form' => 'runs#annotation_form'

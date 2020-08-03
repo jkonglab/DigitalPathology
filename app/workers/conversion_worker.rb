@@ -22,9 +22,9 @@ class ConversionWorker
             File.open("jobs/#{image.id}/job.sh", 'w') do |file|
 		file.puts "#!/bin/bash"
                 file.puts "#SBATCH -N 1"
-                file.puts "#SBATCH -c 1"
-                file.puts "#SBATCH -p qDPGPU" 
-                file.puts "#SBATCH -t 60"
+                file.puts "#SBATCH -c 2"
+                file.puts "#SBATCH -p qDP" 
+                file.puts "#SBATCH -t 900"
                 file.puts "#SBATCH -J c#{image_id}_#{user_id}"
                 file.puts "#SBATCH -e error%A.err"
                 file.puts "#SBATCH -o out%A.out"
@@ -63,7 +63,7 @@ class ConversionWorker
     until File.exist?(image.dzi_path)
         timer +=1
         sleep 1
-        if timer > 900
+        if timer > 3000
             break
         end
     end

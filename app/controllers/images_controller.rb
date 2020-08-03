@@ -55,6 +55,41 @@ class ImagesController < ApplicationController
     end
   end
 
+  def show_landmark_points_3d
+    @image = Image.find(params[:id])
+    if @image.threed? && @image.parent_id.blank?
+      @slices = Image.where(:parent_id => @image.id).order('slice_order asc')
+      default_slice = (@slices.length.to_f/2).ceil(0) - 1
+      @ref_image = @slices[default_slice]
+      @target_image = @slices[default_slice-1]
+    else
+      redirect_to @image, notice: 'Image is not a 3D volume and cannot be viewed in 3D space'
+    end
+  end
+
+
+  def download_landmarks
+    @image = Image.find(params[:id])
+    landmarks = Landmark.where(:parent_id=>@image.id)
+    output = []
+    parent_hash = {}
+    parent_hash["image_id"] = @image.id
+    parent_hash["landmark_points"] = []
+    landmarks.each do |landmark|
+        result_hash = {}
+        result_hash["reference_image_id"] = landmark.ref_image_id
+        result_hash["reference_image_data"]  = landmark.ref_image_data
+        result_hash["current_image_id"] = landmark.image_id
+        result_hash["current_image_data"] = landmark.image_data
+        parent_hash["landmark_points"] << result_hash
+    end
+    output = parent_hash
+    file_path = @image.file_folder_path
+
+    send_data output.to_json, :type => 'application/json', :disposition => "attachment; filename=#{@image.id}_landmarks.json"
+
+  end
+
   def get_slice
     @slice = Image.where(:parent_id => @image.id).order('slice_order asc')[params[:slice].to_i - 1]
     respond_with @slice
@@ -264,6 +299,79 @@ class ImagesController < ApplicationController
       output << result_hash
     end
     send_data output.to_json, :type => 'application/json; header=present', :disposition => "attachment; filename=#{@image.title.split('.')[0]}_annotations.json"
+  end
+
+  def download_annotations_xml
+    @image = Image.find(params[:id])
+    @annotations = @image.hidden? ? @image.annotations.where(:user_id=>current_user.id).order('id desc') : @image.annotations
+    classes = @annotations.group_by(&:annotation_class)
+
+    regAttrs = [{"Id":"9998", "Name":"Region" },
+    {"Id":"9997", "Name":"Length" },
+    {"Id":"9996", "Name":"Area" },
+    {"Id":"9998", "Name":"Text" }]
+
+    builder = Nokogiri::XML::Builder.new { |xml|
+      xml.Annotations('MicronsPerPixel' => '') do
+          classes.each_pair do |annotation_class, data|
+            annotation_id = 0
+            annotation_id = annotation_id+1
+            xml.Annotation(:Id=>annotation_id, :Name=>annotation_class, :ReadOnly=>"0", :NameReadOnly=>"0", :LineColorReadOnly=>"0", :Incremental=>"0", :Type=>"9", :LineColor=>"65280", :Visible=>"1", :Selected=>"0", :MarkupImagePath=>"", :MacroName=>""){
+            xml.Attributes{
+              xml.Attribute(:Name=>"Annotation Class", :Id=>"1",:Value=>annotation_class)
+            }
+            xml.Regions{
+              xml.RegionAttributeHeaders{
+                regAttrs.each do |attr|
+                    xml.AttributeHeader(:Id=>attr[:Id], :Name=>attr[:Name], :ColumnWidth=>"-1")
+                end
+              }
+              data.each do |a|
+              display_id = 0
+              display_id = display_id+1
+              if a["data"][0][0] == "circle"
+                type = 2
+              elsif a["data"][0][0] == "rect"
+                type = 1
+              elsif (a["data"][0][0] == "path") && (a["data"][0][1]["d"].include? "L")
+                type = 0
+              else
+                type = 5
+              end
+
+              xml.Region(:Id=>a["id"], :Type=>type, :Zoom=>"" ,:Selected=>"0", :ImageLocation=>"", :ImageFocus=>"-1", :Length=>"0.0", :Area=>"0.0", :LengthMicrons=>"0.0", :AreaMicrons=>"0.0", :Text=>"", :NegativeROA=>"0" ,:InputRegionId=>"0", :Analyze=>"0", :DisplayId=>display_id){
+              xml.Attributes{}
+              xml.Vertices{
+                if a["data"][0][0] == "rect"
+                    xml.Vertex(:X=>a["x_point"], :Y=>a["y_point"],:Z=>"0")
+                    xml.Vertex(:X=>a["x_point"], :Y=>a["y_point"]+a["height"],:Z=>"0")
+                    xml.Vertex(:X=>a["x_point"]+a["width"], :Y=>a["y_point"]+a["height"],:Z=>"0")
+                    xml.Vertex(:X=>a["x_point"]+a["width"], :Y=>a["y_point"],:Z=>"0")
+                elsif a["data"][0][0] == "circle"
+                    #xml.Vertex(:X=>(((a["data"][0][1]["cx"].to_f)*@image.width)/100).to_i-(((a.data[0][1]["r"].to_f)*@image.width)/100).to_i, :Y=>(((a["data"][0][1]["cy"].to_f)*@image.height)/100).to_i-(((a.data[0][1]["r"].to_f)*@image.width)/100).to_i,:Z=>"0")
+                    xml.Vertex(:X=>a["x_point"], :Y=>a["y_point"],:Z=>"0")
+                    #xml.Vertex(:X=>(((a["data"][0][1]["cx"].to_f)*@image.width)/100).to_i+(((a.data[0][1]["r"].to_f)*@image.width)/100).to_i, :Y=>(((a["data"][0][1]["cy"].to_f)*@image.height)/100).to_i+(((a.data[0][1]["r"].to_f)*@image.width)/100).to_i,:Z=>"0")
+                    xml.Vertex(:X=>a["x_point"]+a["width"], :Y=>a["y_point"]+a["height"],:Z=>"0")
+                elsif (a["data"][0][0] == "path")  && (a["data"][0][1]["d"].include? "L")
+                    annotation_points = a["data"][0][1]["d"].split("M")[1].split("Z")[0].split(" L")
+                        annotation_points.each do |point|
+                            point_array = point.split(' ')
+                            xml.Vertex(:X=>(((point_array[0].to_f)*@image.width)/100).to_i, :Y=>(((point_array[1].to_f)*@image.height)/100).to_i,:Z=>"0")
+                        end
+                else    
+                    annotation_points = a.data[0][1]["d"].split("M")[1].split("Z")[0] 
+                    point_array = annotation_points.split(' ')   
+                    xml.Vertex(:X=>(((point_array[0].to_f)*@image.width)/100).to_i, :Y=>(((point_array[1].to_f)*@image.height)/100).to_i,:Z=>"0")  
+                end
+             }
+            }
+            end
+           }
+          }
+          end
+      end
+    }
+    send_data builder.to_xml, :type => 'application/xml; header=present', :disposition => "attachment; filename=#{@image.title.split('.')[0]}_annotations.xml"
   end
 
   private
