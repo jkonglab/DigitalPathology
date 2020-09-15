@@ -12,10 +12,18 @@ class RunsController < ApplicationController
     @run = Run.find(params[:id])
     @algorithm = @run.algorithm
     @image = @run.image
-    @slices = Image.where('generated_by_run_id IN (?) AND (image_type = ? OR parent_id IS NOT NULL)', @run.id, Image::IMAGE_TYPE_TWOD).order('id desc')
+    if @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["landmarks"]
+      @slices = Image.where(:parent_id => @image.id).order('slice_order asc')
+      #default ref and target images
+      @target_image = @slices[0]
+      @ref_image = @slices[1]
+    else
+      @slices = Image.where('generated_by_run_id IN (?) AND (image_type = ? OR parent_id IS NOT NULL)', @run.id, Image::IMAGE_TYPE_TWOD).order('id desc')
+    end
+
     @threed_volume = Image.where('generated_by_run_id IN (?) AND image_type = ? AND parent_id IS NULL', @run.id, Image::IMAGE_TYPE_THREED).first
     @annotation = @run.annotation
-    
+
     @results = @algorithm.multioutput ? @run.results.where(:output_key=>@algorithm.multioutput_options[0]["output_key"]).order('id asc') : @run.results.order('id asc')
 
     if @results.count < 10000
@@ -86,16 +94,44 @@ class RunsController < ApplicationController
             parameter_value = annotation[algorithm_parameter["annotation_key"]]
         elsif algorithm_parameter["images_array"]
             input_images_array = []
-            if algorithm.name == "high_low_registration" or "get_level_image"
+            if algorithm.name == "high_low_registration" or algorithm.name == "get_level_image" or algorithm.name == "global_machine_L"
                 Image.where(:parent_id => image.id).order('slice_order asc').each do |i|
                     input_images_array << File.join(i.file_folder_path, i.file_file_name)
                 end
+                parameter_value = input_images_array
+            elsif algorithm.name == "generate_registered_images"
+                    Image.where(:parent_id => image.id).order('slice_order asc').each do |i|
+                        input_images_array << File.join(i.file_folder_path, i.file_file_name)
+                    end
+                    #write to file
+                    corrected_landmarks = Landmark.where(:parent_id => image.id)
+                    file_path = image.file_folder_path
+                    if !File.directory?(file_path)
+                        FileUtils.mkdir_p file_path
+                    end
+                    
+                    File.open(file_path+'/openSlide_global_surf_Landmark_Corrected_L.json', 'w+') { |f|
+                        corrected_landmarks.each_with_index do |image_pair, index|
+                          image_pair.image_data.zip(image_pair.ref_image_data).each do |trgt, ref|
+                            f.puts index.next.to_s+","+trgt.join(",")+","+ref.join(",")+"\n"
+                          end
+                        end
+                    }
+                    parameter_value = [input_images_array, file_path+'/openSlide_global_surf_Landmark_Corrected_L.json']
             end
-            parameter_value = input_images_array
         else
             parameter_value = params["parameters"][algorithm_parameter["key"]]
             if algorithm_parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["integer"]
-                parameter_value = parameter_value.to_i
+                if algorithm.name == "high_low_registration"
+                    r = Run.find(parameter_value.to_i)
+                    Dir.entries(r.run_folder + '/').each do |file_name|
+                        if file_name.include?('mat')
+                            parameter_value =  r.run_folder + '/' + file_name
+                        end
+                    end
+                else
+                    parameter_value = parameter_value.to_i
+                end
             elsif algorithm_parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["float"]
                 parameter_value = parameter_value.to_f
             elsif algorithm_parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["boolean"]
@@ -108,7 +144,7 @@ class RunsController < ApplicationController
                         redirect_to image, alert: 'Could not parse your input array in analysis parameters.  Please make sure your arrays are comma separated and contained within square brackets [like, this]'
                         return
                     end
-              end
+                end
             elsif algorithm_parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["file"]
                 if !parameter_value.blank?
                     file_path = Rails.root.join('public','uploads',parameter_value.original_filename)

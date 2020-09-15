@@ -7,6 +7,7 @@ class User < ActiveRecord::Base
   has_many :user_project_ownerships
   has_many :projects, :through => :user_project_ownerships
   has_many :annotations
+  has_many :landmarks
   has_many :user_run_ownerships
   has_many :runs, :through => :user_run_ownerships
   has_many :results, through: :runs

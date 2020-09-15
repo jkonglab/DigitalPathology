@@ -22,7 +22,7 @@ class TilingWorker
             chgrp webapp #{@run.run_folder}
         }
 
-        if @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"]
+        if @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"] or @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["landmarks"]
             # Queuing tile_x, tile_y = (0,0) means that there is no tiling required in this algorithm
             # set tilesize to 0
             @run.update_attributes(:tile_size=>0)

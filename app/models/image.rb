@@ -1,6 +1,7 @@
 class Image < ActiveRecord::Base
-	has_many :annotations
-	has_many :runs
+  has_many :annotations
+  has_many :runs
+  has_many :landmarks
   belongs_to :project
   has_many :results, through: :runs
   has_attached_file :file, {

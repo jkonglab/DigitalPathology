@@ -22,17 +22,17 @@ require 'fileutils'
 # 7. Also remove the output, copy, conversion script after done or before starting
 
 ENV['RAILS_ENV'] = "production"
-require '/DP_Share/imageviewer/config/environment.rb'
+require '/Project/DP_Share/imageviewer/config/environment.rb'
 
-orig_files_reg_expression = '/DP_Share/hli35/datasets/temp_data/*.svs'
+orig_files_reg_expression = '/Project/DP_Share/Testing_WSIs/Fibrosis_New_Dataset/*.ndpi'
 user_id = 10
-project_id = 31
+project_id = 39
 files = Dir.glob(orig_files_reg_expression)
-temp_file_path = '/DP_Share/Testing_WSIs/Temp/'
-temp_file = '/DP_Share/Testing_WSIs/Temp/04.tif'
-output_file = '/DP_Share/imageviewer/scripts/output.csv'
-copy_script_file = '/DP_Share/imageviewer/scripts/copy.sh'
-conversion_script_file = '/DP_Share/imageviewer/scripts/conversion.sh'
+temp_file_path = '/Project/DP_Share/Testing_WSIs/Temp/'
+temp_file = '/Project/DP_Share/Testing_WSIs/Temp/04.tif'
+output_file = '/Project/DP_Share/imageviewer/scripts/output.csv'
+copy_script_file = '/Project/DP_Share/imageviewer/scripts/copy.sh'
+conversion_script_file = '/Project/DP_Share/imageviewer/scripts/conversion.sh'
 
 files.each do |image_path|
 	title = image_path.split('/')[-1]
@@ -54,10 +54,10 @@ files.each do |image_path|
 	File.open(conversion_script_file, "a+") do |f|
                 f.puts "module load Compilers/Python3.7.4"
 		f.puts "module load Image_Analysis/Openslide3.4.1"
-		f.puts "cd /DP_Share/imageviewer/algorithms/python3"
+		f.puts "cd /Project/DP_Share/imageviewer/algorithms/python3"
 		f.puts "source env3.7/bin/activate"
 		f.puts "cd #{@image.file_folder_path}"
-		f.puts "python3 /DP_Share/imageviewer/algorithms/python3/conversion/deepzoom_tile.py #{@image.file.path}"
+		f.puts "python3 /Project/DP_Share/imageviewer/algorithms/python3/conversion/deepzoom_tile.py #{@image.file.path}"
 		f.puts ""
         end
 	temp_file = new_file

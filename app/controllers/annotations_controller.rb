@@ -5,10 +5,6 @@ class AnnotationsController < ApplicationController
     image = Image.find(params[:image_id])
     @annotation = image.annotations.new
 
-    if image.threed? && image.parent_id.blank?
-      image = Image.where(:parent_id => image.id).order('slice_order asc')[0]
-    end
-
     data = params[:data].blank? ? {} : JSON.parse(params[:data])
     width = (params[:width].to_f / 100) * image.width
     height = (params[:height].to_f / 100) * image.height

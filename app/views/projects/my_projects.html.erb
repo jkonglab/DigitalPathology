@@ -49,12 +49,14 @@
 		                Actions
 		              </button>
 		              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-		              	<%=link_to edit_project_path(project.id), :class=> 'dropdown-item' do %>Edit<%end%>
-                               	<%if !@current_user.reviewer? %>			
+
+                        <%if !@current_user.reviewer? %>
+							<%=link_to edit_project_path(project.id), :class=> 'dropdown-item' do %>Edit<%end%>
 			                <%=link_to project, :class=> 'dropdown-item', :data => {:method=> :delete, :confirm => 'Are you sure you want to delete this project?  It must be emptied first.'} do %>Delete<%end%>
-                                <% else %>
-                                        <a class="dropdown-item disabled">Delete</a> 
-				<% end %>		
+                        <% else %>
+							<a class="dropdown-item disabled">Edit</a> 
+                            <a class="dropdown-item disabled">Delete</a> 
+						<% end %>
 		              </div>
 		            </div>
 		          </td>

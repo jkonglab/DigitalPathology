@@ -18,9 +18,9 @@ class AnalysisWorker
         @tile_height = @annotation.height > 4096 ? 4096 : @annotation.height
         roi_type = "wholeslide"
         @work_folder = @run.run_folder
-	output_file = @work_folder
+        output_file = @work_folder
         input_folder_path = @image.file_folder_path
-    elsif @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"]
+    elsif @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"] or @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["landmarks"]
         input_folder_path = @image.file_folder_path
         roi_type = "wholeslide"
         @work_folder = @run.run_folder
@@ -168,6 +168,8 @@ class AnalysisWorker
       handle_3d_volume_output_generation
     elsif @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["image"]
       handle_image_output_generation
+    elsif @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["landmarks"]
+      handle_landmarks_output_generation
     else
       sleep 10
       raw = File.read(output_file)
@@ -261,10 +263,68 @@ class AnalysisWorker
   def algorithm_path
     return File.join(Rails.root.to_s, 'algorithms', Algorithm::LANGUAGE_LOOKUP_INVERSE[@algorithm.language])
   end
-  
+
+  def handle_landmarks_output_generation
+    output = []
+    target_slice = 0
+    result_hash = {}
+    target_points = []
+    ref_points = []
+    Dir.entries(@work_folder + '/').each do |file_name|
+      if file_name.include?('openSlide_global_surf_Landmark_L')
+        File.open(@work_folder + '/'+file_name,'r').each_line do |line|
+            data = line.strip.split(",")
+            if data[0] != target_slice
+                if target_points.length != 0 && ref_points.length != 0
+                    result_hash["target_landmarks"] = target_points
+                    result_hash["ref_landmarks"] = ref_points
+                    output << result_hash
+                    #save to landmarks
+                    new_landmark = Landmark.create!(
+                      :parent_id => @image.id,
+                      :image_id => Image.where(:parent_id => @image.id, :slice_order => target_slice).first.id,
+                      :image_data => target_points,
+                      :ref_image_id => Image.where(:parent_id => @image.id, :slice_order => target_slice.next).first.id,
+                      :ref_image_data => ref_points)
+                    new_landmark.save!
+                end
+                target_slice = data[0]
+                result_hash = {}
+                target_points = []
+                ref_points = []
+                result_hash["target_id"] = data[0].to_i
+                result_hash["reference_id"] = data[3].to_i
+                target_points << [data[1],data[2]]
+                ref_points << [data[4],data[5]]
+            else
+                target_points << [data[1],data[2]]
+                ref_points << [data[4],data[5]]
+            end
+        end
+        result_hash["target_landmarks"] = target_points
+        result_hash["ref_landmarks"] = ref_points
+        output << result_hash
+        #save to landmarks
+        new_landmark = Landmark.create!(
+            :parent_id => @image.id,
+            :image_id => Image.where(:parent_id => @image.id, :slice_order => target_slice).first.id,
+            :image_data => target_points,
+            :ref_image_id => Image.where(:parent_id => @image.id, :slice_order => target_slice.next).first.id,
+            :ref_image_data => ref_points)
+        new_landmark.save!
+        new_result = @run.results.create!(
+          :run_at => @run.run_at,
+          :raw_data => output,
+          :output_type => Algorithm::OUTPUT_TYPE_LOOKUP["landmarks"],
+          :output_file => @work_folder + '/' +file_name)
+        new_result.save!
+      end
+    end
+  end
+
   def handle_image_output_generation  
         timer = 0
-        until File.exist?(@run.run_folder+'/output.txt')
+        until File.exist?(@run.run_folder+'/output.json')
             timer +=1
             sleep 1
             if timer > 36000
@@ -272,8 +332,7 @@ class AnalysisWorker
             end
         end
         Dir.entries(@run.run_folder + '/').each do |file_name|
-            if file_name.include?('output') && file_name.include?('.png')
-
+            if (file_name.include?('output') || file_name.include?('reg')) && file_name.include?('.tif')
                 new_result = @run.results.create!(
                         :run_at => @run.run_at,
                         :tile_x => @tile_x,
@@ -285,6 +344,13 @@ class AnalysisWorker
   end
 
   def handle_3d_volume_output_generation
+    if @algorithm.name == 'get_level_image' #save level to results
+      level = File.read(File.join(@run.run_folder, "/output.json")).strip
+      new_result = @run.results.create!(
+        :raw_data => level,
+        :run_at => @run.run_at)
+      new_result.save!
+    end
     Dir.entries(@work_folder + '/').each do |file_name|
       if file_name.include?('.tif')
         i = 0

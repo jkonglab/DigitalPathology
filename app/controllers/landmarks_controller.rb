@@ -8,23 +8,36 @@ class LandmarksController < ApplicationController
     ref_image_data = JSON.parse(params[:ref_image_data])
     curr_image_data = JSON.parse(params[:image_data])
 
-    landmark = Landmark.where(:image_id => curr_image_id, :ref_image_id => curr_image_id)
-
-    if landmark.first.nil? #create
-      l = Landmark.new
-      l.parent_id = @image.id
-      l.image_id = curr_image_id
-      l.image_data = curr_image_data
-      l.ref_image_id = ref_image_id
-      l.ref_image_data = ref_image_data
-      l.save
-    else
-      landmark.update_all({
-        :image_data => curr_image_data,
-        :ref_image_data => ref_image_data
-      })
+    ref_points = []
+    ref_image_data.each do |point|
+        ref_points << [point["x"].to_f.truncate(3),point["y"].to_f.truncate(3)].map(&:to_s)
+    end
+    
+    trgt_points = []
+    curr_image_data.each do |point|
+        trgt_points << [point["x"].to_f.truncate(3),point["y"].to_f.truncate(3)].map(&:to_s)
     end
 
-  end
-  
+    landmark = Landmark.where(:parent_id=> @image.id,:image_id => curr_image_id, :ref_image_id => ref_image_id).first
+
+    if landmark.nil? #create
+        new_landmark = Landmark.create!(
+            :parent_id => @image.id,
+            :image_id => curr_image_id,
+            :image_data => trgt_points,
+            :ref_image_id => ref_image_id,
+            :ref_image_data => ref_points)
+        new_landmark.save!
+    else
+        landmark.destroy
+        new_landmark = Landmark.create!(
+            :parent_id => @image.id,
+            :image_id => curr_image_id,
+            :image_data => trgt_points,
+            :ref_image_id => ref_image_id,
+            :ref_image_data => ref_points)
+        new_landmark.save!
+    end
+
+end
 end

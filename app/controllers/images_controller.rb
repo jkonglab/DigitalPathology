@@ -36,7 +36,7 @@ class ImagesController < ApplicationController
     @annotations = @image.hidden? ? @image.annotations.where(:user_id=>current_user.id).order('id desc') : @image.annotations
     @clinical_data = @image.clinical_data || {}
     @slices = Image.where(:parent_id => @image.id).order('slice_order asc')
-    default_slice = (@slices.length.to_f/2).ceil(0) - 1
+    default_slice = (@slices.length.to_f/2).floor(0)-1
     @image_shown = @image.threed? && @image.parent_id.blank? ? @slices[default_slice] : @image
     @tilesizes = []
     minsize = @image.height > @image.width ? @image.width : @image.height
@@ -53,41 +53,6 @@ class ImagesController < ApplicationController
     else
       redirect_to @image, notice: 'Image is not a 3D volume and cannot be viewed in 3D space'
     end
-  end
-
-  def show_landmark_points_3d
-    @image = Image.find(params[:id])
-    if @image.threed? && @image.parent_id.blank?
-      @slices = Image.where(:parent_id => @image.id).order('slice_order asc')
-      default_slice = (@slices.length.to_f/2).ceil(0) - 1
-      @ref_image = @slices[default_slice]
-      @target_image = @slices[default_slice-1]
-    else
-      redirect_to @image, notice: 'Image is not a 3D volume and cannot be viewed in 3D space'
-    end
-  end
-
-
-  def download_landmarks
-    @image = Image.find(params[:id])
-    landmarks = Landmark.where(:parent_id=>@image.id)
-    output = []
-    parent_hash = {}
-    parent_hash["image_id"] = @image.id
-    parent_hash["landmark_points"] = []
-    landmarks.each do |landmark|
-        result_hash = {}
-        result_hash["reference_image_id"] = landmark.ref_image_id
-        result_hash["reference_image_data"]  = landmark.ref_image_data
-        result_hash["current_image_id"] = landmark.image_id
-        result_hash["current_image_data"] = landmark.image_data
-        parent_hash["landmark_points"] << result_hash
-    end
-    output = parent_hash
-    file_path = @image.file_folder_path
-
-    send_data output.to_json, :type => 'application/json', :disposition => "attachment; filename=#{@image.id}_landmarks.json"
-
   end
 
   def get_slice
@@ -135,31 +100,34 @@ class ImagesController < ApplicationController
 
   def convert_3d
     i = 1
-    first_image = nil
+    ref_image = nil
+    refIdx = (params['image_ids'].length.to_f/2).floor(0)
     params['image_ids'].each do |id|
       image = Image.find(id.to_i)
+      if refIdx == i
+        ref_image = image
+      end
       if image
-        first_image = first_image || image
         image.update_attributes!(:slice_order => i, :image_type => Image::IMAGE_TYPE_THREED)
         i += 1
       end
     end
 
     parent_image = Image.create!(
-      :title => '3D Volume: ' + first_image.title, 
+      :title => '3D Volume: ' + ref_image.title, 
       :image_type => Image::IMAGE_TYPE_THREED, 
-      :visibility => first_image.visibility,
+      :visibility => ref_image.visibility,
       :processing => false,
       :complete => true,
-      :file_file_name => first_image.file_file_name,
-      :file_content_type => first_image.file_content_type,
-      :file_file_size => first_image.file_file_size,
-      :file_updated_at => first_image.file_updated_at,
-      :clinical_data => first_image.clinical_data,
-      :generated_by_run_id => first_image.generated_by_run_id,
-      :project_id => first_image.project_id,
-      :height => first_image.height,
-      :width => first_image.width
+      :file_file_name => ref_image.file_file_name,
+      :file_content_type => ref_image.file_content_type,
+      :file_file_size => ref_image.file_file_size,
+      :file_updated_at => ref_image.file_updated_at,
+      :clinical_data => ref_image.clinical_data,
+      :generated_by_run_id => ref_image.generated_by_run_id,
+      :project_id => ref_image.project_id,
+      :height => ref_image.height,
+      :width => ref_image.width
     )
 
     @images.update_all(:parent_id=> parent_image.id)

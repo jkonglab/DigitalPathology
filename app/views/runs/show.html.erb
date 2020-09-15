@@ -1,5 +1,7 @@
-<% if @run.algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"] %>
-	<%= render partial: 'show_3d' %>
+<% if @run.algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"]%>
+    <%= render partial: 'show_3d' %>
+<% elsif @run.algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["landmarks"]%>
+    <%= render partial: 'show_landmark_points_3d' %>
 <% else %>
-	<%= render partial: 'show_2d' %>
+    <%= render partial: 'show_2d' %>
 <% end %>
