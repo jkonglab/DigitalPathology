@@ -87,10 +87,10 @@
 </div>
 
 <script>
-     var results_data = JSON.parse('<%= raw(@results_data.to_json) %>');
-     var key;
-     var timeout;
-     var currentRequest = null;  
+    var results_data = JSON.parse('<%= raw(@results_data.to_json) %>');
+    var key;
+    var timeout;
+    var currentRequest = null;  
     var annotation = '<%=raw(@annotation.data.to_json) %>';
     var viewer = OpenSeadragon({
         preserveViewport: true,
@@ -107,28 +107,21 @@
         element: viewer.element,
         moveHandler: trackPointer
     });
-    
-    
+    var width = <%= @image.width %>
+    var height = <%= @image.height %>
+
     var overlay = (function setOverlay(){
     if (<%= @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["image"]%>)
     {
         point = new OpenSeadragon.Point (<%= @annotation.x_point.blank? ? 0 : @annotation.x_point %>, <%= @annotation.y_point.blank? ? 0 : @annotation.y_point %>);
-        //viewportPoint = viewer.viewport.imageToViewerElementCoordinates(point);
+
         viewportPoint = viewer.viewport.pointFromPixel(point);
 
-        //width = <%= @annotation.width.blank? ? @image.width  : @annotation.width%> > 4096 ? 4096 : <%= @annotation.width.blank? ? 0 :  @image.width %>
-
-		if(<%= @annotation.width.blank? %>) // if annotation doesnot exists
-			width = <%= @image.width %> > 4096 ? 4096 : <%= @image.height %>
-		else
-			width = <%= @annotation.width %> > 4096 ? 4096 : <%= @annotation.width %>
-
-        //height = <%= @annotation.height.blank? ? 0 :  @image.height %> > 4096 ? 4096 : <%= @annotation.height.blank? ? 0 :  @image.height %> 
-
-		if(<%= @annotation.height.blank? %>) // if annotation doesnot exists
-			height = <%= @image.height %> > 4096 ? 4096 : <%= @image.height %>
-		else
-			height = <%= @annotation.height %> > 4096 ? 4096 : <%= @annotation.height %>
+        if(<%= @annotation.blank? %> == false) // if annotation exists
+        {
+            width = <%= @annotation.width.blank? ? @image.width : @annotation.width  %> > 4096 ? 4096 : <%= @annotation.width.blank? ? @image.width : @annotation.width  %>
+            height = <%= @annotation.height.blank? ? @image.height : @annotation.height %> > 4096 ? 4096 : <%= @annotation.height.blank? ? @image.height : @annotation.height %> 
+        }
 
         viewer.addHandler('open', function(){
         var elt = document.createElement("div");

@@ -1,7 +1,7 @@
 <%= form_for(@run, :html => {:multipart => true}) do |f| %>
     <div class="form-group">
         <%= f.label :algorithm_id, "Select an algorithm to run" %>
-        <%= f.collection_select :algorithm_id, @algorithm, :id, :title_with_type, {include_blank: 'Please select'}, { class: 'form-control', required: true } %>
+        <%= f.collection_select :algorithm_id, @algorithm.order('input_type ASC').all, :id, :title_with_type, {include_blank: 'Please select'}, { class: 'form-control', required: true } %>
     </div>
     <% if @image.threed? %>
         <div class="form-group twod-algorithm-slice-select" style="display:none;">
@@ -15,7 +15,7 @@
     <div id="annotation-select" class="form-group">
     </div>
 
-    <div class="form-group">
+    <div id="tilesize-select" class="form-group">
         <%= f.label :tile_size, "Tile Size (in pixels)" %>
         <%= f.select :tile_size, @tilesizes, { :selected => 128 }, {class: 'form-control', required: true, value: []} %>
     </div>
@@ -32,14 +32,14 @@
 <script>
     $('#run_algorithm_id').change(function(){
         $.get( '<%=parameter_form_algorithms_path%>', {
-                  'image_id': <%= @image.id %>,
-                  'algorithm_id': $(this).val()
+            'image_id': <%= @image.id %>,
+            'algorithm_id': $(this).val()
         }).done(function(partial){
             $('#algorithm-parameters-form').html(partial);
         });
 
         $.get( '<%=annotation_form_runs_path%>', {
-                'image_id': <%= @image.id %>
+            'image_id': <%= @image.id %>
         }).done(function(partial){
             $('#annotation-select').html(partial);
         })
@@ -49,8 +49,11 @@
         if($(this).find(":selected").text().includes('3D Algorithm')){
             $('.twod-algorithm-slice-select').css('display', 'none');
             $('#run_image_id').prepend("<option value= <%= @image.id %> selected='selected'></option>");
-        }else{
+            $('#tilesize-select').css('display', 'none');
+        }
+      else{
             $('.twod-algorithm-slice-select').css('display', 'block');
+            $('#tilesize-select').css('display', 'block');
         }
     })
 
