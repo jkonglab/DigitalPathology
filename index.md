@@ -16,15 +16,21 @@ demo2OverallDriveId: 1UuiKJCtp68Hgqjzk9DOPo3IOn89XcE7B/preview
 
 # Welcome to Digital Pathology Demo Page
 
-Note: Please [unblock third-party cookie](https://medium.com/@akohubteam/how-to-enable-third-party-cookies-on-your-browsers-f9a8143b8cc5) before you watch videos. Or, please following following steps to unblock cookied on Chrome:
+Note: Please [unblock third-party cookie](https://medium.com/@akohubteam/how-to-enable-third-party-cookies-on-your-browsers-f9a8143b8cc5) before you watch videos. 
 
-Step1:
+Or, please following following steps to unblock cookied on Chrome:
+
+Step1: click the icon of a blocked eye on url address bar in Chrome, and click "Site not working"
 ![Step1](/images/step1.png)
 
+Step2: click "Allow cookies" button
+![Step2](/images/step2.png)
+
+Step3: When the block eye icon becomes an unblocked eye icon, you are all set.
+![Step3](/images/step3.png)
 
 
-
-
+<br />
 
 
 ## User Registration
