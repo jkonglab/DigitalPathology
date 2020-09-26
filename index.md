@@ -16,6 +16,8 @@ demo2OverallDriveId: 1UuiKJCtp68Hgqjzk9DOPo3IOn89XcE7B/preview
 
 # Welcome to Digital Pathology Demo Page
 
+Note: Please [unblock third-party cookie](https://medium.com/@akohubteam/how-to-enable-third-party-cookies-on-your-browsers-f9a8143b8cc5) before you watch videos.
+
 ## User Registration
 {% include googleDrivePlayer.html id=page.userRegDriveId %}
 
