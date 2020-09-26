@@ -18,7 +18,7 @@ demo2OverallDriveId: 1UuiKJCtp68Hgqjzk9DOPo3IOn89XcE7B/preview
 
 Note: Please [unblock third-party cookie](https://medium.com/@akohubteam/how-to-enable-third-party-cookies-on-your-browsers-f9a8143b8cc5) before you watch videos. 
 
-Or, please following following steps to unblock cookied on Chrome:
+Or, please follow following steps to unblock cookied on Chrome:
 
 Step1: click the icon of a blocked eye on url address bar in Chrome, and click "Site not working"
 ![Step1](/images/step1.png)
