@@ -73,4 +73,3 @@ demo2OverallDriveId: 1UuiKJCtp68Hgqjzk9DOPo3IOn89XcE7B/preview
 
 ## Demo: Demo: Analysis Result Visualization, Refinement, and Export
 {% include googleDrivePlayer.html id=page.demo2OverallDriveId %}
-
