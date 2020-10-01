@@ -64,7 +64,7 @@ In pg_hba.conf, change all occurances of "ident" to "password"
 # Setting up the Application 
 ## Set up App Code & Install Gems
     cd /var/www
-    git clone http://github.com/ays0110/imageviewer
+    git clone https://github.com/jkonglab/DigitalPathology
     cd imageviewer
     gem install bundler
     bundle install
