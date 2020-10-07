@@ -34,6 +34,9 @@ class ImagesController < ApplicationController
     @algorithm = @image.threed? && @image.parent_id.blank? ? Algorithm.all : Algorithm.where('input_type NOT IN (?)', Algorithm::INPUT_TYPE_LOOKUP["3D"])
     @annotation = Annotation.new
     @annotations = @image.hidden? ? @image.annotations.where(:user_id=>current_user.id).order('id desc') : @image.annotations
+    if current_user.admin?
+        @annotations = @image.annotations
+    end
     @clinical_data = @image.clinical_data || {}
     @slices = Image.where(:parent_id => @image.id).order('slice_order asc')
     default_slice = (@slices.length.to_f/2).floor(0)-1
@@ -209,6 +212,9 @@ class ImagesController < ApplicationController
 
   def download_annotations
     @annotations = @image.hidden? ? @image.annotations.where(:user_id=>current_user.id).order('id desc') : @image.annotations
+    if current_user.admin?
+        @annotations = @image.annotations
+    end
     output = []
     labels = @annotations.group_by(&:label)
     labels.each_pair do |label, data|
@@ -272,6 +278,9 @@ class ImagesController < ApplicationController
   def download_annotations_xml
     @image = Image.find(params[:id])
     @annotations = @image.hidden? ? @image.annotations.where(:user_id=>current_user.id).order('id desc') : @image.annotations
+    if current_user.admin?
+        @annotations = @image.annotations
+    end
     classes = @annotations.group_by(&:annotation_class)
 
     regAttrs = [{"Id":"9998", "Name":"Region" },
