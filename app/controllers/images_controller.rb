@@ -34,6 +34,7 @@ class ImagesController < ApplicationController
     @algorithm = @image.threed? && @image.parent_id.blank? ? Algorithm.all : Algorithm.where('input_type NOT IN (?)', Algorithm::INPUT_TYPE_LOOKUP["3D"])
     @annotation = Annotation.new
     @annotations = @image.hidden? ? @image.annotations.where(:user_id=>current_user.id).order('id desc') : @image.annotations
+    
     if current_user.admin?
         @annotations = @image.annotations
     end

@@ -36,7 +36,7 @@ def main(img, params):
         # reference image
         try:
             function_handler = getattr(algorithm_module,'read_im')
-            img_file = "/DP_Share/imageviewer/public/uploads/"+params[1]
+            img_file = "/Project/DP_Share/imageviewer/public/uploads/"+params[1]
             rf_img = function_handler(img_file)
         except TypeError:
             print("The option `--ref_img` is necessary when choose `Customer` as the option `--ref`.")

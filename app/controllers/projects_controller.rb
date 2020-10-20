@@ -150,6 +150,7 @@ class ProjectsController < ApplicationController
       send_data output.to_json, :type => 'application/json; header=present', :disposition => "attachment; filename=#{@project.title.split('.')[0]}_annotations.json"
    end
 
+
    private
      def project_params
        params.require(:project).permit(:title, :modality, :tissue_type, :method, :visibility, :description, user_project_ownerships_attributes: [:id, :_destroy])
