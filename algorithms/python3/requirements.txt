@@ -7,7 +7,7 @@ scikit-image
 scikit-learn
 scipy
 sklearn
-tensorflow-gpu==1.14.0
+tensorflow-gpu==2.3.1
 oauthlib
 opencv-python
 Lasagne==0.1
