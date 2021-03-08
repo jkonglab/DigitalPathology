@@ -191,7 +191,7 @@ Set up the second virtual environment in the /algorithms/python3 folder:
 ## Create a user
 1.) Go to your URL, whether that's a production URL like dp.gsu.edu or localhost:80, and sign up a new user.
 2.) The app will send a confirmation email to the email that you signed up with.  
-3.) Click the confirmation link to confirm the account.  Please note that the link will default to https://dp.gsu.edu, so if you are signing up a localhost account, simply change the url from http://dp.gsu.edu to localhost:80.
+3.) Click the confirmation link to confirm the account.  Please note that the link will default to https://dplab.gsu.edu/, so if you are signing up a localhost account, simply change the url from https://dplab.gsu.edu/ to localhost:80.
 
 ## Make that user an admin
 Open up your terminal and cd into your imageviewer folder.  Then run `RAILS_ENV=production bundle exec rails c`
