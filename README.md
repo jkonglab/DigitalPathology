@@ -189,7 +189,7 @@ Set up the second virtual environment in the /algorithms/python3 folder:
     bundle exec sidekiq -d -L log/sidekiq.log -C config/sidekiq.yml -e production
 
 ## Create a user
-1.) Go to your URL, whether that's a production URL like dp.gsu.edu or localhost:80, and sign up a new user.
+1.) Go to your URL, whether that's a production URL like dplab.gsu.edu or localhost:80, and sign up a new user.
 2.) The app will send a confirmation email to the email that you signed up with.  
 3.) Click the confirmation link to confirm the account.  Please note that the link will default to https://dplab.gsu.edu/, so if you are signing up a localhost account, simply change the url from https://dplab.gsu.edu/ to localhost:80.
 
