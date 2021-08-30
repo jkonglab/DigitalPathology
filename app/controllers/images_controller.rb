@@ -2,7 +2,7 @@ class ImagesController < ApplicationController
   include ApplicationHelper
   before_action :set_current_user
   before_action :authenticate_user!, :except => [:index, :show]
-  before_action :set_image_validated, :only => [:show_3d, :download_annotations, :show, :add_single_clinical_data, :add_upload_clinical_data, :get_slice, :import_annotations]
+  before_action :set_image_validated, :only => [:show_3d, :show_volume, :download_annotations, :show, :add_single_clinical_data, :add_upload_clinical_data, :get_slice, :import_annotations]
   before_action :set_images_validated, :only =>[:convert_3d, :confirm_convert_3d, :confirm_delete, :delete, :confirm_move, :move]
   respond_to :json, only: [:get_slice]
 
@@ -378,5 +378,8 @@ class ImagesController < ApplicationController
     end     
   end
 
-
+  # def show_volume
+  #   puts "here";
+  #   @test = "hello!"
+  # end
 end

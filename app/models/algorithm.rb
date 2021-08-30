@@ -33,7 +33,7 @@ class Algorithm < ActiveRecord::Base
 		"points" => 3,
 		"percentage" => 4,
 		"image" => 5,
-                "landmarks"=>6
+        "landmarks"=>6
 	}
 
 	REVERSE_OUTPUT_TYPE_LOOKUP={
@@ -43,7 +43,7 @@ class Algorithm < ActiveRecord::Base
 		3 => 'points',
 		4 => 'percentage',
 		5 => 'image',
-                6 => 'landmarks'
+        6 => 'landmarks'
 	}
 
 	INPUT_TYPE_LOOKUP={

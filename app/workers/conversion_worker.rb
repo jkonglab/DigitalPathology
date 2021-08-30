@@ -48,8 +48,10 @@ class ConversionWorker
                 sbatch job.sh
           }
        else
-            %x{ cd #{python_virtualenv_path}
-                source env_3.7/bin/activate 
+            %x{ 
+                source ~/opt/anaconda3/etc/profile.d/conda.sh
+                conda activate test
+                python3 --version
                 cd #{file_path}
                 python3 #{conversion_file_path}/deepzoom_tile.py #{image.file.path};
             }

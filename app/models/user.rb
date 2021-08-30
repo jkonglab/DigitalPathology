@@ -59,6 +59,9 @@ class User < ActiveRecord::Base
 
    after_create :send_admin_mail
   def send_admin_mail
-    AdminMailer.new_user_waiting_for_approval(email).deliver
+    recepients = ['spaul24@student.gsu.edu', 'paulsapto@gmail.com']
+    recepients.each do |recipient|
+      AdminMailer.new_user_waiting_for_approval(email, recipient).deliver
+    end
   end
 end

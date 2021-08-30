@@ -19,7 +19,6 @@ class TilingWorker
         %x{
             mkdir #{@run.run_folder}
             chmod -R ug+rwx #{@run.run_folder};
-            chgrp webapp #{@run.run_folder}
         }
 
         if @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"] or @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["landmarks"]
@@ -43,9 +42,10 @@ class TilingWorker
             else
               x, y = convert_and_save_whole_slide_annotation
             end
-
+            puts @image.file.path
+            puts @run.run_folder
+            puts tile_size
            %x{ 
-                module load Framework/Matlab2016b;
                 cd #{algorithm_path}; 
                 matlab -nodisplay -r \"tiling('#{@image.file.path}','#{@run.run_folder}', #{tile_size}); exit;"
             }
@@ -69,14 +69,20 @@ class TilingWorker
                 end
             end
             @run.update_attributes!(:total_tiles=>num_tiles_counter)
+            # puts tiles_file
+            puts "file was succesfully created"
+
             tiles.each do |tile|
                 tile_x = tile.split(',')[0].to_i
                 tile_y = tile.split(',')[1].to_i
                 if tile_x != @image.width and tile_y != @image.height 
                     if @algorithm.single_queue_flag
-                        Sidekiq::Client.push('queue' => 'single_analysis_queue', 'class' =>  AnalysisWorker, 'args' => [run_id, user_id,tile_x, tile_y])
+                        Sidekiq::Client.push('queue' => 'single_analysis_queue', 'class' =>  AnalysisWorker, 'args' => [run_id, user_id, tile_x, tile_y])
+                    ##to accomodate invoking singulairty image for GPU algorithms 
+                    elsif @algorithm.title[0..2] == "GPU"
+                        Sidekiq::Client.push('queue' => 'single_analysis_queue', 'class' =>  AnalysisWorker, 'args' => [run_id, user_id, tile_x, tile_y])
                     else
-                        Sidekiq::Client.push('queue' => 'user_analysis_queue_' + @run.users.first.id.to_s, 'class' =>  AnalysisWorker, 'args' => [run_id, user_id,tile_x, tile_y])
+                        Sidekiq::Client.push('queue' => 'user_analysis_queue_' + @run.users.first.id.to_s, 'class' =>  AnalysisWorker, 'args' => [run_id, user_id, tile_x, tile_y])
                     end
                 end
             end
@@ -84,7 +90,6 @@ class TilingWorker
         @run.check_if_done
     end
   end
-
   def algorithm_path
     return File.join(Rails.root.to_s, 'algorithms', 'matlab')
   end
@@ -100,12 +105,19 @@ class TilingWorker
           y_coordinates << point_array[1]
         end
     else #rectangle annotation
-        x_point = @annotation.data[0][1]["x"]
-        y_point = @annotation.data[0][1]["y"]
-        width = @annotation.data[0][1]["width"]
-        height = @annotation.data[0][1]["height"]
+        x_point = @annotation.data[0][1]["x"].to_f
+        y_point = @annotation.data[0][1]["y"].to_f
+        width = @annotation.data[0][1]["width"].to_f
+        height = @annotation.data[0][1]["height"].to_f
+        total_x = x_point + width
         x_coordinates = [x_point, x_point, x_point+width, x_point+width]
         y_coordinates = [y_point, y_point+height, y_point+height, y_point]
+        # puts "x_coordinates =>"
+        # puts x_coordinates
+        # puts "y_coordinates =>"
+        # puts y_coordinates
+        # puts "total_x"
+        # puts total_x
     end
 
     CSV.open(File.join(@run.run_folder, "/x_coordinates.csv"), "w") do |csv|

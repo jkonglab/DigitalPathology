@@ -9,6 +9,7 @@ class RunsController < ApplicationController
   end
 
   def show
+    puts "Show function was triggered"
     @run = Run.find(params[:id])
     @algorithm = @run.algorithm
     @image = @run.image
@@ -23,16 +24,26 @@ class RunsController < ApplicationController
 
     @threed_volume = Image.where('generated_by_run_id IN (?) AND image_type = ? AND parent_id IS NULL', @run.id, Image::IMAGE_TYPE_THREED).first
     @annotation = @run.annotation
+    puts "annotation id=>"
+    puts @annotation.id
 
     @results = @algorithm.multioutput ? @run.results.where(:output_key=>@algorithm.multioutput_options[0]["output_key"]).order('id asc') : @run.results.order('id asc')
 
+    puts "test_result=>"
+    @test_result = @run.results.where('exclude IS NOT true').order('output_key asc, id asc')
+    @test_result.each do |result|
+      puts "here =>"
+      puts result.raw_data
+      break;
+    end
+    
     if @results.count < 10000
         @results_data = @results.pluck(:svg_data, :id, :exclude)
     else
       @results = [0]
       @results_data = [0]
     end
-
+   
     if @algorithm.multioutput
       @numerical_result_hash = {}
       @algorithm.multioutput_options.each do |option|
@@ -40,16 +51,65 @@ class RunsController < ApplicationController
         if option["output_type"] == Algorithm::OUTPUT_TYPE_LOOKUP["scalar"]
           @numerical_result_hash[key.to_sym] = @run.results.where(:output_key=>key).pluck(:raw_data).sum
         elsif option["output_type"] == Algorithm::OUTPUT_TYPE_LOOKUP["percentage"]
-          results = @run.results.where(:output_key=>key).pluck(:raw_data)
-          @numerical_result_hash[key.to_sym] = results.length > 0 ? (results.sum / results.length) : 0
+          if (@algorithm.name != "steatosis")
+            results = @run.results.where(:output_key=>key).pluck(:raw_data)
+            @numerical_result_hash[key.to_sym] = results.length > 0 ? (results.sum / results.length) : 0
+          end
         end
       end
     end
   end
 
   def get_results
+    puts "get_result function was triggered"
     @run = Run.find(params[:id])
     @algorithm = @run.algorithm
+    @output_file = @run.run_folder + "/pr_result.json"	
+    @pr_analysis_done = true
+    @percentage = 0
+    puts "Algorithm Name =>"
+    puts @algorithm.name
+    puts @algorithm.multioutput
+    if @algorithm.multioutput
+        puts "here"
+    end
+    puts @run.complete
+    if @run.complete
+      if @algorithm.name == "steatosis"|| @algorithm.name == "fibrosis" || @algorithm.name == "steatosis_neural_net"
+        puts "Getting result for steatosis"
+        
+        puts current_user
+        puts @run.percentage
+        if @run.percentage_analysis_done == false || @run.percentage_analysis_done == nil
+          puts "here"
+          puts @run.percentage
+          if File.exist?(@output_file)
+            output_json = File.read(@output_file)
+            output_hash = JSON.parse(output_json)
+            @pr_analysis_done = output_hash['pr_analysis_done']
+            @percentage = output_hash['percentage']
+            puts "output hash =>"
+            puts output_hash 
+            puts "percentage =>"
+            puts @percentage
+            # type(@percentage)
+            puts "done =>"
+            puts @pr_analysis_done
+            @run.percentage = @percentage
+            if @pr_analysis_done == true
+              @run.percentage_analysis_done = true
+            else 
+              @run.percentage_analysis_done = false
+            end
+          @run.save
+          else 
+            Sidekiq::Client.push('queue' => 'pr_result_queue_' + current_user.id.to_s, 'class' =>  PRWorker, 'args' => [@run.id, current_user.id])
+      # TODO
+          end
+        end
+      end
+    end
+
     @results = @run.results.where('tile_x >= ? AND tile_x <= ? AND tile_y >= ? AND tile_y <= ?', params['x'].to_f - @run.tile_size, (params['x'].to_f + params["width"].to_f), params['y'].to_f - @run.tile_size, (params['y'].to_f + params["height"].to_f))
 
     if params["key"]
@@ -86,7 +146,17 @@ class RunsController < ApplicationController
     end
 
     run_parameters = []
+    puts "checking algorithm parameters =>"
+    puts algorithm.parameters
+
     algorithm_parameters = algorithm.parameters.sort_by { |k| k["order"] }
+
+    puts "algorithm parameter loop section =>"
+    puts algorithm_parameters
+    puts "algorithm name =>"
+    puts algorithm.name
+    # puts algorithm_parameter["images_array"]
+
     algorithm_parameters.each do |algorithm_parameter|
         if algorithm_parameter["hard_coded"]
             parameter_value = algorithm_parameter["default_value"]
@@ -120,6 +190,12 @@ class RunsController < ApplicationController
                     parameter_value = [input_images_array, file_path+'/openSlide_global_surf_Landmark_Corrected_L.json']
             end
         else
+            puts "here I am ruuning params =>"
+            puts params
+            puts "checking params =>"
+            # puts params["parameters"].empty?
+            # puts params["parameters"]
+            if (!params["parameters"].nil?)
             parameter_value = params["parameters"][algorithm_parameter["key"]]
             if algorithm_parameter["type"] == Algorithm::PARAMETER_TYPE_LOOKUP["integer"]
                 if algorithm.name == "high_low_registration"
@@ -155,14 +231,18 @@ class RunsController < ApplicationController
                     parameter_value = parameter_value.original_filename.to_s
                 end
             end
+          end
         end
-        run_parameters << parameter_value
+        if (!params["parameters"].nil?)
+          run_parameters << parameter_value
+        end
     end
 
     @run.parameters = run_parameters
 
     if @run.save
         UserRunOwnership.create!(:user_id=> current_user.id,:run_id=> @run.id)
+        puts "Run Analysis was triggered here!"
         Sidekiq::Client.push('queue' => 'user_tiling_queue_' + current_user.id.to_s, 'class' =>  TilingWorker, 'args' => [@run.id, current_user.id])
         redirect_to @run, notice: 'New analysis created, please wait for it to finish running.'
     end
@@ -188,6 +268,7 @@ class RunsController < ApplicationController
   end
 
   def download_results
+    puts "result download function triggered here"
     @run = Run.find(params[:id])
     @results = @run.results.where('exclude IS NOT true').order('output_key asc, id asc')
     @algorithm = @run.algorithm
@@ -237,6 +318,14 @@ class RunsController < ApplicationController
     render partial: 'annotation_form'
   end
 
+  def gpu_status
+    @output_file = "/Users/ohm/imageviewer/public/data/gpu_status.json"
+    gpu_json = File.read(@output_file)
+    output_hash = JSON.parse(gpu_json)
+    @gpu_status = output_hash["GPU_available"]
+    render json: @gpu_status
+  end
+
   private
     def run_params
         params.require(:run).permit(:image_id, :algorithm_id, :parameters, :annotation_id, :tile_size)
@@ -259,5 +348,21 @@ class RunsController < ApplicationController
           redirect_to runs_path, alert: 'No analysis selected or you may lack permission to access these analyses'
         end
       end     
+    end
+
+    def create_annotation_file(annotation)
+      output = []
+      result_hash = {}
+      result_hash["name"] = annotation.label
+      result_hash["annotation_class"] = annotation.annotation_class
+      puts result_hash["name"]
+      annotation_data_arr = []
+      annotation_data = {}
+      if annotation.data[0][0] == "path"
+        if annotation.data[0[1]]["d"].include?"L"
+          annotation_data["annotation_object"] = "contour"
+        end
+      end
+      
     end
 end

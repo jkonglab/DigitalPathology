@@ -36,6 +36,7 @@ Rails.application.routes.draw do
       post 'upload_data' => 'images#add_upload_clinical_data'
       get 'get_slice' => 'images#get_slice'
       get 'show_3d' => 'images#show_3d'
+      get 'show_volume' => 'images#show_volume'
       post 'import_annotations' => 'images#import_annotations'
       get 'download_annotations' => 'images#download_annotations'
       get 'download_annotations_xml' => 'images#download_annotations_xml'
@@ -53,6 +54,7 @@ Rails.application.routes.draw do
   resources :runs do
     collection do
       get 'annotation_form' => 'runs#annotation_form'
+      get 'gpu_status' => 'runs#gpu_status'
       #get 'tilesize_form' => 'runs#tilesize_form'
       post 'confirm_delete' => 'runs#confirm_delete'
       post 'delete' => 'runs#delete'

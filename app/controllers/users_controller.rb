@@ -5,6 +5,7 @@ class UsersController < ApplicationController
     @user = User.find(params[:user_id])
     @user.approved = true
     @user.save
+    ApprovalMailer.approval_notification(@user.email).deliver
     redirect_back(fallback_location:'/admin')
   end
 
@@ -73,6 +74,5 @@ class UsersController < ApplicationController
       if !current_user.admin?
         redirect_to root_path, notice: 'Admins only.'
       end
-    end
-  
+    end  
 end

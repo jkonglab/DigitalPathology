@@ -29,7 +29,7 @@
           <a class="nav-link" href="/about">About<a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="https://slimwiki.com/imageviewer/">Wiki<a>
+          <a class="nav-link" href="https://jkonglab.github.io/DigitalPathology/">Wiki<a>
         </li>
 <!--         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" id="images-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a>
@@ -60,7 +60,7 @@
           </li>
         <% else %>
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle"  style="line-height:15px;" id="account-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Account</a>
+            <a class="nav-link dropdown-toggle"  style="line-height:15px;" id="account-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><%=current_user.email%></a>
             <div class="dropdown-menu" aria-labelledby="account-dropdown">
               <a class="dropdown-item" href="<%=runs_path%>">My Analyses</a>
               <a class="dropdown-item" href="<%=my_projects_path%>">My Projects</a>

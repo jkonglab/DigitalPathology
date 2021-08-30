@@ -29,8 +29,16 @@
             </div>
 
             <header>
-                  <span style="white-space:pre-wrap;" class="navbar-brand">Results</span>
+                  <span style="white-space:pre-wrap;" class="navbar-brand">Results here</span>
             </header>
+            <% if @algorithm.name == "steatosis" || @algorithm.name == "fibrosis" || @algorithm.name == "steatosis_neural_net" %>
+                <% if @run.percentage_analysis_done == true %>
+                    <p>Percentage: <%=@run.percentage %> %</p> 
+                <% end %>
+                <% if @run.percentage_analysis_done == false || @run.percentage_analysis_done == nil %>
+                    <p>Percentage: Retrieving result. Refresh to check.</p> 
+                <% end %>
+            <%end%> 
             <% if @algorithm.multioutput %>
                 <% @algorithm.multioutput_options.each do |option| %>
                     <% if [Algorithm::OUTPUT_TYPE_LOOKUP["points"], Algorithm::OUTPUT_TYPE_LOOKUP["contour"]].include?(option["output_type"])%>

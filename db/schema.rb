@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200921182107) do
+ActiveRecord::Schema.define(version: 20210701192201) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -132,6 +132,9 @@ ActiveRecord::Schema.define(version: 20200921182107) do
     t.integer "tiles_processed", default: 0
     t.integer "lock_version", default: 0, null: false
     t.integer "tile_size"
+    t.json "results"
+    t.decimal "percentage"
+    t.boolean "percentage_analysis_done"
     t.index ["user_id"], name: "index_runs_on_user_id"
   end
 

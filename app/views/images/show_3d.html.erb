@@ -293,10 +293,11 @@
 
 	visualisationApp.buildVisualization = function() {
 		if ( slidesGroup ) { scene.remove( slidesGroup ); }
-		geometry = new THREE.PlaneGeometry( 200, 200, 1, 1);
+		geometry = new THREE.CubeGeometry( 200, 200, 7, 1);
 		slidesGroup = new THREE.Group();
 		slidesGroup.current = 0;
 		var image_array = <%= raw(@slices.collect{|slice| slice.whole_image_path}.to_json) %>;
+		console.log(image_array)
 
 		for ( var i = 0; i <= image_array.length - 1; i++ ) {		
 			map = new THREE.TextureLoader().load('/'+image_array[i]);

@@ -17,6 +17,12 @@
   </a>
   <% end %>
 
+  <% if image.threed? %>
+  <a href="<%=show_volume_image_path(image) %>" class="list-group-item drawer-link">
+    <i class="material-icons" role="presentation">layers</i>3D Volume <sup style="color:orange"> Beta </sup>
+  </a>
+  <% end %>
+
   <li class="bmd-layout-spacer"></li>
 
   <a class="list-group-item">

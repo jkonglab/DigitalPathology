@@ -1,7 +1,7 @@
 <%= form_for(@run, :html => {:multipart => true}) do |f| %>
-    <div class="form-group">
+    <div class="form-group" id="selected-algorithm">
         <%= f.label :algorithm_id, "Select an algorithm to run" %>
-        <%= f.collection_select :algorithm_id, @algorithm.order('input_type ASC').all, :id, :title_with_type, {include_blank: 'Please select'}, { class: 'form-control', required: true } %>
+        <%= f.collection_select :algorithm_id, @algorithm.order('input_type ASC').where.not(name: 'generate_registered_images'), :id, :title_with_type, {include_blank: 'Please select'}, {class: 'form-control', required: true} %>
     </div>
     <% if @image.threed? %>
         <div class="form-group twod-algorithm-slice-select" style="display:none;">
@@ -26,8 +26,10 @@
     <hr/>
     <div id="algorithm-parameters-form">
     </div>
+    <div id="button-group">
       <%= f.submit "Start Analysis", {class: "float-right btn-raised btn-success"} %>
-<%end %>
+     <%end %>
+    </div>
 
 <script>
     $('#run_algorithm_id').change(function(){
@@ -56,5 +58,23 @@
             $('#tilesize-select').css('display', 'block');
         }
     })
-
+    
+    $("#run_algorithm_id").change(function(){
+        var selectedAlgo = $(this).children("option:selected").text();
+        if (selectedAlgo.includes("GPU") == true) {
+            $.get( '<%=gpu_status_runs_path%>', function(data) {
+                if (data != true) {
+                    alert("GPU is not available")
+                    // addAlert("gpu is available")
+                } 
+            })
+        } else {
+            console.log('GPU Algo not selected')
+        }
+       console.log(selectedAlgo)
+    });
+    function addAlert(message) {
+    $('#alerts').append(
+        '<div class="alert">' + message + '</div>');
+    }
 </script>

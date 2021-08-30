@@ -33,7 +33,6 @@ class AnalysisWorker
         %x{
           mkdir #{@work_folder};
           chmod -R ug+rwx #{@work_folder};
-          chgrp webapp #{@work_folder}
         }
     end
 
@@ -114,26 +113,49 @@ class AnalysisWorker
 
     else
       if @algorithm.language == Algorithm::LANGUAGE_LOOKUP["matlab"]
-        parameters = convert_parameters_cell_array_string(@run.parameters)
+        ##parameters = convert_parameters_cell_array_string(@run.parameters)
+        parameters = fix_params_for_matlab(convert_parameters_cell_array_string(@run.parameters))
 
+
+        File.open("#{@work_folder}/job.sh", 'w') do |file|
+            file.puts "matlab -nodisplay -r \"main('#{input_folder_path}','#{output_file}',#{parameters},'#{@algorithm.name}',#{@tile_x},#{@tile_y},#{@tile_width},#{@tile_height}); exit;\""
+        end
         %x{
           cd #{algorithm_path};
-          matlab -nodisplay -r "main('#{@image.tile_folder_path}','#{output_file}',#{parameters},'#{@algorithm.name}',#{@tile_x},#{@tile_y},#{@tile_width},#{@tile_height}); exit;"
+          matlab -nodisplay -r "main('#{input_folder_path}','#{output_file}',#{parameters},'#{@algorithm.name}',#{@tile_x},#{@tile_y},#{@tile_width},#{@tile_height}); exit;"
         }
 
       elsif @algorithm.language == Algorithm::LANGUAGE_LOOKUP["python3"] ||  @algorithm.language == Algorithm::LANGUAGE_LOOKUP["python"] 
-        parameters = @run.parameters
+        parameters = ""
+        @run.parameters.each do |parameter|
+            parameters = parameters + parameter.to_json + ' '
+        end
+        File.open("#{@work_folder}/job.sh", 'w') do |file|
+            file.puts "python -m main #{input_folder_path} '#{@image.title}' #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{roi_type} #{parameters}"
+        end
 
+        puts "printing steatosis_neural_net params for whole slide"
+        puts @tile_x 
+        puts @tile_y 
+        puts @tile_width 
+        puts @tile_height 
+        puts roi_type 
+        puts parameters
         ## FILTHY HACK
         if @algorithm.name == 'steatosis_neural_net'
+            # %x{cd #{algorithm_path};
+            #     export CUDA_VISIBLE_DEVICES=5;
+            #     singularity exec -B /var/www/imageviewer,/mnt/dpdata/share/ --nv ./steatosis_neural_net/steatosis_image.sif python -m main #{input_folder_path} '#{@image.title}' #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{roi_type} #{parameters}
+            #   }
+        elsif @algorithm.name == 'fibrosis'
             %x{cd #{algorithm_path};
-                source env3.6/bin/activate;
-                ## cp -r #{algorithm_path}/steatosis_neural_net/mrcnn env_3.6/lib/python3.6/site-packages;
-                python -m main #{input_folder_path} '#{@image.title}' #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{roi_type} #{parameters}
+                export CUDA_VISIBLE_DEVICES=0;
+                singularity exec -B /var/www/imageviewer,/mnt/dpdata/share/ --nv ./fibrosis/rb-5fb09cd39a193de1c6104dc6_latest.sif python -m main #{input_folder_path} '#{@image.title}' #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{roi_type} #{parameters}
               }
         else
-            %x{cd #{algorithm_path};
-                source env3.7/bin/activate;
+            %x{
+                cd #{algorithm_path};
+                source env/bin/activate;
                 python -m main #{input_folder_path} '#{@image.title}' #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{roi_type} #{parameters}
               }
         end
@@ -327,7 +349,7 @@ class AnalysisWorker
         until File.exist?(@run.run_folder+'/output.json')
             timer +=1
             sleep 1
-            if timer > 36000
+            if timer > 60
               break
             end
         end

@@ -17,7 +17,7 @@
         <div class="save-file" style="padding:15px;">
           <%= form_for :run,  url: {action: :create} do |f| %>
               <%= f.hidden_field :image_id, value: @image.id %>
-              <%= f.hidden_field :algorithm_id, value:  Algorithm.where(:title=>"CPU::3D Generate Registered Images").first.id %>
+              <%= f.hidden_field :algorithm_id, value:  Algorithm.where(:name=>"generate_registered_images").first.id %>
               <%= f.submit 'Generate Transformations', :style=>'float:right', :class=>"btn-raised btn btn-success"%>
           <% end %>
         </div>
@@ -270,6 +270,7 @@ function saveElements(message)
   if(point_array_1.length > 0 && point_array_2.length > 0 && point_array_1.length == point_array_2.length )
   {
     console.log(JSON.stringify(point_array_1));
+    console.log(JSON.stringify(point_array_2))
     $.post( '<%= landmarks_path %>.json', {
             'parent_id': <%= @image.id %>,
             'image_id': target_image_id,
@@ -306,6 +307,8 @@ function deletePointPairs(HTMLid)
 
 function setTargetResults(results, target_slice_num)
 {
+    console.log("checking results =>")
+    console.log(results)
     array_1 = results[0][target_slice_num]["target_landmarks"];
     for (i = 0; i < array_1.length; i++) {
         var HTMLid = "t-"+(i+1).toString();
