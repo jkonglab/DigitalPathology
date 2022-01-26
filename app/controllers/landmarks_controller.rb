@@ -1,6 +1,7 @@
 class LandmarksController < ApplicationController
 
   def create
+    puts "create is triggered"
     @image = Image.find(params[:parent_id])
 
     ref_image_id = params[:ref_image_id]
@@ -18,7 +19,15 @@ class LandmarksController < ApplicationController
         trgt_points << [point["x"].to_f.truncate(3),point["y"].to_f.truncate(3)].map(&:to_s)
     end
 
-    landmark = Landmark.where(:parent_id=> @image.id,:image_id => curr_image_id, :ref_image_id => ref_image_id).first
+    landmark = Landmark.where(:parent_id=> @image.id,:image_id => curr_image_id, :ref_image_id => ref_image_id)
+   
+    puts landmark
+    puts 'parent_id =>'
+    puts @image.id
+    puts 'current image_id =>'
+    puts curr_image_id
+    puts 'reference image id =>'
+    puts ref_image_id 
 
     if landmark.nil? #create
         new_landmark = Landmark.create!(
@@ -29,7 +38,8 @@ class LandmarksController < ApplicationController
             :ref_image_data => ref_points)
         new_landmark.save!
     else
-        landmark.destroy
+        
+        landmark.destroy_all
         new_landmark = Landmark.create!(
             :parent_id => @image.id,
             :image_id => curr_image_id,
