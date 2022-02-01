@@ -14,7 +14,23 @@ class RunsController < ApplicationController
     @algorithm = @run.algorithm
     @image = @run.image
     if @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["landmarks"]
+      @slice_dzi = []
+      @slice_temp = []
+      
       @slices = Image.where(:parent_id => @image.id).order('slice_order asc')
+      @slices.each do |slice|
+        slice_hash = {}
+        puts "Images path =>"
+        puts slice.dzi_url
+        slice_hash["dzi_url"] = slice.dzi_url
+        slice_hash["id"] = slice.id
+        slice_hash["height"] = slice.height
+        slice_hash["width"] = slice.width
+        @slice_temp << slice_hash
+        @slice_dzi << slice.dzi_url
+      end
+      puts "landmark sliced image details =>"
+      puts @slice_temp
       #default ref and target images
       @target_image = @slices[0]
       @ref_image = @slices[1]
@@ -158,15 +174,21 @@ class RunsController < ApplicationController
     # puts algorithm_parameter["images_array"]
 
     algorithm_parameters.each do |algorithm_parameter|
+      puts "algorithm parameter =>"
+      puts algorithm_parameter
         if algorithm_parameter["hard_coded"]
             parameter_value = algorithm_parameter["default_value"]
         elsif algorithm_parameter["annotation_derived"]
             parameter_value = annotation[algorithm_parameter["annotation_key"]]
         elsif algorithm_parameter["images_array"]
             input_images_array = []
-            if algorithm.name == "high_low_registration" or algorithm.name == "get_level_image" or algorithm.name == "global_machine_L"
+            puts "algorithm_name"
+            puts algorithm.name
+            if algorithm.name == "high_low_registration" or algorithm.name == "get_level_image" or algorithm.name == "global_machine_L" or algorithm.name == "registration_post_processingV2"
                 Image.where(:parent_id => image.id).order('slice_order asc').each do |i|
                     input_images_array << File.join(i.file_folder_path, i.file_file_name)
+                    puts "input_images_array"
+                    puts input_images_array
                 end
                 parameter_value = input_images_array
             elsif algorithm.name == "generate_registered_images"
@@ -174,7 +196,11 @@ class RunsController < ApplicationController
                         input_images_array << File.join(i.file_folder_path, i.file_file_name)
                     end
                     #write to file
+                    puts "image id used to generate landmark"
+                    puts image.id
                     corrected_landmarks = Landmark.where(:parent_id => image.id)
+                    puts "corrected_landmarks =>"
+                    puts corrected_landmarks
                     file_path = image.file_folder_path
                     if !File.directory?(file_path)
                         FileUtils.mkdir_p file_path
@@ -233,16 +259,18 @@ class RunsController < ApplicationController
             end
           end
         end
-        if (!params["parameters"].nil?)
+          if (parameter_value.nil?)
+            parameter_value = 'file_not_there'
+          end
           run_parameters << parameter_value
-        end
     end
-
     @run.parameters = run_parameters
+    
 
     if @run.save
         UserRunOwnership.create!(:user_id=> current_user.id,:run_id=> @run.id)
         puts "Run Analysis was triggered here!"
+        puts "Not running workers for now!"
         Sidekiq::Client.push('queue' => 'user_tiling_queue_' + current_user.id.to_s, 'class' =>  TilingWorker, 'args' => [@run.id, current_user.id])
         redirect_to @run, notice: 'New analysis created, please wait for it to finish running.'
     end
@@ -274,6 +302,23 @@ class RunsController < ApplicationController
     @algorithm = @run.algorithm
     output = []
     if @algorithm.output_type != Algorithm::OUTPUT_TYPE_LOOKUP["image"]
+      if @algorithm.name == 'generate_registered_images'
+        files = Dir[@run.run_folder+"/*.mat"]
+        puts "files are =>"
+        puts files
+        output_file = files.first
+        puts "output files are =>"
+        puts output_file
+        puts File.basename(output_file)
+        puts @run.run_folder
+        if !File.exist?(@run.run_folder+'/results.zip')
+          puts "here bitch";
+            ::Zip::File.open(@run.run_folder+'/results.zip', Zip::File::CREATE) do |z|
+              z.add(File.basename(output_file), output_file)
+            end
+        end
+        send_file  @run.run_folder+'/results.zip' , :type => "application/zip", :disposition => "attachment"
+      else
         @results.each do |result|
           result_hash = {}
           result_hash["output_key"] = result.output_key
@@ -299,8 +344,10 @@ class RunsController < ApplicationController
           output << result_hash
         end
         send_data output.to_json, :type => 'application/json; header=present', :disposition => "attachment; filename=results.json"
+      end
     else
         if !File.exist?(@run.run_folder+'/results.zip')
+          puts "here bitch2"
         ::Zip::File.open(@run.run_folder+'/results.zip', Zip::File::CREATE) do |z|
             @results.each do |result|
                 z.add(result.output_file, File.join(@run.run_folder ,result.output_file))

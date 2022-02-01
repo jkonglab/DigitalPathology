@@ -96,6 +96,9 @@ class ImagesController < ApplicationController
   end
 
   def confirm_convert_3d
+    puts "convert 3d images is triggered"
+    puts "params"
+    puts params['image_ids']
     @images = @images.order('title asc')
     if @images.length < 1
       return redirect_to @images.first.project, alert: 'Volume could not be created because all selected images are already attached to a 3D volume.'
@@ -136,6 +139,9 @@ class ImagesController < ApplicationController
 
     @images.update_all(:parent_id=> parent_image.id)
     @images.update_all(:visibility=> parent_image.visibility)
+    puts "parent_image =>"
+    puts parent_image.id
+    Sidekiq::Client.push('queue' => 'convert3d_queue_' + current_user.id.to_s, 'class' => Convert3dWorker, 'args' => [parent_image.id, current_user.id])
     redirect_to @images.first.project, notice: 'Images converted into 3D volume'
   end
 

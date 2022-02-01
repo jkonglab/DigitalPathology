@@ -292,16 +292,32 @@ class AnalysisWorker
     result_hash = {}
     target_points = []
     ref_points = []
+    puts "work_folder"
+    puts @work_folder
+    # landmark = Landmark.where(:parent_id=> @image.id,:image_id => curr_image_id, :ref_image_id => ref_image_id).first
     Dir.entries(@work_folder + '/').each do |file_name|
       if file_name.include?('openSlide_global_surf_Landmark_L')
         File.open(@work_folder + '/'+file_name,'r').each_line do |line|
             data = line.strip.split(",")
+            puts "data =>"
+            puts data
             if data[0] != target_slice
+              puts " data[0] != target_slice"
+              puts data[0]
                 if target_points.length != 0 && ref_points.length != 0
                     result_hash["target_landmarks"] = target_points
                     result_hash["ref_landmarks"] = ref_points
                     output << result_hash
-                    #save to landmarks
+                    puts "image id / parent id: Analysis script =>"
+                    puts @image.id
+
+                    puts "current_image_id =>"
+                    puts Image.where(:parent_id => @image.id, :slice_order => target_slice).first.id
+
+                    puts "ref_image_id =>"
+                    puts Image.where(:parent_id => @image.id, :slice_order => target_slice.next).first.id
+
+                    # save to landmarks
                     new_landmark = Landmark.create!(
                       :parent_id => @image.id,
                       :image_id => Image.where(:parent_id => @image.id, :slice_order => target_slice).first.id,
@@ -326,7 +342,9 @@ class AnalysisWorker
         result_hash["target_landmarks"] = target_points
         result_hash["ref_landmarks"] = ref_points
         output << result_hash
-        #save to landmarks
+        puts "output =>"
+        puts output 
+        # save to landmarks
         new_landmark = Landmark.create!(
             :parent_id => @image.id,
             :image_id => Image.where(:parent_id => @image.id, :slice_order => target_slice).first.id,
@@ -401,8 +419,12 @@ class AnalysisWorker
   end
 
   def convert_parameters_cell_array_string(parameters)
+    puts "parameters"
+    puts parameters
     new_parameters = []
     parameters.each do |p|
+      puts "testing parameters =>"
+      puts p
         if p.kind_of?(Array)
             p = convert_parameters_cell_array_string(p)
         end
@@ -411,6 +433,7 @@ class AnalysisWorker
     converted_parameters = new_parameters.to_json.gsub('"', "'")
     converted_parameters[0] = '{'
     converted_parameters[-1] = '}'
+    puts converted_parameters
     return converted_parameters
   end
 

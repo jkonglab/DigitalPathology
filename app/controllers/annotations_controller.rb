@@ -2,6 +2,7 @@ class AnnotationsController < ApplicationController
   before_action :authenticate_user!, :only => [:create]
 
   def create
+    puts "annotation controller got triggered"
     image = Image.find(params[:image_id])
     @annotation = image.annotations.new
 

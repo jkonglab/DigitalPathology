@@ -92,6 +92,13 @@ Rails.application.routes.draw do
   get '/about' => 'pages#about'
   get '/algorithmguide' => 'pages#algorithmguide'
 
+  get '/demo' => 'demo#demo'
+  resources :demo do
+    get 'get_slice' => 'demo#get_slice'
+    get 'show_3d' => 'demo#show_3d'
+  end
+
+
   authenticate :user, lambda { |u| u.admin? } do
     get '/admin' => 'users#admin_panel'
     get '/admin/new_user' => 'users#admin_create_user'

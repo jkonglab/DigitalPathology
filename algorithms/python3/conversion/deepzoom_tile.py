@@ -228,8 +228,9 @@ if __name__ == '__main__':
     parser.add_option('-B', '--ignore-bounds', dest='limit_bounds',
                 default=True, action='store_false',
                 help='display entire scan area')
+    # Overlap is added to 1 as default for smoother rendering
     parser.add_option('-e', '--overlap', metavar='PIXELS', dest='overlap',
-                type='int', default=0,
+                type='int', default=1,
                 help='overlap of adjacent tiles [1]')
     parser.add_option('-f', '--format', metavar='{jpeg|png}', dest='format',
                 default='png',
@@ -245,9 +246,16 @@ if __name__ == '__main__':
     parser.add_option('-r', '--viewer', dest='with_viewer',
                 action='store_true',
                 help='generate directory tree with HTML viewer')
+    """
+    The parser.add option is set to default 256 tile size (recommended),
+    in order to render .dzi images through deepzoom smoother.
+    tile_size:    the width and height of a single tile.  For best viewer
+                      performance, tile_size + 2 * overlap should be a power
+                      of two.
+    """
     parser.add_option('-s', '--size', metavar='PIXELS', dest='tile_size',
-                type='int', default=2048,
-                help='tile size [2048]')
+                type='int', default=256,
+                help='tile size [256]')
 
     (opts, args) = parser.parse_args()
     try:
