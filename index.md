@@ -15,7 +15,7 @@ demo2OverallDriveId: 1UuiKJCtp68Hgqjzk9DOPo3IOn89XcE7B/preview
 
 # Welcome to Digital Pathology Demo Page
 
-Note: Please [unblock third-party cookie](https://medium.com/@akohubteam/how-to-enable-third-party-cookies-on-your-browsers-f9a8143b8cc5) before you watch videos. 
+Note: Please [unblock third-party cookie](https://medium.com/@akohubteam/how-to-enable-third-party-cookies-on-your-browsers-f9a8143b8cc5) before you watch videos.
 
 Or, please follow following steps to unblock cookied on Chrome:
 
@@ -32,7 +32,7 @@ Step3: When the block eye icon becomes an unblocked eye icon, you are all set.
 <br />
 
 
-## Movie S1: User Registration
+## Movie S1: User Account Creation
 {% include googleDrivePlayer.html id=page.userRegDriveId %}
 
 <br />
@@ -47,7 +47,7 @@ Step3: When the block eye icon becomes an unblocked eye icon, you are all set.
 
 <br />
 
-## Movie S4: Annotations
+## Movie S4: Image Annotations
 {% include googleDrivePlayer.html id=page.annotationDriveId %}
 
 <br />
@@ -57,35 +57,36 @@ Step3: When the block eye icon becomes an unblocked eye icon, you are all set.
 
 <br />
 
-## Movie S6: Analysis
-{% include googleDrivePlayer.html id=page.analysisDriveId %}
-
-<br />
-
-## Movie S7: Algorithms
-{% include googleDrivePlayer.html id=page.algorithmsDriveId %}
-
-<br />
-
-## Movie S8: 3D Visualization
-{% include googleDrivePlayer.html id=page.3dvisualizationDriveId %}
-
-<br />
-
-## Movie S9: Image Registration Analysis
+## Movie S6: WSI Registration Analysis
 {% include googleDrivePlayer.html id=page.3dvolregistrationDriveId %}
 
 <br />
 
-## Movie S10: Administrator Account
+## Movie S7: 3D Tissue Volume Visualization
+{% include googleDrivePlayer.html id=page.3dvisualizationDriveId %}
+
+<br />
+
+## Movie S8: Algorithm Invocation
+{% include googleDrivePlayer.html id=page.analysisDriveId %}
+
+<br />
+
+## Movie S9: Algorithm Deployment
+{% include googleDrivePlayer.html id=page.algorithmsDriveId %}
+
+<br />
+
+
+## Movie S10: Analysis Result Visualization, Refinement, and Export
+{% include googleDrivePlayer.html id=page.demo2OverallDriveId %}
+
+<br />
+
+## Movie S11: Administrator Account
 {% include googleDrivePlayer.html id=page.adminUserDriveId %}
 
 <br />
 
-## Movie S11: Demo: 3D Visualization and Registration
+## Movie S12: A Short Demo: 3D Visualization and Registration
 {% include googleDrivePlayer.html id=page.demo1AllignDriveId %}
-
-<br />
-
-## Movie S12: Demo: Analysis Result Visualization, Refinement, and Export
-{% include googleDrivePlayer.html id=page.demo2OverallDriveId %}
