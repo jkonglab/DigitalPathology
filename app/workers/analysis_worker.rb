@@ -3,6 +3,8 @@ class AnalysisWorker
   attr_accessor :run, :tile_x, :tile_y
   sidekiq_options :retry => 3
 
+  # source env/bin/activate; -> For my local I do not need to activate the python file.
+
   def perform(run_id, userid, tile_x, tile_y)
     @run = Run.find(run_id)
     @algorithm = @run.algorithm
@@ -13,14 +15,30 @@ class AnalysisWorker
     @tile_width = @run.tile_size
     @tile_height = @run.tile_size
 
+    puts @tile_x
+    puts @tiles_y
+    puts @tile_width
+    puts @tile_height
+
+    puts "@annotation.width =>"
+    puts @annotation.width
+    puts @run.run_folder
+
+    puts "algorithm path =>"
+    puts algorithm_path
+
+
     if @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["image"]
-        @tile_width = @annotation.width > 4096 ? 4096 : @annotation.width
-        @tile_height = @annotation.height > 4096 ? 4096 : @annotation.height
+      if @algorithm.name != "hyperion_segmentation"
+          input_folder_path = @image.file_folder_path
+          @tile_width = @annotation.width > 4096 ? 4096 : @annotation.width
+          @tile_height = @annotation.height > 4096 ? 4096 : @annotation.height
+      end
         roi_type = "wholeslide"
         @work_folder = @run.run_folder
         output_file = @work_folder
         input_folder_path = @image.file_folder_path
-    elsif @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"] or @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["landmarks"]
+    elsif @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"] or @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["landmarks"] 
         input_folder_path = @image.file_folder_path
         roi_type = "wholeslide"
         @work_folder = @run.run_folder
@@ -155,7 +173,6 @@ class AnalysisWorker
         else
             %x{
                 cd #{algorithm_path};
-                source env/bin/activate;
                 python -m main #{input_folder_path} '#{@image.title}' #{output_file} #{@algorithm.name} #{@tile_x} #{@tile_y} #{@tile_width} #{@tile_height} #{roi_type} #{parameters}
               }
         end
@@ -372,7 +389,13 @@ class AnalysisWorker
             end
         end
         Dir.entries(@run.run_folder + '/').each do |file_name|
-            if (file_name.include?('output') || file_name.include?('reg')) && file_name.include?('.tif')
+          puts "it is running here"
+          puts @run.run_folder
+          puts "outside if condition"
+          puts file_name
+            if (file_name.include?('output') || file_name.include?('reg')) && file_name.include?('.tif') || file_name.include?('.tiff')
+              puts "inside if condition"
+              puts file_name
                 new_result = @run.results.create!(
                         :run_at => @run.run_at,
                         :tile_x => @tile_x,
@@ -384,6 +407,7 @@ class AnalysisWorker
   end
 
   def handle_3d_volume_output_generation
+    puts "it is running here get level"
     if @algorithm.name == 'get_level_image' #save level to results
       level = File.read(File.join(@run.run_folder, "/output.json")).strip
       new_result = @run.results.create!(
@@ -392,7 +416,7 @@ class AnalysisWorker
       new_result.save!
     end
     Dir.entries(@work_folder + '/').each do |file_name|
-      if file_name.include?('.tif')
+      if file_name.include?('.tif') || file_name.include?('output')
         i = 0
         while(true)
           begin

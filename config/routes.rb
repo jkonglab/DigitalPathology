@@ -92,7 +92,8 @@ Rails.application.routes.draw do
   get '/about' => 'pages#about'
   get '/algorithmguide' => 'pages#algorithmguide'
 
-  get '/demo' => 'demo#demo'
+  get '/demo/:id' => 'demo#demo'
+  get '/demo'=> 'demo#demo'
   resources :demo do
     get 'get_slice' => 'demo#get_slice'
     get 'show_3d' => 'demo#show_3d'
@@ -109,6 +110,8 @@ Rails.application.routes.draw do
     post '/admin/users/create' => 'users#create'
     delete '/admin/users/delete' => 'users#delete'
     get '/admin/users/resend' => 'users#resend_confirmation'
+    get '/admin/sidekiqlog' => 'users#get_sidekiq_log'
+    get '/admin/analysislog' => 'users#get_analysis_log'
   end
 
   require 'sidekiq/web'

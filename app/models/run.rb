@@ -27,11 +27,20 @@ class Run < ActiveRecord::Base
 	end
 
 	def run_folder
-    	run_data_path = File.join(Rails.root.to_s, 'algorithms', 'run_data')
+		run_data_path = File.join(Rails.root.to_s, 'algorithms','run_data')
     	run_folder = 'run_' + self.id.to_s + '_' + self.run_at.to_s
     	File.join(run_data_path, run_folder)
-  	end
+  	end 
 
+	# def dzi_url
+	# 	Dir.entries(run_folder + '/').each do |file_name|
+	# 		if file_name.include?('.tiff')
+	# 		  file_name = file_name.gsub(".tiff", ".dzi")
+	# 		  image = self.image
+	# 		  return File.join('https:', image.file_folder_url + '/' + file_name)
+	# 		end
+	# 	end
+	# end
 	def status_words
 		if self.complete
 			return 'Complete'

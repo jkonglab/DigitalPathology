@@ -1,0 +1,349 @@
+ 
+
+<style>
+    .bmd-layout-canvas .bmd-drawer-f-l > .bmd-layout-drawer{
+        width: 300px;
+    }
+    .nopadding {
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+    }
+    .addpadding {
+        padding: 1rem !important;
+    }
+</style>
+
+<div class="bmd-layout-container bmd-drawer-f-l bmd-drawer-in">
+    <div id="viewer-sidebar" class="bmd-layout-drawer bg-faded" aria-expanded="false" aria-hidden="false">
+        <span data-tab="drawer-home" class="drawer-link" style="padding:15px;">
+          <a href="/runs"><i style="vertical-align:bottom;" class="material-icons" role="presentation">arrow_back</i>
+          <span>Back to All Analyses</span></a>
+        </span>
+        <header>
+            <span style="white-space:pre-wrap;" class="navbar-brand">Needle Configuration</span>
+        </header>
+        <%= form_for :run,  url: {action: :create} do |f| %>
+        <ul class="list-group">
+            <a class="save-landmarks list-group-item nopadding">
+                <div class="form-group">
+                    <%= f.label :l, "Length of Biopsy Needle" %> </br>
+                    <%= f.number_field :l, value: 2500, step: 1 %> 
+                </div> 
+            </a>
+            <a class="clear-canvas list-group-item nopadding">
+                <div class="form-group">
+                    <%= f.label :r, "Radius of Biopsy Needle" %> </br>
+                    <%= f.number_field :r, value: 160, step: 1 %> 
+                </div> 
+            </a>
+            <a class="clear-canvas list-group-item nopadding">
+                <div class="form-group">
+                    <%= f.label :x0, "Penetrarion coordinate position X-Axis" %> </br> </br>
+                    <%= f.number_field :x0, value: 1500, step: 1 %> 
+                </div> 
+            </a>
+            <a class="clear-canvas list-group-item nopadding">
+                <div class="form-group">
+                    <%= f.label :y0, "Penetrarion coordinate position Y-Axis" %> </br> </br>
+                    <%= f.number_field :y0, value: 1500, step: 1 %> 
+                </div> 
+            </a>
+            <a class="clear-canvas list-group-item nopadding">
+                <div class="form-group">
+                    <%= f.label :z0, "Penetrarion coordinate position Z-Axis" %> </br> </br>
+                    <%= f.number_field :z0, value: 110, step: 1 %> 
+                </div> 
+            </a>
+            <a class="clear-canvas list-group-item nopadding">
+                <div class="form-group">
+                    <%= f.label :theta, "Tube insert angle theta" %> </br>
+                    <%= f.number_field :theta, value: 40, step: 1 %> 
+                </div> 
+            </a>
+            <a class="clear-canvas list-group-item nopadding">
+                <div class="form-group">
+                    <%= f.label :phi, "Tube insert angle phi" %> </br>
+                    <%= f.number_field :phi, value: 45, step: 1 %> 
+                </div> 
+            </a>
+            <a class="clear-canvas list-group-item nopadding">
+                <div class="form-group">
+                    <%= f.label :csr, "Tube cross section rotation angle" %> </br> </br>
+                    <%= f.number_field :csr, value: 0, step: 1 %> 
+                </div> 
+            </a>
+            <a class="clear-canvas list-group-item nopadding">
+                <div class="form-group">
+                    <%= f.label :nc, "cross-section images perpendicular to tube middle axis" %> </br> </br> </br>
+                    <%= f.number_field :nc, value: 0, step: 1 %> 
+                </div> 
+            </a>
+            <a class="clear-canvas list-group-item nopadding">
+                <div class="form-group">
+                    <%= f.label :image_id, "Image id of high resolution image" %></br>
+                    <%= f.number_field :nc, value: 364, step: 1 %> 
+                </div> 
+            </a>
+        
+        <div id="button-group" class="text-center">
+            <%= f.submit 'Generate Needle', :class=>"btn-raised btn btn-success"%>
+            <%= f.submit 'Generate Analysis', :class=>"btn-raised btn btn-success"%>
+            <% end %>
+        </div> 
+        </ul>
+    </div>
+
+    <div class="bmd-layout-content">
+        <div style="position: absolute;z-index: 1; right: 0px;" class="too-many-results-alert alert alert-warning alert-dismissible fade" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+              <strong>Too many results (>10,000) to show</strong> <br/>Please zoom in to a smaller section of the image to view results.
+        </div>
+        
+        <div style="position: absolute;z-index: 1; right: 0px;" class="roi-too-large-alert alert alert-warning alert-dismissible fade" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+              <strong>ROI selected is too large. Analyzed smaller region of selected ROI.</strong> 
+        </div>
+
+        <div style="height:100%" class="row">
+            <div class="col-12">
+                <div style="height:100%" id="openseadragon-container" class="openseadragon">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="position: fixed; bottom: 0; width: 150; right: 0; z-index: 100; color:white; background: rgba(0,0,0,.5); padding: 5px; text-align: center;" class="position-box">
+        x: <span id="position-text-x"></span><br/>
+        y: <span id="position-text-y"></span>
+
+    </div>
+</div>
+<script>
+    var results_data = JSON.parse('<%= raw(@results_data.to_json) %>');
+    var key;
+    var timeout;
+    var currentRequest = null;  
+    var annotation = '<%=raw(@annotation.data.to_json) %>';
+    var algorithm = '<%= @algorithm.name %>';
+    var complete_flag = '<%= @run.complete? %>';
+    console.log(complete_flag);
+    var image_url = '/<%= @image.file_folder_url %>' + '/needle_config.dzi'
+    console.log(image_url);
+    var tileSource = '/<%=@image.dzi_url%>';
+    if (algorithm == "hyperion_segmentation" && complete_flag == 'true' ) {
+        tileSource  = '<%= @tileSource %>';
+    }
+    console.log(tileSource);
+    var viewer = OpenSeadragon({
+        preserveViewport: true,
+        id:            "openseadragon-container",
+        prefixUrl:     "/openseadragon/images/",
+        tileSources:   image_url,
+        maxZoomPixelRatio: 2.0,
+        minPixelRatio: 0.5,
+        timeout: 100000,
+        imageLoaderLimit: 7
+    });
+    var exclude_indices = [];
+    var mouse_tracker = new OpenSeadragon.MouseTracker({
+        element: viewer.element,
+        moveHandler: trackPointer
+    });
+    var width = <%= @image.width %>
+    var height = <%= @image.height %>
+
+    var overlay = (function setOverlay(){
+    if (<%= @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["image"]%>)
+    {
+        point = new OpenSeadragon.Point (<%= @annotation.x_point.blank? ? 0 : @annotation.x_point %>, <%= @annotation.y_point.blank? ? 0 : @annotation.y_point %>);
+
+        viewportPoint = viewer.viewport.pointFromPixel(point);
+
+        if(<%= @annotation.blank? %> == false) // if annotation exists
+        {
+            width = <%= @annotation.width.blank? ? @image.width : @annotation.width  %> > 4096 ? 4096 : <%= @annotation.width.blank? ? @image.width : @annotation.width  %>
+            height = <%= @annotation.height.blank? ? @image.height : @annotation.height %> > 4096 ? 4096 : <%= @annotation.height.blank? ? @image.height : @annotation.height %> 
+        }
+
+        viewer.addHandler('open', function(){
+        var elt = document.createElement("div");
+        elt.id = "runtime-overlay";
+        elt.className = "highlight";
+        viewer.addOverlay({
+            element: elt,
+            location: viewer.viewport.imageToViewportRectangle(point.x, point.y, width, height)
+        });
+        });
+        if(<%= @annotation.width.blank? ? @image.width : @annotation.width  %> > 4096 || <%= @annotation.height.blank? ? @image.height : @annotation.height %> >4096){
+            $('.roi-too-large-alert').addClass('show');
+        }
+        else{
+            $('.roi-too-large-alert').removeClass('show');
+        }
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+    })();
+
+    var opacity = (function initializeOpacitySlider(){
+        if (<%= @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["contour"]%>)
+        {
+            $("#opacity-slider").show();
+        }
+        else
+        {
+            $("#opacity-slider").hide();
+        }
+    })();
+
+    var stroke_opacity = 1;
+    const opacity_range = document.querySelector('#opacity-range')
+    opacity_range.addEventListener('input', function(e){
+        stroke_opacity = e.target.value;
+        var current_annotations = viewer.annotations.get();
+        var i;
+        for(i = 0; i < current_annotations.length; i++) {
+            current_annotations[i][1]["stroke-opacity"] = stroke_opacity;
+        }
+        viewer.annotations.set(current_annotations);
+    });
+
+    function trackPointer(event){
+        var imagePoint = viewer.viewport.viewerElementToImageCoordinates(event.position);
+        if(imagePoint.x >=0 && imagePoint.x <= <%=@image.width%> && imagePoint.y >=0 && imagePoint.y <= <%=@image.height%>){
+            $('#position-text-x').html(String(imagePoint.x.toFixed(2)));
+            $('#position-text-y').html(String(imagePoint.y.toFixed(2)));
+        }else{
+            $('#position-text-x').html("");
+            $('#position-text-y').html("");
+        }
+    }
+
+    viewer.initializeAnnotations();
+    waitForAnnotationInitialize();
+    viewer.addHandler('animation-finish', function(e){retrieveAndSetResults(e);});
+
+    function clickEvent(e){
+        if($(e.originalEvent.target).is('circle') || $(e.originalEvent.target).is('path')){
+            var index = $(e.originalEvent.target).attr('index');
+            e.preventDefaultAction = true;
+            excludeResult(index);
+        }
+    }
+
+    function waitForAnnotationInitialize(){
+        if(viewer.areAnnotationsActive()){
+            clearTimeout(timeout);
+            retrieveAndSetResults(null);
+            viewer.addHandler('canvas-click', clickEvent);
+        }
+        else{
+            timeout = setTimeout(waitForAnnotationInitialize, 250);
+        }
+    }
+
+    function generateSVGs(results_data, annotation){
+        var svgs = [];
+        _.each(results_data, function(element, index){
+            try {
+            if(element[0][0] == "circle" || element[0][0] == "path"){
+                element[0][1]["index"] = index;
+                element[0][1]["r"] = 0.02;
+                element[0][1]["data-id"] = element[1];
+                element[0][1]["fill"] = "lime"
+                element[0][1]["fill-opacity"] = 0.1;
+                element[0][1]["stroke"] = "lime";
+                element[0][1]["stroke-width"] = 8.0;
+                element[0][1]["stroke-opacity"] = stroke_opacity;
+                if(element[2] === true){
+                    element[0][1]["fill"] = "red";
+                    element[0][1]["stroke"] = "red";
+                    element[0][1]["exclude"] = true;
+                }
+            }
+            svgs.push(element[0]);
+            }
+            catch(error){
+            }
+        });
+
+        if(annotation && annotation != 'null'){
+            var annotation_data = JSON.parse(annotation)[0];
+            svgs.push(annotation_data);
+        }
+        return svgs;
+    }
+
+    function excludeResult(index){
+           var current_annotations = viewer.annotations.get();
+
+        if (index > -1) {
+            var id = current_annotations[index][1]["data-id"];
+            var action = current_annotations[index][1]["exclude"] === true ? 'include' : 'exclude';
+
+            $.ajax({
+                  method: "PUT",
+                  url: "/results/"+id+"/"+action+".json"
+            })
+              .done(function() {
+                  if(action == 'exclude'){
+                    current_annotations[index][1]["fill"] = "red";
+                    current_annotations[index][1]["stroke"] = "red";
+                    current_annotations[index][1]["exclude"] = true;
+                }else{
+                    current_annotations[index][1]["fill"] = "lime";
+                    current_annotations[index][1]["stroke"] = "lime";
+                    current_annotations[index][1]["exclude"] = false;
+
+                }
+                viewer.annotations.set(current_annotations);
+              });
+        }
+    }
+
+    function retrieveAndSetResults(event){
+        var bounds = viewer.viewport.viewportToImageRectangle(viewer.viewport.getBounds());
+        currentRequest = $.ajax({
+            method: "GET",
+            url: "/runs/<%=@run.id%>/get_results.json?",
+            data: { 
+                key: key, 
+                x: bounds.x,
+                y: bounds.y, 
+                width: bounds.width,
+                height: bounds.height
+              },
+              beforeSend : function()    {           
+                if(currentRequest != null) {
+                    currentRequest.abort();
+                }
+            },
+            success: function(results_data) {
+                viewer.annotations.clean();
+
+                if(results_data[0] == 0){
+                    $('.too-many-results-alert').addClass('show');
+                    viewer.annotations.set(generateSVGs([], annotation));
+
+                }else{
+                    $('.too-many-results-alert').removeClass('show');
+                    viewer.annotations.set(generateSVGs(results_data, annotation));
+                }
+            }
+        });
+    }
+
+    $('.retrieve-results').off('click').click(function(){
+        key = $(this).attr('key');
+        retrieveAndSetResults(null);
+    });
+
+</script>
+

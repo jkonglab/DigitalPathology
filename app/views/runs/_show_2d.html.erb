@@ -100,11 +100,19 @@
     var timeout;
     var currentRequest = null;  
     var annotation = '<%=raw(@annotation.data.to_json) %>';
+    var algorithm = '<%= @algorithm.name %>';
+    var complete_flag = '<%= @run.complete? %>';
+    console.log(complete_flag);
+    var tileSource = '/<%=@image.dzi_url%>';
+    if (algorithm == "hyperion_segmentation" && complete_flag == 'true' ) {
+        tileSource  = '<%= @tileSource %>';
+    }
+    console.log(tileSource);
     var viewer = OpenSeadragon({
         preserveViewport: true,
         id:            "openseadragon-container",
         prefixUrl:     "/openseadragon/images/",
-        tileSources:   "/<%=@image.dzi_url%>",
+        tileSources:   tileSource,
         maxZoomPixelRatio: 2.0,
         minPixelRatio: 0.5,
         timeout: 100000,

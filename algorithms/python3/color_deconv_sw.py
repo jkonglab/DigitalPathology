@@ -16,9 +16,9 @@ def postprocess(main_output, output_file_path):
     algorithm_module = __import__('color_deconv_utils')
     function_handler = getattr(algorithm_module,'save_im')
     img, mask = main_output
-    function_handler(os.path.join(output_file_path, 'output_white_pixel_mask.png'), mask)
-    function_handler(os.path.join(output_file_path, 'output_input_tile.png'), img)
-    f = open(os.path.join(output_file_path, 'output.txt'), 'w')
+    function_handler(os.path.join(output_file_path, 'output_white_pixel_mask.tif'), mask)
+    function_handler(os.path.join(output_file_path, 'output_input_tile.tif'), img)
+    f = open(os.path.join(output_file_path, 'output.json'), 'w')
     f.close()
 
 def main(img, params):

@@ -79,6 +79,12 @@ class Algorithm < ActiveRecord::Base
   	def multioutput_options=(value)
   		value = value.present? ? JSON.parse(value) : []
   		super(value)
-  	end
+	end
+	  
+	def custom_titles
+		"#{self.title.slice! "CPU::"}"
+		"#{self.title.slice! "- Step 3"}"
+		return self.title
+	end
 
 end

@@ -18,6 +18,8 @@ en:
       unconfirmed: "You have to confirm your email address before continuing."
       not_approved: "Your account has not been approved by your administrator yet."
     mailer:
+      confitmation_notification:
+        subject: "Confirmation notification"
       confirmation_instructions:
         subject: "Confirmation instructions"
       reset_password_instructions:

@@ -12,6 +12,9 @@
         <%= f.hidden_field :image_id, :value=> @image.id %>
     <% end %>
 
+    <div class="alert alert-primary" role="alert" style="display:none;" id="alert-roi">
+        Please Select a small ROI
+    </div>
     <div id="annotation-select" class="form-group">
     </div>
 
@@ -64,14 +67,23 @@
         if (selectedAlgo.includes("GPU") == true) {
             $.get( '<%=gpu_status_runs_path%>', function(data) {
                 if (data != true) {
-                    alert("GPU is not available")
-                    // addAlert("gpu is available")
+                    addAlert("gpu is available")
                 } 
             })
         } else {
             console.log('GPU Algo not selected')
         }
-       console.log(selectedAlgo)
+       console.log(selectedAlgo);
+    });
+
+    $("#run_algorithm_id").change(function(){
+        var selectedAlgo = $(this).children("option:selected").text();
+        if (selectedAlgo.includes("3D Volume Registration") == true) {
+            $('#alert-roi').css('display', 'block');
+        } else {
+            console.log('3D Volume Registration not selected');
+        }
+       console.log(selectedAlgo);
     });
     function addAlert(message) {
     $('#alerts').append(

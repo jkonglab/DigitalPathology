@@ -23,7 +23,7 @@ class Ref:
         #HERef = np.array([[0.5626, 0.2159],[0.7201, 0.8012],[0.4062, 0.5581]])
 
         #maxCRef = np.array([1.9705, 1.0308])
-        img_file = "/Project/DP_Share/imageviewer/algorithms/python3/color_deconv_utils/he_ref.png"
+        img_file = "/var/www/imageviewer/algorithms/python3/color_deconv_utils/he_ref.png"
         ref_img = read_im(img_file)
         HERef, maxCRef = custom_ref(ref_img)
 
@@ -34,7 +34,7 @@ class Ref:
         # H&E staining reference value for normalization
         # It is from the [Python](https://github.com/schaugf/HEnorm_python) code.
         #copied H&E , needs change
-        img_file = "/Project/DP_Share/imageviewer/algorithms/python3/color_deconv_utils/ihc_ref.png"
+        img_file = "/var/www/imageviewer/algorithms/python3/color_deconv_utils/ihc_ref.png"
         ref_img = read_im(img_file)
         HERef, maxCRef = custom_ref(ref_img)
 

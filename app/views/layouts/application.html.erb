@@ -50,6 +50,11 @@
             <a class="nav-link" href="<%= new_user_registration_path %>">Sign Up</a>
           </li>
         <% end %>
+        <% if !current_user %>
+        <li class = "nav-item">
+          <a class="nav-link" href="/demo">Demo</a>
+        </li>
+        <% end %>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <% if !current_user %>

@@ -15,13 +15,14 @@ def postprocess(main_output, output_file_path):
     algorithm_module = __import__('color_deconv_utils')
     function_handler = getattr(algorithm_module,'save_im')
     img, Inorm = main_output
-    function_handler(os.path.join(output_file_path, 'output_norm.png'), Inorm)
-    function_handler(os.path.join(output_file_path, 'output_input_tile.png'), img)
-    f = open(os.path.join(output_file_path, 'output.txt'), 'w')
+    function_handler(os.path.join(output_file_path, 'output_norm.tif'), Inorm)
+    function_handler(os.path.join(output_file_path, 'output_input_tile.tif'), img)
+    f = open(os.path.join(output_file_path, 'output.json'), 'w')
     f.close()
 
 def main(img, params):
     ref = None
+    rf_img = None
     sys.path.insert(0, './color_deconv_utils')
     algorithm_module = __import__('color_deconv_utils')
     if params[0] == 'HE':
@@ -34,7 +35,7 @@ def main(img, params):
         # reference image
         try:
             function_handler = getattr(algorithm_module,'read_im')
-            img_file = "/Project/DP_Share/imageviewer/public/uploads/"+params[1]
+            img_file = "/mnt/dpdata/share/imageviewer/upload_data/"+params[1]
             rf_img = function_handler(img_file)
         except TypeError:
             print("The option `--ref_img` is necessary when choose `Customer` as the option `--ref`.")

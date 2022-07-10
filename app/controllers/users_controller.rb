@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
     before_action :check_admin_user!
+    respond_to :html, :json
 
   def approve
     @user = User.find(params[:user_id])
@@ -64,6 +65,35 @@ class UsersController < ApplicationController
     redirect_to '/admin', notice: 'Confirmation email has been resent'
   end
 
+  def get_sidekiq_log
+    puts "got triggered"
+  end
+
+  def get_analysis_log
+    @logs = []
+    puts "analysis_log_file =>"
+    puts log_file
+    if File.exist?(log_file)
+      if File.zero?(log_file)
+        @logs.push("Log is empty")
+      else
+        File.readlines(log_file).each do |line|
+          puts line
+          @logs.push(line)
+        end
+      end
+    else
+       @logs.push("Log is empty")
+    end
+    render json: @logs
+  end
+
+  def log_file
+    analysis_log_file = File.join(Rails.root.to_s, 'algorithms','log.txt')
+    puts analysis_log_file
+    return analysis_log_file
+  end
+
   private
 
     def user_params
@@ -75,4 +105,5 @@ class UsersController < ApplicationController
         redirect_to root_path, notice: 'Admins only.'
       end
     end  
+
 end

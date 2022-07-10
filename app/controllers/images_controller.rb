@@ -31,6 +31,10 @@ class ImagesController < ApplicationController
 
   def show
     @run = @image.runs.new
+    puts 'Run =>'
+    puts @image.title
+    @algorithm_name = get_algorithm_name(@image.title)
+    puts @algorithm_name
     @algorithm = @image.threed? && @image.parent_id.blank? ? Algorithm.all : Algorithm.where('input_type NOT IN (?)', Algorithm::INPUT_TYPE_LOOKUP["3D"])
     @annotation = Annotation.new
     @annotations = @image.hidden? ? @image.annotations.where(:user_id=>current_user.id).order('id desc') : @image.annotations
@@ -40,7 +44,11 @@ class ImagesController < ApplicationController
     end
     @clinical_data = @image.clinical_data || {}
     @slices = Image.where(:parent_id => @image.id).order('slice_order asc')
-    default_slice = (@slices.length.to_f/2).floor(0)-1
+    if @slices.length.odd?
+      default_slice = (@slices.length.to_f/2).floor(0)
+    else
+      default_slice = (@slices.length.to_f/2).floor(0)-1
+    end 
     @image_shown = @image.threed? && @image.parent_id.blank? ? @slices[default_slice] : @image
     @tilesizes = []
     minsize = @image.height > @image.width ? @image.width : @image.height
@@ -388,4 +396,19 @@ class ImagesController < ApplicationController
   #   puts "here";
   #   @test = "hello!"
   # end
+  def get_algorithm_name title
+    s_title = title.split(" ")
+    if s_title.include? "Run"
+      run_id = s_title[3]
+      run_id.slice! ':'
+      puts run_id
+      algorithm_id = Run.find(run_id).algorithm_id
+      puts algorithm_id
+      algorithm_name = Algorithm.find(algorithm_id).name
+      puts algorithm_name
+      return algorithm_name
+    else 
+      return nil
+    end
+  end
 end

@@ -21,6 +21,9 @@
 	 		<% i += 1 %>
 		<% end %>
 		</ul>
+		<%if @algorithm.name == 'generate_registered_images'%>
+			<%=link_to download_results_run_path(@run.id) do%><span>Download MAT File</span><% end %>
+		<% end %>
 	</div>
 
 	<div class="image-table">

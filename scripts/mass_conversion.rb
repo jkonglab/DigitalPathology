@@ -21,18 +21,18 @@ require 'fileutils'
 #
 # 7. Also remove the output, copy, conversion script after done or before starting
 
-ENV['RAILS_ENV'] = "production"
-require '/Project/DP_Share/imageviewer/config/environment.rb'
+ENV['RAILS_ENV'] = "development"
+require '/Users/ohm/imageviewer/config/environment.rb'
 
-orig_files_reg_expression = '/Project/DP_Share/Testing_WSIs/Fibrosis_New_Dataset/*.ndpi'
-user_id = 10
-project_id = 39
+orig_files_reg_expression = '/Users/ohm/imageviewer/test_dataset/*.png'
+user_id = 1
+project_id = 1
 files = Dir.glob(orig_files_reg_expression)
-temp_file_path = '/Project/DP_Share/Testing_WSIs/Temp/'
-temp_file = '/Project/DP_Share/Testing_WSIs/Temp/04.tif'
-output_file = '/Project/DP_Share/imageviewer/scripts/output.csv'
-copy_script_file = '/Project/DP_Share/imageviewer/scripts/copy.sh'
-conversion_script_file = '/Project/DP_Share/imageviewer/scripts/conversion.sh'
+temp_file_path = '/Users/ohm/imageviewer/test_dataset'
+temp_file = '/Users/ohm/imageviewer/test_dataset/test_image.png'
+output_file = '/Users/ohm/imageviewer/scripts/output.csv'
+copy_script_file = '/Users/ohm/imageviewer/scripts/copy.sh'
+conversion_script_file = '/Users/ohm/imageviewer/scripts/conversion.sh'
 
 files.each do |image_path|
 	title = image_path.split('/')[-1]
@@ -54,13 +54,13 @@ files.each do |image_path|
 	File.open(conversion_script_file, "a+") do |f|
                 f.puts "module load Compilers/Python3.7.4"
 		f.puts "module load Image_Analysis/Openslide3.4.1"
-		f.puts "cd /Project/DP_Share/imageviewer/algorithms/python3"
-		f.puts "source env3.7/bin/activate"
+		f.puts "cd /Users/ohm/imageviewer/algorithms/python3"
+		# f.puts "source env3.7/bin/activate"
 		f.puts "cd #{@image.file_folder_path}"
-		f.puts "python3 /Project/DP_Share/imageviewer/algorithms/python3/conversion/deepzoom_tile.py #{@image.file.path}"
+		f.puts "python3 /Users/ohm/imageviewer/algorithms/python3/conversion/deepzoom_tile.py #{@image.file.path}"
 		f.puts ""
         end
-	temp_file = new_file
+	# temp_file = new_file
 end
 
 

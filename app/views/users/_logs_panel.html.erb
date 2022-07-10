@@ -1,0 +1,23 @@
+<div class="container h-100"> 
+    <br/>
+    <br/>
+    <h1>Logs</h1>
+    <br/>
+    <%= link_to new_algorithm_path do %>
+    <button style="float:right" class="btn btn-success">Sidekiq Logs</button>
+    <% end %>
+    <%= link_to admin_analysislog_path do %>
+    <button style="float:right" class="btn btn-success">Analysis Logs</button>
+    <% end %>
+    <br/>
+    <textarea class="form-control h-75" id="log_placeholder" readonly="readonly"></textarea>
+</div>
+<script>
+    $.get('<%=admin_analysislog_path %>', function(data) {
+        var text = document.getElementById('log_placeholder');
+        data.forEach(element => {
+            text.value += element;
+        });
+        
+    });
+</script>

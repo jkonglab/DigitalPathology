@@ -19,6 +19,9 @@
             </div>
             <% if @image.threed? %>
                 <div class="col-2 slider-container">
+                        <% if @algorithm_name == "hyperion_registration" %>
+                            <p id="image-type"> Reference Nanostring </p>
+                        <% end %>
                         <button id="slideUp"><i class="material-icons" role="presentation">arrow_drop_up</i></button>
                         <input id="sliceNavigator" class="form-control" type="text" data-slider-min="1" data-slider-max="<%=@slices.length%>" data-slider-step="1" data-slider-value="<%=(@slices.length.to_f/2).ceil(0)%>" data-slider-orientation="vertical"/>    
 
@@ -389,7 +392,18 @@
 
     <% if @image.threed? %>
         var changeSlide = function() {
+            console.log("change");
             var slice_num = slice_slider.bootstrapSlider('getValue');
+            console.log(slice_num);
+            <% if @algorithm_name == "hyperion_registration" %>
+                if (slice_num == 1) {
+                    document.getElementById("image-type").innerText = "Target Hyperion"
+                } else if (slice_num == 2) {
+                    document.getElementById("image-type").innerText = "Reference Nanostring"
+                } else if (slice_num == 3) {
+                    document.getElementById("image-type").innerText = "Registered Target Hyperion"
+                }
+            <% end %>
             var current_bounds = viewer.viewport.getBounds();
             //var saved_annotations = viewer.annotations.get();
             var is_drawing_mode = $('.drawer-annotations').hasClass('active');

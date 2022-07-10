@@ -1,0 +1,418 @@
+<div class="bmd-layout-container bmd-drawer-f-l bmd-drawer-in">
+    <div id="viewer-sidebar" class="bmd-layout-drawer bg-faded" aria-expanded="false" aria-hidden="false">
+        <div class="drawer-tab active drawer-home">
+            <header>
+                <span style="white-space:pre-wrap; overflow-wrap: break-word;" class="navbar-brand">GBM3D Dataset Demo</span>
+            </header>
+            <ul class="list-group">
+                <a href="<%=demo_show_3d_path(@demoID) %>" class="list-group-item drawer-link">
+                    <i class="material-icons" role="presentation">visibility</i>View in 3D
+                </a>
+                <a href=""class="list-group-item drawer-link">
+                    <i class="material-icons" role="presentation">layers</i>3D Volume <sup style="color:orange"> Beta </sup>
+                </a>
+                <li class="list-group-item">
+                   <%= select_tag(:image_type, options_for_select([['302',302],['292',292]]), {:class=>'form-control', :id=>'image_id', :prompt=>'Select an Image Id', :required => true, :onchange=> 'changeURL()'}) %>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="bmd-layout-content" style="background:#eee;">
+        <div style="height:100%;" class="row">
+            <div class="<%= @image.threed? ? 'col-10' : 'col-12' %>" style="padding-right:0px;">
+                <div id="openseadragon-container" class="openseadragon">
+                </div>
+            </div>
+            <% if @image.threed? %>
+                <div class="col-2 slider-container">
+                        <button id="slideUp"><i class="material-icons" role="presentation">arrow_drop_up</i></button>
+                        <input id="sliceNavigator" class="form-control" type="text" data-slider-min="1" data-slider-max="<%=@slices.length%>" data-slider-step="1" data-slider-value="<%=(@slices.length.to_f/2).ceil(0)%>" data-slider-orientation="vertical"/>    
+
+                        <button id="slideDown"><i class="material-icons" role="presentation">arrow_drop_down</i></button>
+                        <span id="sliderValLabel">Current Slide: <span id="sliderVal"><%=(@slices.length.to_f/2).ceil(0)%></span></span>
+                </div>
+            <% end %>
+        </div>
+    </div>
+
+    <div style="position: fixed; bottom: 0; width: 150; right: 0; z-index: 100; color:white; background: rgba(0,0,0,.5); padding: 5px; text-align: center;" class="position-box">
+        x: <span id="position-text-x"></span><br/>
+        y: <span id="position-text-y"></span>
+    </div>
+</div>
+
+
+<script id="image_template" type="text/template">
+</script>
+
+<script>
+    var viewer = OpenSeadragon({
+        preserveViewport: true,
+        id:            "openseadragon-container",
+        prefixUrl:     "/openseadragon/images/",
+        tileSources:   "/<%=@image_shown.dzi_url%>",
+        maxZoomPixelRatio: 2.0,
+        minPixelRatio: 0.5,
+        timeout: 100000,
+        imageLoaderLimit: 7
+    });
+    console.log(viewer.viewport.getZoom());
+    bindAnnotationRows();
+
+    var mouse_tracker = new OpenSeadragon.MouseTracker({
+        element: viewer.element,
+        moveHandler: trackPointer
+    });
+
+    var image_width = <%=@image_shown.width %>;
+    console.log(image_width)
+    var image_height = <%=@image_shown.height %>;
+    console.log(image_height)
+
+    var annotation_type = "";
+    var annotation_tool = "";
+    var current_class_element = "";
+    var annotation_data_dict = {};
+    var all_annotations = [];
+    var bbox;
+
+    function changeURL() {
+        console.log($('#image_id'))
+        var select = document.getElementById('image_id').value;
+        window.location.pathname = '/demo/' + select;
+    }
+
+    function trackPointer(event){
+        var imagePoint = viewer.viewport.viewerElementToImageCoordinates(event.position);
+        if(imagePoint.x >=0 && imagePoint.x <= image_width && imagePoint.y >=0 && imagePoint.y <= image_height){
+            $('#position-text-x').html(String(imagePoint.x.toFixed(2)));
+            $('#position-text-y').html(String(imagePoint.y.toFixed(2)));
+        }else{
+            $('#position-text-x').html("");
+            $('#position-text-y').html("");
+        }
+    }
+
+    function goToDrawerHome()
+    {
+        $('.start-draw').show(); 
+        $('.stop-draw').hide();
+        $('.annotation-tools-form').hide();
+        clearCanvas();
+        if(viewer.areAnnotationsActive())
+        {
+            viewer.shutdownAnnotations();
+        }
+    }
+
+    $('.drawer-link').click(function(){
+        var clicked_tab = $(this).attr('data-tab');
+        $('.drawer-tab').removeClass('active');
+        $('.'+clicked_tab).css('opacity',0).addClass('active').animate({opacity: 1}, 50);
+
+        if(clicked_tab == 'drawer-annotations'){
+            startDrawing();
+        }
+        else if( clicked_tab == 'drawer-home'){
+            goToDrawerHome();
+        }
+        else{
+            stopDrawing();
+        }
+    });
+
+    $('.start-draw').click(startDrawing);
+    $('.stop-draw').click(stopDrawing);
+    $('.clear-canvas').click(clearCanvas);
+
+    function clearCanvas(){
+        all_annotations = [];
+        if(viewer.areAnnotationsActive())
+        {
+            viewer.annotations.clean();
+        }
+    }
+
+    function stopDrawing(){
+        <% if @image.threed? %>
+            $('.slider-container').css('opacity', 1);
+        <% end %>
+        if(all_annotations.length > 0)
+        {
+            promptAndSaveAnnotation();
+            all_annotations = []; //reset array
+        }
+        $('.start-draw').show(); 
+        $('.stop-draw').hide();
+        $('.annotation-tools-form').hide();
+        if(viewer.areAnnotationsActive())
+        {
+            viewer.stopDrawing(); 
+        }
+    }
+
+    function startDrawing(){
+        <% if @image.threed? %>
+            slice_slider.bootstrapSlider('setValue', <%=(@slices.length.to_f/2).ceil(0)%>, true, true);
+            $('.slider-container').css('opacity', 0);
+        <% end %>
+        resetAnnotationToolsForm();
+        $( "#annotation-type option" ).eq(0).prop('selected', true);
+        $('.annotation-tools-form').show();
+        $('.start-draw').hide(); 
+        $('.stop-draw').show();
+        if(!viewer.areAnnotationsActive())
+        {
+            viewer.initializeAnnotations();
+        }
+    }
+
+    function resetAnnotationToolsForm(){
+        current_class_element = "";
+        $('#annotation-class-txt').val("");
+        $('.annotation-class-button').hide();
+        $('.training-annotation-tools').hide();
+        $('.analysis-annotation-tools').hide();
+        $('.annotation-class-select').hide();
+        $("#analysis-annotation-tool option").eq(0).prop('selected', true);
+        $("#training-annotation-tool option").eq(0).prop('selected', true);
+        $("#annotation-class option").eq(0).prop('selected', true);
+        i = 0;
+        $('#annotation-class').children('option:not(:first)').remove(); //remove all other classes except for default
+    }
+
+    function annotationTypeChangeEvent(){
+        clearCanvas();
+        resetAnnotationToolsForm();
+        annotation_type = $( "#annotation-type option:selected" ).text();
+        if(annotation_type == 'Analysis')
+            {
+                //hide add class button
+                $('.annotation-class-button').hide();
+                // tools - free hand, rectangle
+                $('.training-annotation-tools').hide();
+                $('.analysis-annotation-tools').show();
+            }
+        else if(annotation_type == 'Training')
+            {
+                //show add class button
+                $('.annotation-class-button').show();
+                // tools - free hand, rectangle, circle, points
+                $('.analysis-annotation-tools').hide();
+                $('.training-annotation-tools').show();
+            }
+        else if(annotation_type == "Select Annotation Type" )
+            {
+                alert("Please Select Annotation Type");
+                stopDrawing();
+            }
+    }
+
+    function annotationToolChangeEvent(){
+        if(annotation_type == 'Analysis')
+        {
+            annotation_tool = $( "#analysis-annotation-tool option:selected" ).text();
+            current_class_element = $("#annotation-class-txt").val();
+            if(current_class_element == "")
+            {
+                alert("Annotation Class cannot be null !!");
+                stopDrawing();
+            }
+            else
+            {
+                if(annotation_tool == 'Free Hand')
+                {
+                    viewer.startDrawingFreehand(); 
+                }
+                else if(annotation_tool == 'Rectangle')
+                {
+                    //TO-DO prompt appears before rect is visible
+                    viewer.startDrawingRectangle(); 
+                }
+                bindAnnotation();
+            }
+        }
+        else if(annotation_type == 'Training')
+        {
+            annotation_tool = $( "#training-annotation-tool option:selected" ).text();
+            if(current_class_element == "" || current_class_element == "Select Annotation Class" )
+            {
+                alert("Annotation class cannot be null !!");
+                stopDrawing();
+            }
+            else
+            {
+                if(annotation_tool == 'Free Hand')
+                {
+                    viewer.startDrawingFreehand(); 
+                }
+                else if(annotation_tool == 'Rectangle')
+                {
+                    viewer.startDrawingRectangle(); 
+                }
+                else if(annotation_tool == 'Circle')
+                {
+                    viewer.startDrawingCircle(); 
+                }
+                else if(annotation_tool == 'Point')
+                {
+                    viewer.startDrawingPoint();
+                }
+                bindAnnotation();
+            }
+        }
+    }
+
+    var i = 0;
+    function addAnnotationClass(){
+        i = i+1;
+        var class_text = $("#annotation-class-txt").val();
+        var exists = false;
+        $('#annotation-class option').each(function(){
+            if (this.text == class_text) {
+                exists = true;
+                return false;
+            }
+        });
+        if (!exists && class_text != "")
+        {
+            $('#annotation-class').append($('<option></option>').val(i).html(class_text));
+        }
+        $('.annotation-class-select').show();
+        $('#annotation-class-txt').val(""); //reset text field
+    }
+
+    function annotationClassChangeEvent(){
+        current_class_element = $( "#annotation-class option:selected" ).text();
+        //TO-DO enable color picker
+    }
+
+    function bindAnnotation(){
+      $( ".openseadragon-canvas svg" ).unbind().mouseup(function(e) {
+        e.stopPropagation();
+        var annotation = viewer.annotations.get();
+        var new_annotation = annotation.slice(-1)[0];
+        if(annotation_tool == 'Free Hand' || annotation_tool == 'Point')
+        {
+            bbox = $('.openseadragon-canvas svg path').slice(-1)[0].getBBox(); 
+        }
+        else if(annotation_tool == 'Circle')
+        {
+            bbox = $('.openseadragon-canvas svg circle').slice(-1)[0].getBBox();
+        }
+        else if(annotation_tool == 'Rectangle')
+        {
+            bbox = $('.openseadragon-canvas svg rect').slice(-1)[0].getBBox();
+        }
+        update_all_annotations(new_annotation, bbox);
+        if(annotation_type == 'Analysis')
+        {
+          stopDrawing();
+        }
+      });
+    }
+
+    function bindAnnotationRows(){
+        $('.annotation-row').unbind().click(function(){
+            var annotation_data = JSON.parse($(this).attr('annotation-data'))[0];
+            viewer.annotations.set([annotation_data]);
+        });
+    }
+
+    function promptAndSaveAnnotation(){
+        annotation_rows = []
+        var annotation_label = prompt("Please label your annotation", "");
+        if (annotation_label != null) {
+            for(i=0; i<all_annotations.length; i++)
+                {
+                    $.post( '<%= annotations_path %>.json', {
+                        'image_id': <%= @image.id %>,
+                        'label': annotation_label,
+                        'data': JSON.stringify(all_annotations[i]["data"]),
+                        'x': all_annotations[i]["x"],
+                        'y': all_annotations[i]["y"],
+                        'width': all_annotations[i]["width"],
+                        'height': all_annotations[i]["height"],
+                        'annotation_class': all_annotations[i]["annotation_class"],
+                        'annotation_type': all_annotations[i]["annotation_type"]
+                    })
+                    .done(function(partial_data){
+                        //TO-DO group annotations by label
+                        $( ".annotations-table" ).prepend(partial_data);
+                        bindAnnotationRows();
+                    });
+                }
+                //TO-DO set annotations
+        }
+        else{
+            clearCanvas();
+        }
+    }
+
+    function update_all_annotations(annotation_data, bbox){
+        //TO-DO update stroke-color
+        annotation_data_dict = {
+                'data': [annotation_data],
+                'x': bbox.x,
+                'y': bbox.y,
+                'width':bbox.width,
+                'height':bbox.height,
+                'annotation_class': current_class_element,
+                'annotation_type': annotation_type
+            };
+        all_annotations.push(annotation_data_dict);
+    }
+
+
+    <% if @image.threed? %>
+        var changeSlide = function() {
+            var slice_num = slice_slider.bootstrapSlider('getValue');
+            var current_bounds = viewer.viewport.getBounds();
+            //var saved_annotations = viewer.annotations.get();
+            var is_drawing_mode = $('.drawer-annotations').hasClass('active');
+            var url = 'demo/'+"<%=@image.id%>/get_slice?slice="+slice_num.toString()
+            <% if @flag == true %>
+            var url = "<%=@image.id%>/get_slice?slice="+slice_num.toString()
+            <% end %>
+
+            $.ajax({
+                  url: url
+              }).done(function(data){
+                  viewer.open('/'+data.dzi_url);
+                  image_width = data.width;
+                  image_height = data.height;
+                  viewer.viewport.fitBounds(current_bounds);
+                  if(is_drawing_mode && !viewer.areAnnotationsActive())
+                  {
+                      viewer.initializeAnnotations();
+                  }
+            });
+        };
+
+        var slice_slider = $("#sliceNavigator").bootstrapSlider({reversed : true}).on('change', changeSlide);
+
+        $("#sliceNavigator").slider({
+            tooltip: 'always'
+        });
+
+        $("#sliceNavigator").on("slide", function(slideEvt) {
+            $("#sliderVal").text(slideEvt.value);
+        });
+
+        $('#slideUp').bind('click', function(){
+            var currentSlide = slice_slider.bootstrapSlider('getValue');
+            if(currentSlide < <%=@slices.length%>){
+                slice_slider.bootstrapSlider('setValue', currentSlide + 1, true, true);
+            }
+        });
+
+        $('#slideDown').bind('click', function(){
+            var currentSlide = slice_slider.bootstrapSlider('getValue');
+            if(currentSlide > 0){
+                slice_slider.bootstrapSlider('setValue', currentSlide - 1, true, true);
+            }
+        });
+    <% end %>
+</script>
+
+

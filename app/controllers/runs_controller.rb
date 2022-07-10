@@ -4,6 +4,8 @@ class RunsController < ApplicationController
   before_action :set_runs_validated, :only =>[:confirm_delete, :delete]
   before_action :set_run_validated, :only => [:show, :get_results, :download_results]
 
+  # This is imageviewer
+
   def index
     @runs = current_user.runs.order('id desc')
   end
@@ -12,7 +14,11 @@ class RunsController < ApplicationController
     puts "Show function was triggered"
     @run = Run.find(params[:id])
     @algorithm = @run.algorithm
+    puts "run_folder =>"
+    puts @run.run_folder
     @image = @run.image
+    puts "@algorithm"
+    puts @algorithm.name
     if @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["landmarks"]
       @slice_dzi = []
       @slice_temp = []
@@ -67,12 +73,22 @@ class RunsController < ApplicationController
         if option["output_type"] == Algorithm::OUTPUT_TYPE_LOOKUP["scalar"]
           @numerical_result_hash[key.to_sym] = @run.results.where(:output_key=>key).pluck(:raw_data).sum
         elsif option["output_type"] == Algorithm::OUTPUT_TYPE_LOOKUP["percentage"]
-          if (@algorithm.name != "steatosis")
             results = @run.results.where(:output_key=>key).pluck(:raw_data)
             @numerical_result_hash[key.to_sym] = results.length > 0 ? (results.sum / results.length) : 0
-          end
         end
       end
+    end
+    if @run.complete?
+    if @algorithm.name == "hyperion_segmentation"
+      Dir.entries(@run.run_folder + '/').each do |file_name|
+        if file_name.include?('colored')
+          file_name = file_name.gsub(".tiff", ".dzi")
+          @tileSource = 'http://localhost:3000/'+@image.file_folder_url + '/' + file_name
+        end
+    elseif @algorithm
+
+      end
+    end
     end
   end
 
@@ -144,9 +160,13 @@ class RunsController < ApplicationController
   end
 
   def create
+    puts "run_params =>"
+    puts run_params
     @run = Run.new(run_params)
     image = Image.find(@run.image_id)
     algorithm = Algorithm.find(@run.algorithm_id)
+    puts "algorithm"
+    puts algorithm
     temp_idx = current_user.email.index('@')
     user_name = current_user.email[0..temp_idx-1]
 
@@ -184,16 +204,24 @@ class RunsController < ApplicationController
             input_images_array = []
             puts "algorithm_name"
             puts algorithm.name
-            if algorithm.name == "high_low_registration" or algorithm.name == "get_level_image" or algorithm.name == "global_machine_L" or algorithm.name == "registration_post_processingV2"
+            if algorithm.name == "high_low_registration" \
+              or algorithm.name == "get_level_image" \
+              or algorithm.name == "global_machine_L" \
+              or algorithm.name == "registration_post_processingV2"\
+              or algorithm.name == "hyperion_reg_preprocess"\
+              or algorithm.name == "hyperion_global_machine_L"
                 Image.where(:parent_id => image.id).order('slice_order asc').each do |i|
                     input_images_array << File.join(i.file_folder_path, i.file_file_name)
                     puts "input_images_array"
                     puts input_images_array
                 end
                 parameter_value = input_images_array
-            elsif algorithm.name == "generate_registered_images"
+            elsif algorithm.name == "generate_registered_images" or algorithm.name == "hyperion_registration"
+                  puts "here => hyperion_registration"
                     Image.where(:parent_id => image.id).order('slice_order asc').each do |i|
                         input_images_array << File.join(i.file_folder_path, i.file_file_name)
+                        puts "input_images_array"
+                        puts input_images_array
                     end
                     #write to file
                     puts "image id used to generate landmark"
@@ -312,12 +340,12 @@ class RunsController < ApplicationController
         puts File.basename(output_file)
         puts @run.run_folder
         if !File.exist?(@run.run_folder+'/results.zip')
-          puts "here bitch";
+          puts "here1";
             ::Zip::File.open(@run.run_folder+'/results.zip', Zip::File::CREATE) do |z|
               z.add(File.basename(output_file), output_file)
             end
         end
-        send_file  @run.run_folder+'/results.zip' , :type => "application/zip", :disposition => "attachment"
+        send_file  @run.run_folder+'/results.zip' , :type => "application/zip", :disposition => "attachment"      
       else
         @results.each do |result|
           result_hash = {}
@@ -346,10 +374,13 @@ class RunsController < ApplicationController
         send_data output.to_json, :type => 'application/json; header=present', :disposition => "attachment; filename=results.json"
       end
     else
+      puts "this is triggered!"
+      
         if !File.exist?(@run.run_folder+'/results.zip')
-          puts "here bitch2"
+          puts "here 2!"
         ::Zip::File.open(@run.run_folder+'/results.zip', Zip::File::CREATE) do |z|
             @results.each do |result|
+                puts result.output_file
                 z.add(result.output_file, File.join(@run.run_folder ,result.output_file))
             end
         end

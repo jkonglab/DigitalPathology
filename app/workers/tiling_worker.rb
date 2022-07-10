@@ -3,6 +3,7 @@ class TilingWorker
   require 'csv'
   attr_accessor :run, :image, :annotation, :algorithm
   sidekiq_options :retry => 3
+  # This is imageviewer
 
 
   def perform(run_id, user_id)
@@ -10,6 +11,7 @@ class TilingWorker
     @run_time = Time.now.to_i
     @image = run.image
     @algorithm = run.algorithm
+    puts @algorithm.name
     num_tiles_counter = 0
     tile_size = @run.tile_size || 256
 
@@ -20,14 +22,16 @@ class TilingWorker
             mkdir #{@run.run_folder}
             chmod -R ug+rwx #{@run.run_folder};
         }
-
+        puts @algorithm.output_type
         if @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["3d_volume"] or @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["landmarks"]
+            puts "here1"
             # Queuing tile_x, tile_y = (0,0) means that there is no tiling required in this algorithm
             # set tilesize to 0
             @run.update_attributes(:tile_size=>0)
             @run.update_attributes!(:total_tiles=>1)
             Sidekiq::Client.push('queue' => 'user_analysis_queue_' + @run.users.first.id.to_s, 'class' =>  AnalysisWorker, 'args' => [run_id, user_id, 0, 0])
         elsif @algorithm.output_type == Algorithm::OUTPUT_TYPE_LOOKUP["image"]
+          puts "here2"
             if run.annotation_id != 0
               @annotation = run.annotation
               tile_x = @annotation.x_point
@@ -35,7 +39,15 @@ class TilingWorker
               @run.update_attributes!(:total_tiles=>1)
               Sidekiq::Client.push('queue' => 'user_analysis_queue_' + @run.users.first.id.to_s, 'class' =>  AnalysisWorker, 'args' => [run_id, user_id, tile_x, tile_y])
             end
+        # elsif @algorithm.name == "hyperion_segmentation" 
+        #     puts "its hare"
+        #     puts "running algorithm =>"
+        #     puts @algorithm.name
+        #     @run.update_attributes(:tile_size=>0)
+        #     @run.update_attributes!(:total_tiles=>1)
+        #     Sidekiq::Client.push('queue' => 'user_analysis_queue_' + @run.users.first.id.to_s, 'class' =>  AnalysisWorker, 'args' => [run_id, user_id, 0, 0])
         else
+          puts "here, it should be here"
             if run.annotation_id != 0
               @annotation = run.annotation
               x, y = convert_and_save_annotation_points
@@ -45,10 +57,10 @@ class TilingWorker
             puts @image.file.path
             puts @run.run_folder
             puts tile_size
-           %x{ 
-                cd #{algorithm_path}; 
-                matlab -nodisplay -r \"tiling('#{@image.file.path}','#{@run.run_folder}', #{tile_size}); exit;"
-            }
+          #  %x{ 
+          #       cd #{algorithm_path}; 
+          #       matlab -nodisplay -r \"tiling('#{@image.file.path}','#{@run.run_folder}', #{tile_size}); exit;"
+          #   }
 
             timer = 0
             until File.exist?(File.join(@run.run_folder,'/tiles_to_analyze.json'))

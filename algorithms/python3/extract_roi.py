@@ -7,8 +7,8 @@ def preprocess(raw_input, output_file_path, parameters):
 
 def postprocess(main_output, output_file_path):
     roi = main_output
-    roi.save(os.path.join(output_file_path, 'output_roi.png'))
-    f = open(os.path.join(output_file_path, 'output.txt'), 'w')
+    roi.save(os.path.join(output_file_path, 'output_roi.tif'))
+    f = open(os.path.join(output_file_path, 'output.json'), 'w')
     f.close()
 
 def main(img, params):
