@@ -17,7 +17,7 @@
     "formstone": "^1.4.1",
     "openseadragon": "^2.2.1",
     "openseadragon-annotations": "^1.0.2",
-    "underscore": "^1.8.3"
+    "underscore": "^1.12.1"
   },
   "devDependencies": {
     "webpack": "^5.28.0",
