@@ -43,3 +43,16 @@ imageviewer.conf
 *.gem
 .DS_Store
 .DS_Store
+/node_modules/*
+/test/*
+/test_dataset/*
+/algorithms/*
+/algorithms.bak/*
+/algorithms/python3/*.py
+/scripts/*.csv
+/scripts/copy_script/copy_image.sh
+/scripts/copy_script/file_path.txt
+/scripts/3d_conversion.sh
+/scripts/conversion.sh
+/scripts/volume_vti.sh
+*.vti
