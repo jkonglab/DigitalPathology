@@ -56,3 +56,5 @@ imageviewer.conf
 /scripts/conversion.sh
 /scripts/volume_vti.sh
 *.vti
+
+.DS_Store
