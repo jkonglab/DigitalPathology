@@ -6,7 +6,7 @@ class Sidekiq::Manager
     end
 
     def start
-      Sidekiq::LimitFetch::Queues.start options
+      Sidekiq::LimitFetch::Queues.start @options || @config
       Sidekiq::LimitFetch::Global::Monitor.start!
       super
     end

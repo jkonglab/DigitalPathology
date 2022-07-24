@@ -1,0 +1,56 @@
+version: '3.8'
+
+services: 
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile  
+        depends_on: 
+            - db
+            - redis
+        ports:
+            - "3000:3000"
+        volumes:
+            - .:/app
+            - gem_cache:/usr/local/bundle/gems
+            - node_modules:/app/node_modules
+        env_file: .env
+        environment: 
+            RAILS_ENV: development
+
+    db:
+        image: postgres:latest
+        environment:
+            - POSTGRES_PASSWORD=postgrespw
+        ports:
+            - 5432:5432
+        volumes:
+            - db_data:/var/lib/postgresql/data
+            - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    
+    redis:
+        image: redis:latest
+        ports:
+            - 6379:6379
+
+    sidekiq:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        depends_on: 
+            - app
+            - db
+            - redis
+        volumes:
+            - .:/app
+            - gem_cache:/usr/local/bundle/gems
+            - node_modules:/app/node_modules
+        env_file: .env
+        environment: 
+            RAILS_ENV: development
+        entrypoint: ./entrypoints/sidekiq-entrypoint.sh
+    
+volumes: 
+    gem_cache:
+    db_data:
+    node_modules:
