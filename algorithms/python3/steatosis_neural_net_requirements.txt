@@ -12,4 +12,4 @@ oauthlib
 opencv-python
 openslide-python
 h5py
-setuptools==39.1.0
+setuptools==65.5.1
