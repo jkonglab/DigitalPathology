@@ -1,5 +1,5 @@
 matplotlib
-numpy==1.14.5
+numpy==1.22.0
 keras==2.1.3
 Pillow
 scikit-build==0.10.0
